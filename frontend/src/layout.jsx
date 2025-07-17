@@ -78,7 +78,7 @@ export default function Layout({ children, currentPageName }) {
             <div className="hidden md:flex items-center space-x-3">
               {isLoading ? (
                 <div className="w-48 h-8 bg-gray-200 rounded animate-pulse"></div>
-              ) : user || true ? (
+              ) : user ? (
                 <UserProfileDropdown user={user} onLogout={handleLogout} />
               ) : (
                 <>
@@ -126,7 +126,7 @@ export default function Layout({ children, currentPageName }) {
                 <div className="flex flex-col space-y-2 px-3">
                   {isLoading ? (
                     <div className="w-full h-10 bg-gray-200 rounded animate-pulse my-2"></div>
-                  ) : user || true ? (
+                  ) : user ? (
                     <div className="px-1 py-2">
                       <UserProfileDropdown user={user} onLogout={handleLogout} />
                     </div>

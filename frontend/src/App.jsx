@@ -11,7 +11,7 @@ import StudentAuth from "./Pages/StudentAuth";
 import RecruiterAuth from "./Pages/RecruiterAuth";
 import RecruiterDashboard from "./Pages/RecruiterDashboard";
 import StudentDashboard from "./Pages/StudentDashboard";
-import StudentLayout from "./StudentLAyout";
+import StudentLayout from "./StudentLayout";
 import ResumeBuilder from "./Pages/ResumeBuilder";
 import UpdateProfile from "./Pages/UpdateProfile";
 import UploadResume from "./Pages/UploadResume";
