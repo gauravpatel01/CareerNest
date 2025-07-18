@@ -34,7 +34,7 @@ export default function RecruiterAuth() {
   });
   // Remove passwordLength state and generatePassword function
 
-  // Add state for password generation
+  //password generation
   const generatePassword = () => {
     const length = 12;
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+{}[]<>?,.';

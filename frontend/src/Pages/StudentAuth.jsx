@@ -35,7 +35,7 @@ export default function StudentAuth() {
   const [passwordMessage, setPasswordMessage] = useState('Password must be at least 8 characters and include letters, numbers, and a special character.');
   // Remove passwordLength state and generatePassword function
 
-  // Add state for password generation
+  //password generation
   const generatePassword = () => {
     const length = 12;
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+{}[]<>?,.';
