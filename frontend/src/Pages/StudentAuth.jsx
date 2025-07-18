@@ -33,6 +33,18 @@ export default function StudentAuth() {
   });
   const [passwordStrength, setPasswordStrength] = useState('');
   const [passwordMessage, setPasswordMessage] = useState('Password must be at least 8 characters and include letters, numbers, and a special character.');
+  // Remove passwordLength state and generatePassword function
+
+  // Add state for password generation
+  const generatePassword = () => {
+    const length = 12;
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+{}[]<>?,.';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    setFormData({ ...formData, password: result, confirm_password: result });
+  };
 
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -91,7 +103,7 @@ export default function StudentAuth() {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-    
+
     try {
       if (loginMethod === "email") {
         if (!formData.email || !formData.password) {
@@ -104,7 +116,7 @@ export default function StudentAuth() {
           return;
         }
       }
-      
+
       // In a real app, this would validate against your auth system
       // For demo purposes, we'll use a simulated login
       // await User.login(); // This line was removed as per the new_code
@@ -190,7 +202,7 @@ export default function StudentAuth() {
                 </div>
               </CardTitle>
             </CardHeader>
-            
+
             <CardContent>
               {error && (
                 <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg flex items-center">
@@ -303,14 +315,30 @@ export default function StudentAuth() {
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Confirm Password *
                       </label>
-                      <Input
-                        name="confirm_password"
-                        type={showPassword ? "text" : "password"}
-                        value={formData.confirm_password}
-                        onChange={handleInputChange}
-                        placeholder="Confirm password"
-                        required
-                      />
+                      <div className="relative">
+                        <Input
+                          name="confirm_password"
+                          type={showPassword ? "text" : "password"}
+                          value={formData.confirm_password}
+                          onChange={handleInputChange}
+                          placeholder="Confirm password"
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                        >
+                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={generatePassword}
+                        className="mt-2 px-3 py-1 bg-gray-200 rounded text-sm hover:bg-gray-300"
+                      >
+                        Auto Generate Password
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -416,7 +444,7 @@ export default function StudentAuth() {
                   </div>
                 </div>
 
-                <Button 
+                <Button
                   type="submit"
                   disabled={isLoading}
                   className="w-full bg-blue-600 hover:bg-blue-700 py-3 text-lg"
@@ -482,22 +510,20 @@ export default function StudentAuth() {
         <div className="flex mb-6 bg-gray-100 rounded-lg p-1">
           <button
             onClick={() => setLoginMethod("email")}
-            className={`flex-1 flex items-center justify-center py-2 px-4 rounded-md font-medium transition-colors ${
-              loginMethod === "email" 
-                ? "bg-white text-gray-900 shadow-sm" 
-                : "text-gray-600 hover:text-gray-900"
-            }`}
+            className={`flex-1 flex items-center justify-center py-2 px-4 rounded-md font-medium transition-colors ${loginMethod === "email"
+              ? "bg-white text-gray-900 shadow-sm"
+              : "text-gray-600 hover:text-gray-900"
+              }`}
           >
             <Mail className="w-4 h-4 mr-2" />
             Email
           </button>
           <button
             onClick={() => setLoginMethod("phone")}
-            className={`flex-1 flex items-center justify-center py-2 px-4 rounded-md font-medium transition-colors ${
-              loginMethod === "phone" 
-                ? "bg-white text-gray-900 shadow-sm" 
-                : "text-gray-600 hover:text-gray-900"
-            }`}
+            className={`flex-1 flex items-center justify-center py-2 px-4 rounded-md font-medium transition-colors ${loginMethod === "phone"
+              ? "bg-white text-gray-900 shadow-sm"
+              : "text-gray-600 hover:text-gray-900"
+              }`}
           >
             <Phone className="w-4 h-4 mr-2" />
             Phone
@@ -535,6 +561,8 @@ export default function StudentAuth() {
                   onChange={handleInputChange}
                   placeholder="Password"
                   className="h-12 pr-10"
+                  min="8"
+                  max="64"
                   required
                 />
                 <button
@@ -562,7 +590,7 @@ export default function StudentAuth() {
           )}
 
           {/* Login Button */}
-          <Button 
+          <Button
             type="submit"
             disabled={isLoading}
             className="w-full bg-gray-900 hover:bg-gray-800 text-white py-3 h-12 rounded-lg font-medium"
@@ -601,3 +629,4 @@ export default function StudentAuth() {
     </div>
   );
 }
+  
