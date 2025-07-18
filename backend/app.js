@@ -9,6 +9,7 @@ const mongoose = require('mongoose');
 const User = require('./models/User');
 const Internship = require('./models/Internship');
 const seedRoutes = require('./routes/seed');
+const googleAuthRoutes = require('./routes/googleAuth');
 
 const app = express();
 
@@ -17,6 +18,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(seedRoutes);
+app.use('/api', googleAuthRoutes);
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/careernest', {
