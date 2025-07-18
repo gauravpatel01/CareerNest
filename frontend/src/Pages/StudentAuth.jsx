@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 // import { User } from "@/entities/User";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "../Components/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,6 +47,7 @@ export default function StudentAuth() {
   };
 
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -90,7 +91,7 @@ export default function StudentAuth() {
       if (!res.ok) throw new Error('Google login failed');
       const data = await res.json();
       localStorage.setItem('jwt', data.token);
-      window.location.href = createPageUrl('studentdashboard');
+      navigate('/p/studentdashboard');
     } catch (error) {
       setError('Google login failed. Please try again.');
       console.error('Google login error:', error);
@@ -120,7 +121,7 @@ export default function StudentAuth() {
       // In a real app, this would validate against your auth system
       // For demo purposes, we'll use a simulated login
       // await User.login(); // This line was removed as per the new_code
-      window.location.href = createPageUrl("Home");
+      navigate('/p/studentdashboard');
     } catch (error) {
       setError(loginMethod === "email" ? "Invalid email or password" : "Phone login failed. Please try again.");
       console.error("Login error:", error);
@@ -155,7 +156,7 @@ export default function StudentAuth() {
         return;
       }
       // On success, redirect to dashboard
-      window.location.href = createPageUrl("studentdashboard");
+      navigate('/p/studentdashboard');
     } catch (error) {
       setError("Sign up failed. Please try again.");
       console.error("Sign up error:", error);
