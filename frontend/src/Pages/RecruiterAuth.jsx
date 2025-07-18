@@ -13,6 +13,8 @@ import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 export default function RecruiterAuth() {
   const [isLogin, setIsLogin] = useState(true);
   const [loginMethod, setLoginMethod] = useState("email"); // "email" or "phone"
+  const [passwordStrength, setPasswordStrength] = useState('');
+  const [passwordMessage, setPasswordMessage] = useState('Password must be at least 8 characters and include letters, numbers, and a special character.');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -46,10 +48,24 @@ export default function RecruiterAuth() {
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
   const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    const { name, value } = e.target;
+    if (name === 'phone') {
+      // Only allow numbers and max 10 digits
+      const cleaned = value.replace(/\D/g, '').slice(0, 10);
+      setFormData({ ...formData, [name]: cleaned });
+    } else if (name === 'password') {
+      setFormData({ ...formData, [name]: value });
+      // Password strength logic
+      if (value.length < 8) {
+        setPasswordStrength('Weak');
+      } else if (/^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/.test(value)) {
+        setPasswordStrength('Strong');
+      } else {
+        setPasswordStrength('Medium');
+      }
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
     setError("");
   };
 
@@ -116,21 +132,27 @@ export default function RecruiterAuth() {
     setIsLoading(true);
     setError("");
     try {
-      if (!formData.full_name || !formData.email || !formData.company_name) {
-        setError("Please fill in all required fields");
+      if (!formData.full_name || !formData.email || !formData.phone || !formData.password || !formData.confirm_password || !formData.company_name) {
+        setError("Please fill in all required fields.");
+        return;
+      }
+      if (formData.phone.length !== 10) {
+        setError("Phone number must be exactly 10 digits.");
+        return;
+      }
+      if (formData.password.length < 8) {
+        setError("Password must be at least 8 characters.");
         return;
       }
       if (formData.password !== formData.confirm_password) {
-        setError("Passwords do not match");
+        setError("Passwords do not match.");
         return;
       }
-      // First login with Google or directly sign up based on implementation
-      // await User.login(); // Simulate registration/login (remove or replace with real API call)
-      // Then update profile with additional data
-      // await User.updateMyUserData({
-      //   ...formData,
-      //   user_type: "recruiter"
-      // });
+      // Password regex: at least 8 chars, 1 letter, 1 number, 1 special char
+      if (!/^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/.test(formData.password)) {
+        setError("Password must include a letter, a number, and a special character.");
+        return;
+      }
       // On success, redirect to dashboard
       window.location.href = createPageUrl("recruiterdashboard");
     } catch (error) {
@@ -272,6 +294,12 @@ export default function RecruiterAuth() {
                         >
                           {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                         </button>
+                      </div>
+                      <div className="mt-1 text-xs">
+                        <span>Password strength: {passwordStrength}</span>
+                      </div>
+                      <div className="mt-1 text-xs text-gray-500">
+                        {passwordMessage}
                       </div>
                     </div>
                     <div>
