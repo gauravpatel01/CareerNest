@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-// import { User } from "@/entities/User";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "../utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,20 +10,27 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User as UserIcon, Settings, HelpCircle, Mail, Shield, Key, Trash2, LogOut, ChevronDown } from "lucide-react";
+import { User as UserIcon, Settings, HelpCircle, Mail, Shield, Key, Trash2, LogOut, ChevronDown, FileText, UploadCloud } from "lucide-react";
 
 export default function UserProfileDropdown({ user, onLogout }) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
-      await User.logout();
+      // Clear JWT from localStorage
+      localStorage.removeItem('jwt');
+      // Clear any other user data
+      localStorage.removeItem('user');
+      
       // Call the onLogout callback to refresh parent state immediately
       if (onLogout) {
         onLogout();
       }
-      // No redirect - just stay on current page and show sign-in buttons
+      
+      // Redirect to home page
+      navigate('/p/home');
     } catch (error) {
       console.error("Error logging out:", error);
       // Still call onLogout to refresh state even if logout fails
@@ -68,18 +74,18 @@ export default function UserProfileDropdown({ user, onLogout }) {
       .slice(0, 2);
   };
 
-  const isStudent = user.user_type === "student";
-  const isRecruiter = user.user_type === "recruiter";
+  const isStudent = user.role === "student" || user.user_type === "student";
+  const isRecruiter = user.role === "recruiter" || user.user_type === "recruiter";
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="flex items-center space-x-2 p-2">
+        <Button variant="ghost" className="flex items-center space-x-2 p-2 hover:bg-gray-100">
           <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-            {getUserInitials(user.full_name)}dwdwd
+            {getUserInitials(user.full_name || user.name)}
           </div>
           <div className="hidden md:flex flex-col items-start">
-            <span className="text-sm font-medium text-gray-900">{user.full_name || "User"}</span>
+            <span className="text-sm font-medium text-gray-900">{user.full_name || user.name || "User"}</span>
             <span className="text-xs text-gray-500">{isStudent ? "Student" : isRecruiter ? "Recruiter" : "User"}</span>
           </div>
           <ChevronDown className="w-4 h-4 text-gray-400" />
@@ -89,7 +95,7 @@ export default function UserProfileDropdown({ user, onLogout }) {
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium text-gray-900">{user.full_name || "User"}</p>
+            <p className="text-sm font-medium text-gray-900">{user.full_name || user.name || "User"}</p>
             <p className="text-xs text-gray-500">{user.email}</p>
           </div>
         </DropdownMenuLabel>
@@ -98,7 +104,7 @@ export default function UserProfileDropdown({ user, onLogout }) {
 
         <DropdownMenuItem asChild>
           <Link
-            to={createPageUrl(isRecruiter ? "RecruiterDashboard" : "StudentDashboard")}
+            to={createPageUrl(isRecruiter ? "recruiterdashboard" : "studentdashboard")}
             className="flex items-center"
           >
             <UserIcon className="w-4 h-4 mr-2" />
@@ -126,22 +132,60 @@ export default function UserProfileDropdown({ user, onLogout }) {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuLabel className="text-xs text-gray-500 font-normal">ACCOUNT MANAGEMENT</DropdownMenuLabel>
+        {isStudent ? (
+          // Student-specific settings
+          <>
+            <DropdownMenuLabel className="text-xs text-gray-500 font-normal">SETTINGS</DropdownMenuLabel>
 
-        <DropdownMenuItem onClick={handleChangePassword} className="flex items-center">
-          <Key className="w-4 h-4 mr-2" />
-          Change Password
-        </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to={createPageUrl("updateprofile")} className="flex items-center">
+                <UserIcon className="w-4 h-4 mr-2" />
+                Update Profile
+              </Link>
+            </DropdownMenuItem>
 
-        <DropdownMenuItem onClick={handleChangeEmail} className="flex items-center">
-          <Mail className="w-4 h-4 mr-2" />
-          Change Email
-        </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to={createPageUrl("editresume")} className="flex items-center">
+                <FileText className="w-4 h-4 mr-2" />
+                Edit Resume
+              </Link>
+            </DropdownMenuItem>
 
-        <DropdownMenuItem onClick={handleDeleteAccount} className="flex items-center text-red-600">
-          <Trash2 className="w-4 h-4 mr-2" />
-          Delete Account
-        </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to={createPageUrl("uploadresume")} className="flex items-center">
+                <UploadCloud className="w-4 h-4 mr-2" />
+                Upload Resume
+              </Link>
+            </DropdownMenuItem>
+
+            <DropdownMenuItem asChild>
+              <Link to={createPageUrl("settings")} className="flex items-center">
+                <Settings className="w-4 h-4 mr-2" />
+                Settings
+              </Link>
+            </DropdownMenuItem>
+          </>
+        ) : (
+          // Recruiter-specific account management
+          <>
+            <DropdownMenuLabel className="text-xs text-gray-500 font-normal">ACCOUNT MANAGEMENT</DropdownMenuLabel>
+
+            <DropdownMenuItem onClick={handleChangePassword} className="flex items-center">
+              <Key className="w-4 h-4 mr-2" />
+              Change Password
+            </DropdownMenuItem>
+
+            <DropdownMenuItem onClick={handleChangeEmail} className="flex items-center">
+              <Mail className="w-4 h-4 mr-2" />
+              Change Email
+            </DropdownMenuItem>
+
+            <DropdownMenuItem onClick={handleDeleteAccount} className="flex items-center text-red-600">
+              <Trash2 className="w-4 h-4 mr-2" />
+              Delete Account
+            </DropdownMenuItem>
+          </>
+        )}
 
         <DropdownMenuSeparator />
 

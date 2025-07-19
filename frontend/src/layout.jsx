@@ -19,8 +19,25 @@ export default function Layout({ children, currentPageName }) {
   const checkUser = async () => {
     setIsLoading(true);
     try {
-      const currentUser = await User.me();
-      setUser(currentUser);
+      // Check if JWT exists in localStorage
+      const jwt = localStorage.getItem('jwt');
+      if (jwt) {
+        // In a real app, you would verify the JWT with your backend
+        // For now, we'll create a mock user object
+        const userData = localStorage.getItem('user');
+        if (userData) {
+          setUser(JSON.parse(userData));
+        } else {
+          // Create a default user object if none exists
+          setUser({
+            full_name: "Demo User",
+            email: "demo@example.com",
+            role: "student"
+          });
+        }
+      } else {
+        setUser(null);
+      }
     } catch (e) {
       setUser(null); // User is not logged in
     }

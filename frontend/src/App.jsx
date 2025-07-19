@@ -12,12 +12,14 @@ import RecruiterAuth from "./Pages/RecruiterAuth";
 import RecruiterDashboard from "./Pages/RecruiterDashboard";
 import StudentDashboard from "./Pages/StudentDashboard";
 import StudentLayout from "./StudentLayout";
+import RecruiterLayout from "./RecruiterLayout";
 import ResumeBuilder from "./Pages/ResumeBuilder";
 import UpdateProfile from "./Pages/UpdateProfile";
 import UploadResume from "./Pages/UploadResume";
 import MyApplicationCard from "./Components/jobs/MyApplicationCard";
 import MyApplications from "./Pages/MyApplications";
 import PostJobs from "./Pages/PostJobs";
+import ProtectedRoute from "./Components/auth/ProtectedRoute";
 
 export default function App() {
   return (
@@ -90,65 +92,81 @@ export default function App() {
         <Route
           path="/p/studentdashboard"
           element={
-            <StudentLayout currentPageName="StudentDashboard">
-              <StudentDashboard />
-            </StudentLayout>
+            <ProtectedRoute requiredRole="student">
+              <StudentLayout currentPageName="StudentDashboard">
+                <StudentDashboard />
+              </StudentLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/p/editresume"
           element={
-            <StudentLayout currentPageName="StudentDashboard">
-              <ResumeBuilder />
-            </StudentLayout>
+            <ProtectedRoute requiredRole="student">
+              <StudentLayout currentPageName="StudentDashboard">
+                <ResumeBuilder />
+              </StudentLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/p/updateprofile"
           element={
-            <StudentLayout>
-              <UpdateProfile />
-            </StudentLayout>
+            <ProtectedRoute requiredRole="student">
+              <StudentLayout>
+                <UpdateProfile />
+              </StudentLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/p/help"
           element={
-            <StudentLayout currentPageName="FAQ">
-              <FAQ />
-            </StudentLayout>
+            <ProtectedRoute requiredRole="student">
+              <StudentLayout currentPageName="FAQ">
+                <FAQ />
+              </StudentLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/p/uploadresume"
           element={
-            <StudentLayout>
-              <UploadResume />
-            </StudentLayout>
+            <ProtectedRoute requiredRole="student">
+              <StudentLayout>
+                <UploadResume />
+              </StudentLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/p/internship"
           element={
-            <StudentLayout>
-              <Internships />
-            </StudentLayout>
+            <ProtectedRoute requiredRole="student">
+              <StudentLayout>
+                <Internships />
+              </StudentLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/p/FAQs"
           element={
-            <StudentLayout>
-              <FAQ />
-            </StudentLayout>
+            <ProtectedRoute requiredRole="student">
+              <StudentLayout>
+                <FAQ />
+              </StudentLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/p/applications"
           element={
-            <StudentLayout>
-              <MyApplications />
-            </StudentLayout>
+            <ProtectedRoute requiredRole="student">
+              <StudentLayout>
+                <MyApplications />
+              </StudentLayout>
+            </ProtectedRoute>
           }
         />
         <Route
@@ -162,17 +180,21 @@ export default function App() {
         <Route
           path="/p/recruiterdashboard"
           element={
-            <Layout currentPageName="RecruiterDashboard">
-              <RecruiterDashboard />
-            </Layout>
+            <ProtectedRoute requiredRole="recruiter">
+              <RecruiterLayout currentPageName="RecruiterDashboard">
+                <RecruiterDashboard />
+              </RecruiterLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/p/post-jobs"
           element={
-            <Layout>
-              <PostJobs />
-            </Layout>
+            <ProtectedRoute requiredRole="recruiter">
+              <RecruiterLayout>
+                <PostJobs />
+              </RecruiterLayout>
+            </ProtectedRoute>
           }
         />
 

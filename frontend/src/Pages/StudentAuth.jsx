@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 // import { User } from "@/entities/User";
 import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "../Components/utils";
@@ -49,6 +49,19 @@ export default function StudentAuth() {
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // Check if user is already logged in
+    const jwt = localStorage.getItem('jwt');
+    const userData = localStorage.getItem('user');
+    
+    if (jwt && userData) {
+      const user = JSON.parse(userData);
+      if (user.role === 'student') {
+        navigate(createPageUrl('studentdashboard'));
+      }
+    }
+  }, [navigate]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     if (name === 'phone') {
@@ -91,7 +104,17 @@ export default function StudentAuth() {
       if (!res.ok) throw new Error('Google login failed');
       const data = await res.json();
       localStorage.setItem('jwt', data.token);
-      navigate('/p/studentdashboard');
+      
+      // Store user data in localStorage using actual data from backend
+      const userData = {
+        full_name: data.user?.name || data.user?.full_name || "Student User",
+        name: data.user?.name || data.user?.full_name || "Student User",
+        email: data.user?.email || "student@example.com",
+        role: "student"
+      };
+      localStorage.setItem('user', JSON.stringify(userData));
+      
+      window.location.href = createPageUrl('studentdashboard');
     } catch (error) {
       setError('Google login failed. Please try again.');
       console.error('Google login error:', error);
@@ -104,26 +127,51 @@ export default function StudentAuth() {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-
+    
     try {
       if (loginMethod === "email") {
         if (!formData.email || !formData.password) {
           setError("Please fill in all required fields");
           return;
         }
+        
+        // Call backend API for email login
+        const res = await fetch('/api/auth/student/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: formData.email, password: formData.password })
+        });
+        
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.error || 'Login failed');
+        }
+        
+        const data = await res.json();
+        localStorage.setItem('jwt', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        
       } else { // loginMethod === "phone"
         if (!formData.phone) {
           setError("Please enter your phone number");
           return;
         }
+        
+        // For phone login, create a mock user (in real app, implement OTP verification)
+        const userData = {
+          full_name: "Demo Student",
+          name: "Demo Student",
+          email: formData.phone + "@example.com",
+          role: "student"
+        };
+        
+        localStorage.setItem('user', JSON.stringify(userData));
+        localStorage.setItem('jwt', 'mock-jwt-token');
       }
-
-      // In a real app, this would validate against your auth system
-      // For demo purposes, we'll use a simulated login
-      // await User.login(); // This line was removed as per the new_code
-      navigate('/p/studentdashboard');
+      
+      window.location.href = createPageUrl("studentdashboard");
     } catch (error) {
-      setError(loginMethod === "email" ? "Invalid email or password" : "Phone login failed. Please try again.");
+      setError(error.message || (loginMethod === "email" ? "Invalid email or password" : "Phone login failed. Please try again."));
       console.error("Login error:", error);
     } finally {
       setIsLoading(false);
@@ -155,8 +203,18 @@ export default function StudentAuth() {
         setError("Password must include a letter, a number, and a special character.");
         return;
       }
+      
+      // Store user data in localStorage for form-based signup
+      const userData = {
+        full_name: formData.full_name,
+        name: formData.full_name,
+        email: formData.email,
+        role: "student"
+      };
+      localStorage.setItem('user', JSON.stringify(userData));
+      
       // On success, redirect to dashboard
-      navigate('/p/studentdashboard');
+      window.location.href = createPageUrl("studentdashboard");
     } catch (error) {
       setError("Sign up failed. Please try again.");
       console.error("Sign up error:", error);

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { FileText, Briefcase, LayoutDashboard, Send, Bell, Menu, X, Mail, Phone, MapPin, LogOut } from "lucide-react";
+import { FileText, Briefcase, LayoutDashboard, Send, Bell, Menu, X, Users, Building, Plus, LogOut } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createPageUrl } from "./Components/utils";
 import { Button } from "@/components/ui/button";
 import UserProfileDropdown from "@/components/layout/UserProfileDropdown";
 
-export default function StudentLayout({ children }) {
+export default function RecruiterLayout({ children }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -26,9 +26,9 @@ export default function StudentLayout({ children }) {
           setUser(JSON.parse(userData));
         } else {
           setUser({
-            full_name: "Demo Student",
-            email: "student@example.com",
-            role: "student"
+            full_name: "Demo Recruiter",
+            email: "recruiter@example.com",
+            role: "recruiter"
           });
         }
       } else {
@@ -51,6 +51,15 @@ export default function StudentLayout({ children }) {
   const goToNotifications = () => {
     navigate("/notifications");
   };
+
+  const navItems = [
+    { name: "Dashboard", href: createPageUrl("recruiterdashboard") },
+    { name: "Post Jobs", href: createPageUrl("post-jobs") },
+    { name: "Manage Jobs", href: createPageUrl("manage-jobs") },
+    { name: "Applications", href: createPageUrl("applications") },
+    { name: "Analytics", href: createPageUrl("analytics") },
+    { name: "Logout", href: "#", onClick: handleLogout },
+  ];
 
   const isActive = (href) => location.pathname === href;
 
@@ -111,24 +120,16 @@ export default function StudentLayout({ children }) {
                 Internships
               </Link>
               <Link
-                to={createPageUrl("editResume")}
-                className={`px-3 py-2 text-sm font-medium transition-colors duration-200 ${
-                  isActive(createPageUrl("editResume"))
-                    ? "text-blue-600 border-b-2 border-blue-600"
-                    : "text-gray-700 hover:text-blue-600"
-                }`}
+                to={createPageUrl("About")}
+                className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200"
               >
-                Resume
+                About
               </Link>
               <Link
-                to={createPageUrl("applications")}
-                className={`px-3 py-2 text-sm font-medium transition-colors duration-200 ${
-                  isActive(createPageUrl("applications"))
-                    ? "text-blue-600 border-b-2 border-blue-600"
-                    : "text-gray-700 hover:text-blue-600"
-                }`}
+                to={createPageUrl("FAQ")}
+                className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200"
               >
-                My Applications
+                FAQ
               </Link>
             </nav>
 
@@ -188,26 +189,18 @@ export default function StudentLayout({ children }) {
                 Internships
               </Link>
               <Link
-                to={createPageUrl("editResume")}
-                className={`block px-3 py-2 text-base font-medium transition-colors duration-200 ${
-                  isActive(createPageUrl("editResume"))
-                    ? "text-blue-600 bg-blue-50"
-                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-                }`}
+                to={createPageUrl("About")}
+                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Resume
+                About
               </Link>
               <Link
-                to={createPageUrl("applications")}
-                className={`block px-3 py-2 text-base font-medium transition-colors duration-200 ${
-                  isActive(createPageUrl("applications"))
-                    ? "text-blue-600 bg-blue-50"
-                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-                }`}
+                to={createPageUrl("FAQ")}
+                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                My Applications
+                FAQ
               </Link>
               <div className="pt-4 pb-3 border-t border-gray-200">
                 <div className="flex flex-col space-y-2 px-3">
@@ -236,10 +229,46 @@ export default function StudentLayout({ children }) {
         )}
       </header>
 
-      {/* Main Content Area */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {children}
-      </main>
+      {/* Main Content with Sidebar */}
+      <div className="flex bg-white font-sans">
+        {/* Sidebar */}
+        <aside className="w-full lg:w-80 bg-blue-50 shadow-lg lg:rounded-xl m-0 lg:m-4 p-4 space-y-6">
+          <h2 className="text-lg font-bold flex items-center gap-2 text-gray-800 border-b pb-2">
+            <Building className="w-5 h-5" />
+            Recruiter Dashboard
+          </h2>
+
+          <nav className="space-y-4 text-sm font-semibold text-gray-800">
+            {navItems.map((item) => (
+              <Link
+                key={item.name}
+                to={item.href}
+                onClick={item.onClick}
+                className={`block bg-white hover:bg-blue-100 p-4 rounded-xl border-l-4 shadow-sm transition-colors duration-200 ${
+                  isActive(item.href)
+                    ? "border-blue-500 bg-blue-50"
+                    : "border-transparent hover:border-blue-300"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  {item.name === "Dashboard" && <LayoutDashboard className="w-5 h-5" />}
+                  {item.name === "Post Jobs" && <Plus className="w-5 h-5" />}
+                  {item.name === "Manage Jobs" && <Briefcase className="w-5 h-5" />}
+                  {item.name === "Applications" && <Send className="w-5 h-5" />}
+                  {item.name === "Analytics" && <FileText className="w-5 h-5" />}
+                  {item.name === "Logout" && <LogOut className="w-5 h-5" />}
+                  <span>{item.name}</span>
+                </div>
+              </Link>
+            ))}
+          </nav>
+        </aside>
+
+        {/* Main Content Area */}
+        <main className="flex-1 p-6 bg-gray-50">
+          {children}
+        </main>
+      </div>
     </div>
   );
-}
+} 

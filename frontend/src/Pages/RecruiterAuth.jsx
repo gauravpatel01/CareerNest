@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 // import { User } from "@/entities/User";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "../Components/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,7 @@ import { ArrowLeft, Eye, EyeOff, AlertCircle, Mail, Phone } from "lucide-react";
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 
 export default function RecruiterAuth() {
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [loginMethod, setLoginMethod] = useState("email"); // "email" or "phone"
   const [passwordStrength, setPasswordStrength] = useState('');
@@ -46,6 +47,19 @@ export default function RecruiterAuth() {
   };
 
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
+  useEffect(() => {
+    // Check if user is already logged in
+    const jwt = localStorage.getItem('jwt');
+    const userData = localStorage.getItem('user');
+    
+    if (jwt && userData) {
+      const user = JSON.parse(userData);
+      if (user.role === 'recruiter') {
+        navigate(createPageUrl('recruiterdashboard'));
+      }
+    }
+  }, [navigate]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -89,6 +103,16 @@ export default function RecruiterAuth() {
       if (!res.ok) throw new Error('Google login failed');
       const data = await res.json();
       localStorage.setItem('jwt', data.token);
+      
+      // Store user data in localStorage using actual data from backend
+      const userData = {
+        full_name: data.user?.name || data.user?.full_name || "Recruiter User",
+        name: data.user?.name || data.user?.full_name || "Recruiter User",
+        email: data.user?.email || "recruiter@example.com",
+        role: "recruiter"
+      };
+      localStorage.setItem('user', JSON.stringify(userData));
+      
       window.location.href = createPageUrl('recruiterdashboard');
     } catch (error) {
       setError('Google login failed. Please try again.');
@@ -109,18 +133,44 @@ export default function RecruiterAuth() {
           setError("Please fill in all required fields");
           return;
         }
+        
+        // Call backend API for email login
+        const res = await fetch('/api/auth/recruiter/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: formData.email, password: formData.password })
+        });
+        
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.error || 'Login failed');
+        }
+        
+        const data = await res.json();
+        localStorage.setItem('jwt', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        
       } else { // loginMethod === "phone"
         if (!formData.phone) {
           setError("Please enter your phone number");
           return;
         }
+        
+        // For phone login, create a mock user (in real app, implement OTP verification)
+        const userData = {
+          full_name: "Demo Recruiter",
+          name: "Demo Recruiter",
+          email: formData.phone + "@example.com",
+          role: "recruiter"
+        };
+        
+        localStorage.setItem('user', JSON.stringify(userData));
+        localStorage.setItem('jwt', 'mock-jwt-token');
       }
       
-      // In a real app, this would validate against your auth system based on loginMethod
-      // await User.login(); // This line was commented out in the original file, keeping it commented.
-      window.location.href = createPageUrl("RecruiterDashboard");
+      window.location.href = createPageUrl("recruiterdashboard");
     } catch (error) {
-      setError(loginMethod === "email" ? "Invalid email or password" : "Phone login failed. Please try again.");
+      setError(error.message || (loginMethod === "email" ? "Invalid email or password" : "Phone login failed. Please try again."));
       console.error("Login error:", error);
     } finally {
       setIsLoading(false);
@@ -153,6 +203,16 @@ export default function RecruiterAuth() {
         setError("Password must include a letter, a number, and a special character.");
         return;
       }
+      
+      // Store user data in localStorage for form-based signup
+      const userData = {
+        full_name: formData.full_name,
+        name: formData.full_name,
+        email: formData.email,
+        role: "recruiter"
+      };
+      localStorage.setItem('user', JSON.stringify(userData));
+      
       // On success, redirect to dashboard
       window.location.href = createPageUrl("recruiterdashboard");
     } catch (error) {
