@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "./Components/utils";
 import { Menu, X, Briefcase, Users, Mail, Phone, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
 import Chatbot from "./Components/Chatbot";
+import UserProfileDropdown from "@/components/layout/UserProfileDropdown";
 
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
@@ -19,8 +19,25 @@ export default function Layout({ children, currentPageName }) {
   const checkUser = async () => {
     setIsLoading(true);
     try {
-      const currentUser = await User.me();
-      setUser(currentUser);
+      // Check if JWT exists in localStorage
+      const jwt = localStorage.getItem('jwt');
+      if (jwt) {
+        // In a real app, you would verify the JWT with your backend
+        // For now, we'll create a mock user object
+        const userData = localStorage.getItem('user');
+        if (userData) {
+          setUser(JSON.parse(userData));
+        } else {
+          // Create a default user object if none exists
+          setUser({
+            full_name: "Demo User",
+            email: "demo@example.com",
+            role: "student"
+          });
+        }
+      } else {
+        setUser(null);
+      }
     } catch (e) {
       setUser(null); // User is not logged in
     }
@@ -73,18 +90,24 @@ export default function Layout({ children, currentPageName }) {
               ))}
             </nav>
 
-            {/* Auth Buttons */}
+            {/* Auth Buttons and Profile */}
             <div className="hidden md:flex items-center space-x-3">
-              <Link to={createPageUrl("StudentAuth")}>
-                <Button variant="outline" className="text-blue-600 border-blue-600 hover:bg-blue-50">
-                  Student Sign In
-                </Button>
-              </Link>
-              <Link to={createPageUrl("RecruiterAuth")}>
-                <Button className="bg-blue-600 hover:bg-blue-700">
-                  Recruiter
-                </Button>
-              </Link>
+              {isLoading ? (
+                <div className="w-48 h-8 bg-gray-200 rounded animate-pulse"></div>
+              ) : user ? (
+                <UserProfileDropdown user={user} onLogout={handleLogout} />
+              ) : (
+                <>
+                  <Link to={createPageUrl("StudentAuth")}>
+                    <Button variant="outline" className="text-blue-600 border-blue-600 hover:bg-blue-50">
+                      Student Sign In
+                    </Button>
+                  </Link>
+                  <Link to={createPageUrl("RecruiterAuth")}>
+                    <Button className="bg-blue-600 hover:bg-blue-700">Recruiter</Button>
+                  </Link>
+                </>
+              )}
             </div>
 
             {/* Mobile menu button */}
@@ -120,16 +143,24 @@ export default function Layout({ children, currentPageName }) {
               ))}
               <div className="pt-4 pb-3 border-t border-gray-200">
                 <div className="flex flex-col space-y-2 px-3">
-                  <Link to={createPageUrl("StudentAuth")}>
-                    <Button variant="outline" className="w-full text-blue-600 border-blue-600 hover:bg-blue-50">
-                      Student Sign In
-                    </Button>
-                  </Link>
-                  <Link to={createPageUrl("RecruiterAuth")}>
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                      Recruiter
-                    </Button>
-                  </Link>
+                  {isLoading ? (
+                    <div className="w-full h-10 bg-gray-200 rounded animate-pulse my-2"></div>
+                  ) : user ? (
+                    <div className="px-1 py-2">
+                      <UserProfileDropdown user={user} onLogout={handleLogout} />
+                    </div>
+                  ) : (
+                    <>
+                      <Link to={createPageUrl("StudentAuth")}>
+                        <Button variant="outline" className="w-full text-blue-600 border-blue-600 hover:bg-blue-50">
+                          Student Sign In
+                        </Button>
+                      </Link>
+                      <Link to={createPageUrl("RecruiterAuth")}>
+                        <Button className="w-full bg-blue-600 hover:bg-blue-700">Recruiter</Button>
+                      </Link>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -139,6 +170,9 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Main Content */}
       <main>{children}</main>
+
+      {/* Chatbot */}
+      <Chatbot />
 
       {/* Footer */}
       <footer className="bg-gray-900 text-white">
@@ -198,9 +232,6 @@ export default function Layout({ children, currentPageName }) {
           </div>
         </div>
       </footer>
-
-      <Chatbot /> {/* ⬅️ This adds chatbot on all pages */}
-
     </div>
   );
 }

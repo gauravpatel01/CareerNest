@@ -367,14 +367,14 @@ export default function RecruiterAuth() {
                         Confirm Password *
                       </label>
                       <div className="relative">
-                        <Input
-                          name="confirm_password"
-                          type={showPassword ? "text" : "password"}
-                          value={formData.confirm_password}
-                          onChange={handleInputChange}
-                          placeholder="Confirm password"
-                          required
-                        />
+                      <Input
+                        name="confirm_password"
+                        type={showPassword ? "text" : "password"}
+                        value={formData.confirm_password}
+                        onChange={handleInputChange}
+                        placeholder="Confirm password"
+                        required
+                      />
                         <button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}

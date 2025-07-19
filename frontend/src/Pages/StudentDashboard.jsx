@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import LoadingSpinner from "../Components/common/LoadingSpinner";
 import JobCard from "../Components/jobs/JobCard";
 import { Button } from "@/components/ui/button";
+import Chatbot from "../Components/Chatbot";
 
 import {
   AlertDialog,
@@ -71,6 +72,9 @@ export default function StudentDashboard() {
           </div>
         </main>
       </div>
+
+      {/* Chatbot */}
+      <Chatbot />
     </div>
   );
 }

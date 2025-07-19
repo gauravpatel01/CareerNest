@@ -144,10 +144,10 @@ export default function StudentLayout({ children }) {
                     <Button variant="outline" className="text-blue-600 border-blue-600 hover:bg-blue-50">
                       Student Sign In
                     </Button>
-                  </Link>
+                </Link>
                   <Link to={createPageUrl("RecruiterAuth")}>
                     <Button className="bg-blue-600 hover:bg-blue-700">Recruiter</Button>
-                  </Link>
+                </Link>
                 </>
               )}
             </div>
@@ -198,13 +198,13 @@ export default function StudentLayout({ children }) {
               >
                 Resume
               </Link>
-              <Link
+                <Link
                 to={createPageUrl("applications")}
-                className={`block px-3 py-2 text-base font-medium transition-colors duration-200 ${
+                  className={`block px-3 py-2 text-base font-medium transition-colors duration-200 ${
                   isActive(createPageUrl("applications"))
-                    ? "text-blue-600 bg-blue-50"
-                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-                }`}
+                      ? "text-blue-600 bg-blue-50"
+                      : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                  }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 My Applications
@@ -226,7 +226,7 @@ export default function StudentLayout({ children }) {
                       </Link>
                       <Link to={createPageUrl("RecruiterAuth")}>
                         <Button className="w-full bg-blue-600 hover:bg-blue-700">Recruiter</Button>
-                      </Link>
+                </Link>
                     </>
                   )}
                 </div>
