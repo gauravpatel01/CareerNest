@@ -7,8 +7,20 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { GraduationCap, Mail, User as UserIcon, Phone, MapPin, BookOpen, Upload, Eye, EyeOff, AlertCircle, ArrowLeft } from "lucide-react";
-import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
+import {
+  GraduationCap,
+  Mail,
+  User as UserIcon,
+  Phone,
+  MapPin,
+  BookOpen,
+  Upload,
+  Eye,
+  EyeOff,
+  AlertCircle,
+  ArrowLeft,
+} from "lucide-react";
+import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 
 export default function StudentAuth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -29,17 +41,19 @@ export default function StudentAuth() {
     skills: "",
     experience: "",
     bio: "",
-    resume_url: ""
+    resume_url: "",
   });
-  const [passwordStrength, setPasswordStrength] = useState('');
-  const [passwordMessage, setPasswordMessage] = useState('Password must be at least 8 characters and include letters, numbers, and a special character.');
+  const [passwordStrength, setPasswordStrength] = useState("");
+  const [passwordMessage, setPasswordMessage] = useState(
+    "Password must be at least 8 characters and include letters, numbers, and a special character."
+  );
   // Remove passwordLength state and generatePassword function
 
   //password generation
   const generatePassword = () => {
     const length = 12;
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+{}[]<>?,.';
-    let result = '';
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+{}[]<>?,.";
+    let result = "";
     for (let i = 0; i < length; i++) {
       result += characters.charAt(Math.floor(Math.random() * characters.length));
     }
@@ -51,32 +65,32 @@ export default function StudentAuth() {
 
   useEffect(() => {
     // Check if user is already logged in
-    const jwt = localStorage.getItem('jwt');
-    const userData = localStorage.getItem('user');
-    
+    const jwt = localStorage.getItem("jwt");
+    const userData = localStorage.getItem("user");
+
     if (jwt && userData) {
       const user = JSON.parse(userData);
-      if (user.role === 'student') {
-        navigate(createPageUrl('studentdashboard'));
+      if (user.role === "student") {
+        navigate(createPageUrl("studentdashboard"));
       }
     }
   }, [navigate]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    if (name === 'phone') {
+    if (name === "phone") {
       // Only allow numbers and max 10 digits
-      const cleaned = value.replace(/\D/g, '').slice(0, 10);
+      const cleaned = value.replace(/\D/g, "").slice(0, 10);
       setFormData({ ...formData, [name]: cleaned });
-    } else if (name === 'password') {
+    } else if (name === "password") {
       setFormData({ ...formData, [name]: value });
       // Password strength logic
       if (value.length < 8) {
-        setPasswordStrength('Weak');
+        setPasswordStrength("Weak");
       } else if (/^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/.test(value)) {
-        setPasswordStrength('Strong');
+        setPasswordStrength("Strong");
       } else {
-        setPasswordStrength('Medium');
+        setPasswordStrength("Medium");
       }
     } else {
       setFormData({ ...formData, [name]: value });
@@ -87,37 +101,37 @@ export default function StudentAuth() {
   const handleSelectChange = (name, value) => {
     setFormData({
       ...formData,
-      [name]: value
+      [name]: value,
     });
   };
-
+  const backendURL = import.meta.env.VITE_BACKEND_URL || "";
   const handleGoogleLoginSuccess = async (credentialResponse) => {
     setIsLoading(true);
     setError("");
     try {
       // Send credential to backend and get JWT
-      const res = await fetch('/api/auth/google', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ credential: credentialResponse.credential, user_type: 'student' })
+      const res = await fetch(`${backendURL}/api/auth/google`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ credential: credentialResponse.credential, user_type: "student" }),
       });
-      if (!res.ok) throw new Error('Google login failed');
+      if (!res.ok) throw new Error("Google login failed");
       const data = await res.json();
-      localStorage.setItem('jwt', data.token);
-      
+      localStorage.setItem("jwt", data.token);
+
       // Store user data in localStorage using actual data from backend
       const userData = {
         full_name: data.user?.name || data.user?.full_name || "Student User",
         name: data.user?.name || data.user?.full_name || "Student User",
         email: data.user?.email || "student@example.com",
-        role: "student"
+        role: "student",
       };
-      localStorage.setItem('user', JSON.stringify(userData));
-      
-      window.location.href = createPageUrl('studentdashboard');
+      localStorage.setItem("user", JSON.stringify(userData));
+
+      window.location.href = createPageUrl("studentdashboard");
     } catch (error) {
-      setError('Google login failed. Please try again.');
-      console.error('Google login error:', error);
+      setError("Google login failed. Please try again.");
+      console.error("Google login error:", error);
     } finally {
       setIsLoading(false);
     }
@@ -127,51 +141,54 @@ export default function StudentAuth() {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-    
+
     try {
       if (loginMethod === "email") {
         if (!formData.email || !formData.password) {
           setError("Please fill in all required fields");
           return;
         }
-        
+
         // Call backend API for email login
-        const res = await fetch('/api/auth/student/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: formData.email, password: formData.password })
+        const res = await fetch("/api/auth/student/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: formData.email, password: formData.password }),
         });
-        
+
         if (!res.ok) {
           const errorData = await res.json();
-          throw new Error(errorData.error || 'Login failed');
+          throw new Error(errorData.error || "Login failed");
         }
-        
+
         const data = await res.json();
-        localStorage.setItem('jwt', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        
-      } else { // loginMethod === "phone"
+        localStorage.setItem("jwt", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+      } else {
+        // loginMethod === "phone"
         if (!formData.phone) {
           setError("Please enter your phone number");
           return;
         }
-        
+
         // For phone login, create a mock user (in real app, implement OTP verification)
         const userData = {
           full_name: "Demo Student",
           name: "Demo Student",
           email: formData.phone + "@example.com",
-          role: "student"
+          role: "student",
         };
-        
-        localStorage.setItem('user', JSON.stringify(userData));
-        localStorage.setItem('jwt', 'mock-jwt-token');
+
+        localStorage.setItem("user", JSON.stringify(userData));
+        localStorage.setItem("jwt", "mock-jwt-token");
       }
-      
+
       window.location.href = createPageUrl("studentdashboard");
     } catch (error) {
-      setError(error.message || (loginMethod === "email" ? "Invalid email or password" : "Phone login failed. Please try again."));
+      setError(
+        error.message ||
+          (loginMethod === "email" ? "Invalid email or password" : "Phone login failed. Please try again.")
+      );
       console.error("Login error:", error);
     } finally {
       setIsLoading(false);
@@ -183,7 +200,13 @@ export default function StudentAuth() {
     setIsLoading(true);
     setError("");
     try {
-      if (!formData.full_name || !formData.email || !formData.phone || !formData.password || !formData.confirm_password) {
+      if (
+        !formData.full_name ||
+        !formData.email ||
+        !formData.phone ||
+        !formData.password ||
+        !formData.confirm_password
+      ) {
         setError("Please fill in all required fields.");
         return;
       }
@@ -203,16 +226,16 @@ export default function StudentAuth() {
         setError("Password must include a letter, a number, and a special character.");
         return;
       }
-      
+
       // Store user data in localStorage for form-based signup
       const userData = {
         full_name: formData.full_name,
         name: formData.full_name,
         email: formData.email,
-        role: "student"
+        role: "student",
       };
-      localStorage.setItem('user', JSON.stringify(userData));
-      
+      localStorage.setItem("user", JSON.stringify(userData));
+
       // On success, redirect to dashboard
       window.location.href = createPageUrl("studentdashboard");
     } catch (error) {
@@ -234,12 +257,8 @@ export default function StudentAuth() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Join CareerNest as a Student
-            </h1>
-            <p className="text-gray-600">
-              Create your profile and start applying to your dream jobs
-            </p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Join CareerNest as a Student</h1>
+            <p className="text-gray-600">Create your profile and start applying to your dream jobs</p>
           </div>
 
           <Card className="shadow-xl">
@@ -279,9 +298,7 @@ export default function StudentAuth() {
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Full Name *
-                      </label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
                       <Input
                         name="full_name"
                         value={formData.full_name}
@@ -291,9 +308,7 @@ export default function StudentAuth() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Email *
-                      </label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Email *</label>
                       <Input
                         name="email"
                         type="email"
@@ -304,9 +319,7 @@ export default function StudentAuth() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Phone Number *
-                      </label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
                       <Input
                         name="phone"
                         value={formData.phone}
@@ -316,10 +329,11 @@ export default function StudentAuth() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Location
-                      </label>
-                      <Select value={formData.location} onValueChange={(value) => handleSelectChange("location", value)}>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                      <Select
+                        value={formData.location}
+                        onValueChange={(value) => handleSelectChange("location", value)}
+                      >
                         <SelectTrigger>
                           <SelectValue placeholder="Select your city" />
                         </SelectTrigger>
@@ -338,14 +352,10 @@ export default function StudentAuth() {
 
                 {/* Password Fields */}
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                    Account Security
-                  </h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Account Security</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Password *
-                      </label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Password *</label>
                       <div className="relative">
                         <Input
                           name="password"
@@ -366,14 +376,10 @@ export default function StudentAuth() {
                       <div className="mt-1 text-xs">
                         <span>Password strength: {passwordStrength}</span>
                       </div>
-                      <div className="mt-1 text-xs text-gray-500">
-                        {passwordMessage}
-                      </div>
+                      <div className="mt-1 text-xs text-gray-500">{passwordMessage}</div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Confirm Password *
-                      </label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Confirm Password *</label>
                       <div className="relative">
                         <Input
                           name="confirm_password"
@@ -410,10 +416,11 @@ export default function StudentAuth() {
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Education Level
-                      </label>
-                      <Select value={formData.education_level} onValueChange={(value) => handleSelectChange("education_level", value)}>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Education Level</label>
+                      <Select
+                        value={formData.education_level}
+                        onValueChange={(value) => handleSelectChange("education_level", value)}
+                      >
                         <SelectTrigger>
                           <SelectValue placeholder="Select level" />
                         </SelectTrigger>
@@ -426,9 +433,7 @@ export default function StudentAuth() {
                       </Select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Field of Study
-                      </label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Field of Study</label>
                       <Input
                         name="field_of_study"
                         value={formData.field_of_study}
@@ -437,10 +442,11 @@ export default function StudentAuth() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Graduation Year
-                      </label>
-                      <Select value={formData.graduation_year} onValueChange={(value) => handleSelectChange("graduation_year", value)}>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Graduation Year</label>
+                      <Select
+                        value={formData.graduation_year}
+                        onValueChange={(value) => handleSelectChange("graduation_year", value)}
+                      >
                         <SelectTrigger>
                           <SelectValue placeholder="Select year" />
                         </SelectTrigger>
@@ -453,10 +459,11 @@ export default function StudentAuth() {
                       </Select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Experience Level
-                      </label>
-                      <Select value={formData.experience} onValueChange={(value) => handleSelectChange("experience", value)}>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Experience Level</label>
+                      <Select
+                        value={formData.experience}
+                        onValueChange={(value) => handleSelectChange("experience", value)}
+                      >
                         <SelectTrigger>
                           <SelectValue placeholder="Select experience" />
                         </SelectTrigger>
@@ -473,14 +480,10 @@ export default function StudentAuth() {
 
                 {/* Skills and Bio */}
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                    Skills & Profile
-                  </h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Skills & Profile</h3>
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Skills (comma-separated)
-                      </label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Skills (comma-separated)</label>
                       <Input
                         name="skills"
                         value={formData.skills}
@@ -489,9 +492,7 @@ export default function StudentAuth() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Bio / Summary
-                      </label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Bio / Summary</label>
                       <Textarea
                         name="bio"
                         value={formData.bio}
@@ -515,7 +516,7 @@ export default function StudentAuth() {
                 <GoogleOAuthProvider clientId={clientId}>
                   <GoogleLogin
                     onSuccess={handleGoogleLoginSuccess}
-                    onError={() => setError('Google signup failed. Please try again.')}
+                    onError={() => setError("Google signup failed. Please try again.")}
                     width="100%"
                     useOneTap
                   />
@@ -569,20 +570,18 @@ export default function StudentAuth() {
         <div className="flex mb-6 bg-gray-100 rounded-lg p-1">
           <button
             onClick={() => setLoginMethod("email")}
-            className={`flex-1 flex items-center justify-center py-2 px-4 rounded-md font-medium transition-colors ${loginMethod === "email"
-              ? "bg-white text-gray-900 shadow-sm"
-              : "text-gray-600 hover:text-gray-900"
-              }`}
+            className={`flex-1 flex items-center justify-center py-2 px-4 rounded-md font-medium transition-colors ${
+              loginMethod === "email" ? "bg-white text-gray-900 shadow-sm" : "text-gray-600 hover:text-gray-900"
+            }`}
           >
             <Mail className="w-4 h-4 mr-2" />
             Email
           </button>
           <button
             onClick={() => setLoginMethod("phone")}
-            className={`flex-1 flex items-center justify-center py-2 px-4 rounded-md font-medium transition-colors ${loginMethod === "phone"
-              ? "bg-white text-gray-900 shadow-sm"
-              : "text-gray-600 hover:text-gray-900"
-              }`}
+            className={`flex-1 flex items-center justify-center py-2 px-4 rounded-md font-medium transition-colors ${
+              loginMethod === "phone" ? "bg-white text-gray-900 shadow-sm" : "text-gray-600 hover:text-gray-900"
+            }`}
           >
             <Phone className="w-4 h-4 mr-2" />
             Phone
@@ -609,9 +608,7 @@ export default function StudentAuth() {
           {/* Password Input (only for email login) */}
           {loginMethod === "email" && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Password
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
               <div className="relative">
                 <Input
                   name="password"
@@ -654,18 +651,20 @@ export default function StudentAuth() {
             disabled={isLoading}
             className="w-full bg-gray-900 hover:bg-gray-800 text-white py-3 h-12 rounded-lg font-medium"
           >
-            {isLoading ? (
-              loginMethod === "phone" ? "Sending OTP..." : "Signing in..."
-            ) : (
-              loginMethod === "phone" ? "Send OTP" : "Login"
-            )}
+            {isLoading
+              ? loginMethod === "phone"
+                ? "Sending OTP..."
+                : "Signing in..."
+              : loginMethod === "phone"
+              ? "Send OTP"
+              : "Login"}
           </Button>
 
           {/* Google Sign In */}
           <GoogleOAuthProvider clientId={clientId}>
             <GoogleLogin
               onSuccess={handleGoogleLoginSuccess}
-              onError={() => setError('Google login failed. Please try again.')}
+              onError={() => setError("Google login failed. Please try again.")}
               width="100%"
               useOneTap
             />
@@ -676,10 +675,7 @@ export default function StudentAuth() {
         <div className="text-center mt-8">
           <p className="text-gray-600">
             Don't have an account?{" "}
-            <button
-              onClick={() => setIsLogin(false)}
-              className="font-semibold text-gray-900 hover:text-blue-600"
-            >
+            <button onClick={() => setIsLogin(false)} className="font-semibold text-gray-900 hover:text-blue-600">
               Sign up for free
             </button>
           </p>
@@ -688,4 +684,3 @@ export default function StudentAuth() {
     </div>
   );
 }
-  

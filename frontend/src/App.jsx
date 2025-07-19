@@ -16,10 +16,10 @@ import RecruiterLayout from "./RecruiterLayout";
 import ResumeBuilder from "./Pages/ResumeBuilder";
 import UpdateProfile from "./Pages/UpdateProfile";
 import UploadResume from "./Pages/UploadResume";
-import MyApplicationCard from "./Components/jobs/MyApplicationCard";
 import MyApplications from "./Pages/MyApplications";
 import PostJobs from "./Pages/PostJobs";
 import ProtectedRoute from "./Components/auth/ProtectedRoute";
+import SettingsPage from "./Pages/SettingsPage";
 
 export default function App() {
   return (
@@ -95,6 +95,16 @@ export default function App() {
             <ProtectedRoute requiredRole="student">
               <StudentLayout currentPageName="StudentDashboard">
                 <StudentDashboard />
+              </StudentLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/p/settings"
+          element={
+            <ProtectedRoute requiredRole="student">
+              <StudentLayout>
+                <SettingsPage />
               </StudentLayout>
             </ProtectedRoute>
           }

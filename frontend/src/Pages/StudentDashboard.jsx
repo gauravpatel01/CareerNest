@@ -1,22 +1,7 @@
 import { useEffect, useState } from "react";
-import { FileText, UploadCloud, Settings, HelpCircle, UserCircle, GraduationCap } from "lucide-react";
-import { Link } from "react-router-dom";
 import LoadingSpinner from "../Components/common/LoadingSpinner";
 import JobCard from "../Components/jobs/JobCard";
-import { Button } from "@/components/ui/button";
 import Chatbot from "../Components/Chatbot";
-
-import {
-  AlertDialog,
-  AlertDialogTrigger,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-} from "@/components/ui/dialog";
-import SettingsDialog from "../Components/Dialog/SetingsDialog";
 
 export default function StudentDashboard() {
   const [internships, setInternships] = useState([]);
