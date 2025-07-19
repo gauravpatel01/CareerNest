@@ -4,6 +4,7 @@ require("dotenv").config();
 const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 
+
 // Import routes
 // const userRoutes = require('./routes/userRoutes');
 const User = require("./models/User");
