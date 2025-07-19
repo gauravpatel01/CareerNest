@@ -452,6 +452,7 @@ export default function RecruiterAuth() {
                         value={formData.industry}
                         onValueChange={(value) => handleSelectChange("industry", value)}
                       >
+                        
                         <SelectTrigger>
                           <SelectValue placeholder="Select industry" />
                         </SelectTrigger>
