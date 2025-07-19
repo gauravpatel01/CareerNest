@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "./Components/utils";
 import { Menu, X, Briefcase, Users, Mail, Phone, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import UserProfileDropdown from "@/components/layout/UserProfileDropdown";
-// import { User } from "@/entities/User";
+import { useState } from "react";
+import Chatbot from "./Components/Chatbot";
 
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
@@ -19,25 +19,8 @@ export default function Layout({ children, currentPageName }) {
   const checkUser = async () => {
     setIsLoading(true);
     try {
-      // Check if JWT exists in localStorage
-      const jwt = localStorage.getItem('jwt');
-      if (jwt) {
-        // In a real app, you would verify the JWT with your backend
-        // For now, we'll create a mock user object
-        const userData = localStorage.getItem('user');
-        if (userData) {
-          setUser(JSON.parse(userData));
-        } else {
-          // Create a default user object if none exists
-          setUser({
-            full_name: "Demo User",
-            email: "demo@example.com",
-            role: "student"
-          });
-        }
-      } else {
-        setUser(null);
-      }
+      const currentUser = await User.me();
+      setUser(currentUser);
     } catch (e) {
       setUser(null); // User is not logged in
     }
@@ -55,7 +38,7 @@ export default function Layout({ children, currentPageName }) {
     { name: "Jobs", href: createPageUrl("Jobs") },
     { name: "Internships", href: createPageUrl("Internships") },
     { name: "About", href: createPageUrl("About") },
-    { name: "FAQ", href: createPageUrl("FAQ") },
+    { name: "FAQ", href: createPageUrl("FAQ") }
   ];
 
   const isActive = (href) => location.pathname === href;
@@ -80,35 +63,28 @@ export default function Layout({ children, currentPageName }) {
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`px-3 py-2 text-sm font-medium transition-colors duration-200 ${
-                    isActive(item.href)
-                      ? "text-blue-600 border-b-2 border-blue-600"
-                      : "text-gray-700 hover:text-blue-600"
-                  }`}
+                  className={`px-3 py-2 text-sm font-medium transition-colors duration-200 ${isActive(item.href)
+                    ? "text-blue-600 border-b-2 border-blue-600"
+                    : "text-gray-700 hover:text-blue-600"
+                    }`}
                 >
                   {item.name}
                 </Link>
               ))}
             </nav>
 
-            {/* Auth Buttons and Profile */}
+            {/* Auth Buttons */}
             <div className="hidden md:flex items-center space-x-3">
-              {isLoading ? (
-                <div className="w-48 h-8 bg-gray-200 rounded animate-pulse"></div>
-              ) : user ? (
-                <UserProfileDropdown user={user} onLogout={handleLogout} />
-              ) : (
-                <>
-                  <Link to={createPageUrl("StudentAuth")}>
-                    <Button variant="outline" className="text-blue-600 border-blue-600 hover:bg-blue-50">
-                      Student Sign In
-                    </Button>
-                  </Link>
-                  <Link to={createPageUrl("RecruiterAuth")}>
-                    <Button className="bg-blue-600 hover:bg-blue-700">Recruiter</Button>
-                  </Link>
-                </>
-              )}
+              <Link to={createPageUrl("StudentAuth")}>
+                <Button variant="outline" className="text-blue-600 border-blue-600 hover:bg-blue-50">
+                  Student Sign In
+                </Button>
+              </Link>
+              <Link to={createPageUrl("RecruiterAuth")}>
+                <Button className="bg-blue-600 hover:bg-blue-700">
+                  Recruiter
+                </Button>
+              </Link>
             </div>
 
             {/* Mobile menu button */}
@@ -116,7 +92,11 @@ export default function Layout({ children, currentPageName }) {
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="md:hidden p-2 rounded-md text-gray-700 hover:bg-gray-100"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
             </button>
           </div>
         </div>
@@ -129,11 +109,10 @@ export default function Layout({ children, currentPageName }) {
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`block px-3 py-2 text-base font-medium transition-colors duration-200 ${
-                    isActive(item.href)
-                      ? "text-blue-600 bg-blue-50"
-                      : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-                  }`}
+                  className={`block px-3 py-2 text-base font-medium transition-colors duration-200 ${isActive(item.href)
+                    ? "text-blue-600 bg-blue-50"
+                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                    }`}
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {item.name}
@@ -141,24 +120,16 @@ export default function Layout({ children, currentPageName }) {
               ))}
               <div className="pt-4 pb-3 border-t border-gray-200">
                 <div className="flex flex-col space-y-2 px-3">
-                  {isLoading ? (
-                    <div className="w-full h-10 bg-gray-200 rounded animate-pulse my-2"></div>
-                  ) : user ? (
-                    <div className="px-1 py-2">
-                      <UserProfileDropdown user={user} onLogout={handleLogout} />
-                    </div>
-                  ) : (
-                    <>
-                      <Link to={createPageUrl("StudentAuth")}>
-                        <Button variant="outline" className="w-full text-blue-600 border-blue-600 hover:bg-blue-50">
-                          Student Sign In
-                        </Button>
-                      </Link>
-                      <Link to={createPageUrl("RecruiterAuth")}>
-                        <Button className="w-full bg-blue-600 hover:bg-blue-700">Recruiter</Button>
-                      </Link>
-                    </>
-                  )}
+                  <Link to={createPageUrl("StudentAuth")}>
+                    <Button variant="outline" className="w-full text-blue-600 border-blue-600 hover:bg-blue-50">
+                      Student Sign In
+                    </Button>
+                  </Link>
+                  <Link to={createPageUrl("RecruiterAuth")}>
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                      Recruiter
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -188,42 +159,18 @@ export default function Layout({ children, currentPageName }) {
             <div>
               <h3 className="text-lg font-semibold mb-4">For Job Seekers</h3>
               <ul className="space-y-2 text-gray-400 text-sm">
-                <li>
-                  <Link to={createPageUrl("Jobs")} className="hover:text-white transition-colors">
-                    Browse Jobs
-                  </Link>
-                </li>
-                <li>
-                  <Link to={createPageUrl("Internships")} className="hover:text-white transition-colors">
-                    Find Internships
-                  </Link>
-                </li>
-                <li>
-                  <Link to={createPageUrl("StudentAuth")} className="hover:text-white transition-colors">
-                    Student Login
-                  </Link>
-                </li>
+                <li><Link to={createPageUrl("Jobs")} className="hover:text-white transition-colors">Browse Jobs</Link></li>
+                <li><Link to={createPageUrl("Internships")} className="hover:text-white transition-colors">Find Internships</Link></li>
+                <li><Link to={createPageUrl("StudentAuth")} className="hover:text-white transition-colors">Student Login</Link></li>
               </ul>
             </div>
 
             <div>
               <h3 className="text-lg font-semibold mb-4">For Employers</h3>
               <ul className="space-y-2 text-gray-400 text-sm">
-                <li>
-                  <Link to={createPageUrl("RecruiterAuth")} className="hover:text-white transition-colors">
-                    Post a Job
-                  </Link>
-                </li>
-                <li>
-                  <Link to={createPageUrl("RecruiterAuth")} className="hover:text-white transition-colors">
-                    Recruiter Login
-                  </Link>
-                </li>
-                <li>
-                  <Link to={createPageUrl("About")} className="hover:text-white transition-colors">
-                    About Us
-                  </Link>
-                </li>
+                <li><Link to={createPageUrl("RecruiterAuth")} className="hover:text-white transition-colors">Post a Job</Link></li>
+                <li><Link to={createPageUrl("RecruiterAuth")} className="hover:text-white transition-colors">Recruiter Login</Link></li>
+                <li><Link to={createPageUrl("About")} className="hover:text-white transition-colors">About Us</Link></li>
               </ul>
             </div>
 
@@ -251,6 +198,9 @@ export default function Layout({ children, currentPageName }) {
           </div>
         </div>
       </footer>
+
+      <Chatbot /> {/* ⬅️ This adds chatbot on all pages */}
+
     </div>
   );
 }
