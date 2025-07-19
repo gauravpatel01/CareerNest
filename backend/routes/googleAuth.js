@@ -143,4 +143,110 @@ router.post('/auth/recruiter/login', async (req, res) => {
   }
 });
 
+// Form-based registration for students
+router.post('/auth/student/register', async (req, res) => {
+  const {
+    full_name, email, phone, password, location,
+    education_level, field_of_study, graduation_year,
+    skills, experience, bio
+  } = req.body;
+  
+  try {
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(409).json({ error: 'Email already registered' });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create new user
+    const user = new User({
+      name: full_name,
+      email,
+      password: hashedPassword,
+      role: 'student',
+      phone,
+      location,
+      education_level,
+      field_of_study,
+      graduation_year,
+      skills,
+      experience,
+      bio
+    });
+
+    await user.save();
+
+    // Create JWT
+    const token = jwt.sign({ email, role: user.role }, JWT_SECRET, { expiresIn: '1d' });
+    
+    // Return user data and token
+    res.status(201).json({
+      token,
+      user: {
+        name: user.name,
+        full_name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    });
+  } catch (err) {
+    console.error('Student registration error:', err);
+    res.status(500).json({ error: 'Registration failed' });
+  }
+});
+
+// Form-based registration for recruiters
+router.post('/auth/recruiter/register', async (req, res) => {
+  const {
+    full_name, email, phone, password, company_name,
+    company_size, industry, location, job_title,
+    company_website, company_description
+  } = req.body;
+  
+  try {
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(409).json({ error: 'Email already registered' });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create new user
+    const user = new User({
+      name: full_name,
+      email,
+      password: hashedPassword,
+      role: 'recruiter',
+      phone,
+      location,
+      // Store company info in bio field for now (can be extended later)
+      bio: `Company: ${company_name}, Size: ${company_size}, Industry: ${industry}, Job Title: ${job_title}, Website: ${company_website}, Description: ${company_description}`
+    });
+
+    await user.save();
+
+    // Create JWT
+    const token = jwt.sign({ email, role: user.role }, JWT_SECRET, { expiresIn: '1d' });
+    
+    // Return user data and token
+    res.status(201).json({
+      token,
+      user: {
+        name: user.name,
+        full_name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    });
+  } catch (err) {
+    console.error('Recruiter registration error:', err);
+    res.status(500).json({ error: 'Registration failed' });
+  }
+});
+
 module.exports = router; 

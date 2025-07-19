@@ -19,6 +19,7 @@ export default function RecruiterAuth() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [formData, setFormData] = useState({
     full_name: "",
     email: "",
@@ -81,6 +82,7 @@ export default function RecruiterAuth() {
       setFormData({ ...formData, [name]: value });
     }
     setError("");
+    setSuccessMessage(""); // Clear success message on input change
   };
 
   const handleSelectChange = (name, value) => {
@@ -181,6 +183,7 @@ export default function RecruiterAuth() {
     e.preventDefault();
     setIsLoading(true);
     setError("");
+    setSuccessMessage(""); // Clear success message on sign-up attempt
     try {
       if (!formData.full_name || !formData.email || !formData.phone || !formData.password || !formData.confirm_password || !formData.company_name) {
         setError("Please fill in all required fields.");
@@ -204,19 +207,40 @@ export default function RecruiterAuth() {
         return;
       }
       
-      // Store user data in localStorage for form-based signup
-      const userData = {
-        full_name: formData.full_name,
-        name: formData.full_name,
-        email: formData.email,
-        role: "recruiter"
-      };
-      localStorage.setItem('user', JSON.stringify(userData));
+      // Call backend API for recruiter registration
+      const res = await fetch('/api/auth/recruiter/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          full_name: formData.full_name,
+          email: formData.email,
+          phone: formData.phone,
+          password: formData.password,
+          company_name: formData.company_name,
+          company_size: formData.company_size,
+          industry: formData.industry,
+          location: formData.location,
+          job_title: formData.job_title,
+          company_website: formData.company_website,
+          company_description: formData.company_description
+        })
+      });
       
-      // On success, redirect to dashboard
-      window.location.href = createPageUrl("recruiterdashboard");
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Registration failed');
+      }
+      
+      const data = await res.json();
+      localStorage.setItem('jwt', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      
+      // On success, switch to sign-in mode and show a success message
+      setIsLogin(true);
+      setError("");
+      setSuccessMessage("Registration successful! Please sign in to continue.");
     } catch (error) {
-      setError("Sign up failed. Please try again.");
+      setError(error.message || "Sign up failed. Please try again.");
       console.error("Sign up error:", error);
     } finally {
       setIsLoading(false);
@@ -267,6 +291,12 @@ export default function RecruiterAuth() {
                 <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg flex items-center">
                   <AlertCircle className="w-4 h-4 mr-2" />
                   {error}
+                </div>
+              )}
+              {successMessage && (
+                <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg flex items-center">
+                  <AlertCircle className="w-4 h-4 mr-2" />
+                  {successMessage}
                 </div>
               )}
 
@@ -554,6 +584,12 @@ export default function RecruiterAuth() {
           <div className="mb-6 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg flex items-center">
             <AlertCircle className="w-4 h-4 mr-2" />
             {error}
+          </div>
+        )}
+        {successMessage && (
+          <div className="mb-6 p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg flex items-center">
+            <AlertCircle className="w-4 h-4 mr-2" />
+            {successMessage}
           </div>
         )}
 
