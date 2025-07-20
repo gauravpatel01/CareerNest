@@ -20,6 +20,7 @@ import MyApplications from "./Pages/MyApplications";
 import PostJobs from "./Pages/PostJobs";
 import ProtectedRoute from "./Components/auth/ProtectedRoute";
 import SettingsPage from "./Pages/SettingsPage";
+import AdminPage from "./Pages/Admin";
 
 export default function App() {
   return (
@@ -229,6 +230,15 @@ export default function App() {
                 <PostJobs />
               </RecruiterLayout>
             </ProtectedRoute>
+          }
+        />
+        {/* Admin */}
+        <Route
+          path="/p/adminpage"
+          element={
+            <Layout>
+              <AdminPage />
+            </Layout>
           }
         />
 
