@@ -57,6 +57,30 @@ export default function App() {
             </Layout>
           }
         />
+        {/* Student-specific routes with mobile sidebar */}
+        <Route
+          path="/p/profile"
+          element={
+            <ProtectedRoute requiredRole="student">
+              <StudentLayout>
+                <UpdateProfile />
+              </StudentLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/p/contact"
+          element={
+            <ProtectedRoute requiredRole="student">
+              <StudentLayout>
+                <div className="text-center py-20">
+                  <h1 className="text-2xl font-bold mb-4">Contact Us</h1>
+                  <p className="text-gray-600">Get in touch with our support team.</p>
+                </div>
+              </StudentLayout>
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/p/job-details"
           element={
