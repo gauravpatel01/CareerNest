@@ -15,7 +15,6 @@ const googleAuthRoutes = require("./routes/googleAuth");
 const app = express();
 
 // In-memory user storage
-// const users = []; // This line is removed as per the edit hint.
 app.use(
   cors({
     origin: "http://localhost:5173", // your frontend
@@ -26,14 +25,38 @@ app.use(express.json());
 app.use(seedRoutes);
 app.use("/api", googleAuthRoutes);
 
-// Connect to MongoDB
+// Connect to MongoDB with better error handling
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/careernest";
+
 mongoose
-  .connect(process.env.MONGODB_URI, {
+  .connect(MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+    socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
   })
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.error("MongoDB connection error:", err));
+  .then(() => {
+    console.log("✅ MongoDB connected successfully");
+    console.log("📊 Database:", MONGODB_URI);
+  })
+  .catch((err) => {
+    console.error("❌ MongoDB connection error:", err.message);
+    console.log("💡 Make sure MongoDB is running and MONGODB_URI is set correctly");
+    console.log("🔧 You can set MONGODB_URI in your .env file or use the default localhost");
+  });
+
+// Handle MongoDB connection events
+mongoose.connection.on('error', (err) => {
+  console.error('❌ MongoDB connection error:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.log('⚠️ MongoDB disconnected');
+});
+
+mongoose.connection.on('connected', () => {
+  console.log('✅ MongoDB connected');
+});
 
 // API routes
 // app.use('/api/users', userRoutes);

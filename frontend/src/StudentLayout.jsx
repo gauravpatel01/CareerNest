@@ -1,5 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { FileText, Briefcase, LayoutDashboard, Send, Bell, Menu, X, Mail, Phone, MapPin, LogOut } from "lucide-react";
+import {
+  FileText,
+  Briefcase,
+  LayoutDashboard,
+  Send,
+  Bell,
+  Menu,
+  X,
+  Mail,
+  Phone,
+  MapPin,
+  LogOut,
+  ChevronDown,
+  ChevronUp,
+  Settings,
+  User,
+  HelpCircle,
+  MessageCircle,
+} from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createPageUrl } from "./Components/utils";
 import { Button } from "@/components/ui/button";
@@ -9,6 +27,7 @@ export default function StudentLayout({ children }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [moreDropdownOpen, setMoreDropdownOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -45,7 +64,14 @@ export default function StudentLayout({ children }) {
     localStorage.removeItem("user");
     setUser(null);
     setIsLoading(false);
+    setMobileMenuOpen(false);
     navigate("/p/home");
+  };
+
+  const handleNavigationClick = (href) => {
+    setMobileMenuOpen(false);
+    setMoreDropdownOpen(false);
+    navigate(href);
   };
 
   const goToNotifications = () => {
@@ -161,80 +187,199 @@ export default function StudentLayout({ children }) {
             </button>
           </div>
         </div>
+      </header>
 
-        {/* Mobile Navigation */}
-        {mobileMenuOpen && (
-          <div className="sm:block lg:hidden bg-white border-t">
-            <div className="px-2 pt-2 pb-3 space-y-1">
-              <Link
-                to={createPageUrl("Home")}
-                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Home
-              </Link>
-              <Link
-                to={createPageUrl("Jobs")}
-                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Jobs
-              </Link>
-              <Link
-                to={createPageUrl("Internships")}
-                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Internships
-              </Link>
-              <Link
-                to={createPageUrl("editResume")}
-                className={`block px-3 py-2 text-base font-medium transition-colors duration-200 ${
-                  isActive(createPageUrl("editResume"))
-                    ? "text-blue-600 bg-blue-50"
-                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-                }`}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Resume
-              </Link>
-              <Link
-                to={createPageUrl("applications")}
-                className={`block px-3 py-2 text-base font-medium transition-colors duration-200 ${
-                  isActive(createPageUrl("applications"))
-                    ? "text-blue-600 bg-blue-50"
-                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-                }`}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                My Applications
-              </Link>
-              <div className="pt-4 pb-3 border-t border-gray-200">
-                <div className="flex flex-col space-y-2 px-3">
-                  {isLoading ? (
-                    <div className="w-full h-10 bg-gray-200 rounded animate-pulse my-2"></div>
-                  ) : user ? (
-                    <div className="px-1 py-2">
-                      <UserProfileDropdown user={user} onLogout={handleLogout} />
-                    </div>
-                  ) : (
-                    <>
-                      <Link to={createPageUrl("StudentAuth")}>
-                        <Button variant="outline" className="w-full text-blue-600 border-blue-600 hover:bg-blue-50">
-                          Student Sign In
-                        </Button>
-                      </Link>
-                      <Link to={createPageUrl("RecruiterAuth")}>
-                        <Button className="w-full bg-blue-600 hover:bg-blue-700">Recruiter</Button>
-                      </Link>
-                    </>
-                  )}
+      {/* Mobile Sidebar */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          {/* Click outside to close */}
+          <div className="fixed inset-0" onClick={() => setMobileMenuOpen(false)} />
+          {/* Sidebar */}
+          <div
+            className="fixed left-0 top-0 h-full w-2/3 max-w-sm bg-white shadow-xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* User Profile Section */}
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
+                    {user.full_name
+                      ? user.full_name
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")
+                          .toUpperCase()
+                      : "U"}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">{user.full_name || user.name || "User"}</p>
+                    <p className="text-xs text-gray-500">{user.email}</p>
+                  </div>
                 </div>
+                <button
+                  onClick={() => setMoreDropdownOpen(!moreDropdownOpen)}
+                  className="p-1 hover:bg-gray-100 rounded"
+                >
+                  <ChevronDown
+                    className={`w-4 h-4 text-gray-500 transition-transform ${moreDropdownOpen ? "rotate-180" : ""}`}
+                  />
+                </button>
               </div>
+
+              {/* More Dropdown */}
+              {moreDropdownOpen && (
+                <div className="mt-3 space-y-1">
+                  {/* Your Profile Section */}
+                  <button
+                    onClick={() => handleNavigationClick(createPageUrl("profile"))}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex items-center"
+                  >
+                    <User className="w-4 h-4 mr-3" />
+                    Your Profile
+                  </button>
+
+                  <div className="border-t border-gray-200 my-2"></div>
+
+                  {/* SUPPORT Section */}
+                  <div className="px-4 py-1">
+                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Support</p>
+                  </div>
+                  <button
+                    onClick={() => handleNavigationClick(createPageUrl("help"))}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex items-center"
+                  >
+                    <HelpCircle className="w-4 h-4 mr-3" />
+                    Help Center
+                  </button>
+                  <button
+                    onClick={() => handleNavigationClick(createPageUrl("contact"))}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex items-center"
+                  >
+                    <MessageCircle className="w-4 h-4 mr-3" />
+                    Contact Us
+                  </button>
+
+                  <div className="border-t border-gray-200 my-2"></div>
+
+                  {/* SETTINGS Section */}
+                  <div className="px-4 py-1">
+                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Settings</p>
+                  </div>
+                  <button
+                    onClick={() => handleNavigationClick(createPageUrl("updateProfile"))}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex items-center"
+                  >
+                    <User className="w-4 h-4 mr-3" />
+                    Update Profile
+                  </button>
+                  <button
+                    onClick={() => handleNavigationClick(createPageUrl("editResume"))}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex items-center"
+                  >
+                    <FileText className="w-4 h-4 mr-3" />
+                    Edit Resume
+                  </button>
+                  <button
+                    onClick={() => handleNavigationClick(createPageUrl("uploadResume"))}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex items-center"
+                  >
+                    <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                      />
+                    </svg>
+                    Upload Resume
+                  </button>
+                  <button
+                    onClick={() => handleNavigationClick(createPageUrl("settings"))}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex items-center"
+                  >
+                    <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                    </svg>
+                    Settings
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center"
+                  >
+                    <LogOut className="w-4 h-4 mr-3" />
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Navigation Menu */}
+            <div className="flex-1 overflow-y-auto">
+              <nav className="p-4 space-y-1">
+                {/* Main Navigation */}
+                <button
+                  onClick={() => handleNavigationClick(createPageUrl("Home"))}
+                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+                    isActive(createPageUrl("Home")) ? "text-blue-600 bg-blue-50" : "text-gray-900 hover:bg-gray-100"
+                  }`}
+                >
+                  Home
+                </button>
+                <button
+                  onClick={() => handleNavigationClick(createPageUrl("Jobs"))}
+                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+                    isActive(createPageUrl("Jobs")) ? "text-blue-600 bg-blue-50" : "text-gray-900 hover:bg-gray-100"
+                  }`}
+                >
+                  Jobs
+                </button>
+                <button
+                  onClick={() => handleNavigationClick(createPageUrl("Internships"))}
+                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+                    isActive(createPageUrl("Internships"))
+                      ? "text-blue-600 bg-blue-50"
+                      : "text-gray-900 hover:bg-gray-100"
+                  }`}
+                >
+                  Internships
+                </button>
+                <button
+                  onClick={() => handleNavigationClick(createPageUrl("editResume"))}
+                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+                    isActive(createPageUrl("editResume"))
+                      ? "text-blue-600 bg-blue-50"
+                      : "text-gray-900 hover:bg-gray-100"
+                  }`}
+                >
+                  Resume
+                </button>
+                <button
+                  onClick={() => handleNavigationClick(createPageUrl("applications"))}
+                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+                    isActive(createPageUrl("applications"))
+                      ? "text-blue-600 bg-blue-50"
+                      : "text-gray-900 hover:bg-gray-100"
+                  }`}
+                >
+                  My Applications
+                </button>
+              </nav>
             </div>
           </div>
-        )}
-      </header>
+        </div>
+      )}
 
       {/* Main Content Area */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">{children}</main>
