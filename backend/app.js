@@ -15,7 +15,6 @@ const googleAuthRoutes = require("./routes/googleAuth");
 const app = express();
 
 // In-memory user storage
-// const users = []; // This line is removed as per the edit hint.
 app.use(
   cors({
     origin: "http://localhost:5173", // your frontend

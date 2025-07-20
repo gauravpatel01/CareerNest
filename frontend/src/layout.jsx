@@ -138,41 +138,49 @@ export default function Layout({ children, currentPageName }) {
 
         {/* Mobile Navigation for Non-Students */}
         {mobileMenuOpen && (!user || user.role !== 'student') && (
-          <div className="md:hidden bg-white border-t">
-            <div className="px-2 pt-2 pb-3 space-y-1">
-              {navItems.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  className={`block px-3 py-2 text-base font-medium transition-colors duration-200 ${isActive(item.href)
-                    ? "text-blue-600 bg-blue-50"
-                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-                    }`}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {item.name}
-                </Link>
-              ))}
-              <div className="pt-4 pb-3 border-t border-gray-200">
-                <div className="flex flex-col space-y-2 px-3">
-                  {isLoading ? (
-                    <div className="w-full h-10 bg-gray-200 rounded animate-pulse my-2"></div>
-                  ) : user ? (
-                    <div className="px-1 py-2">
-                      <UserProfileDropdown user={user} onLogout={handleLogout} />
-                    </div>
-                  ) : (
-                    <>
-                      <Link to={createPageUrl("StudentAuth")}>
-                        <Button variant="outline" className="w-full text-blue-600 border-blue-600 hover:bg-blue-50">
-                          Student Sign In
-                        </Button>
-                      </Link>
-                      <Link to={createPageUrl("RecruiterAuth")}>
-                        <Button className="w-full bg-blue-600 hover:bg-blue-700">Recruiter</Button>
-                      </Link>
-                    </>
-                  )}
+          <div className="fixed inset-0 z-50 md:hidden">
+            {/* Click outside to close */}
+            <div 
+              className="fixed inset-0"
+              onClick={() => setMobileMenuOpen(false)}
+            />
+            {/* Mobile Menu */}
+            <div className="fixed top-16 left-0 right-0 bg-white shadow-lg border-t" onClick={(e) => e.stopPropagation()}>
+              <div className="px-2 pt-2 pb-3 space-y-1">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    className={`block px-3 py-2 text-base font-medium transition-colors duration-200 ${isActive(item.href)
+                      ? "text-blue-600 bg-blue-50"
+                      : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                      }`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+                <div className="pt-4 pb-3 border-t border-gray-200">
+                  <div className="flex flex-col space-y-2 px-3">
+                    {isLoading ? (
+                      <div className="w-full h-10 bg-gray-200 rounded animate-pulse my-2"></div>
+                    ) : user ? (
+                      <div className="px-1 py-2">
+                        <UserProfileDropdown user={user} onLogout={handleLogout} />
+                      </div>
+                    ) : (
+                      <>
+                        <Link to={createPageUrl("StudentAuth")} onClick={() => setMobileMenuOpen(false)}>
+                          <Button variant="outline" className="w-full text-blue-600 border-blue-600 hover:bg-blue-50">
+                            Student Sign In
+                          </Button>
+                        </Link>
+                        <Link to={createPageUrl("RecruiterAuth")} onClick={() => setMobileMenuOpen(false)}>
+                          <Button className="w-full bg-blue-600 hover:bg-blue-700">Recruiter</Button>
+                        </Link>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
