@@ -191,7 +191,7 @@ export default function StudentLayout({ children }) {
 
       {/* Mobile Sidebar */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-50 md:hidden">
+        <div className="fixed inset-0 z-50 lg:hidden">
           {/* Click outside to close */}
           <div className="fixed inset-0" onClick={() => setMobileMenuOpen(false)} />
           {/* Sidebar */}

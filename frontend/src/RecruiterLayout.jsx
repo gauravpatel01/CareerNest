@@ -165,7 +165,7 @@ export default function RecruiterLayout({ children }) {
 
         {/* Mobile Navigation for Non-Recruiters */}
         {mobileMenuOpen && (!user || user.role !== "recruiter") && (
-          <div className="sm:block lg:hidden bg-white border-t">
+          <div className="block lg:hidden bg-white border-t">
             <div className="px-2 pt-2 pb-3 space-y-1">
               {["Home", "Jobs", "Internships", "About", "FAQ"].map((page) => (
                 <Link
@@ -203,7 +203,7 @@ export default function RecruiterLayout({ children }) {
 
         {/* Mobile Sidebar for Recruiters */}
         {mobileMenuOpen && user && user.role === "recruiter" && (
-          <div className="fixed inset-0 z-50 md:hidden">
+          <div className="fixed inset-0 z-50 lg:hidden">
             {/* Click outside to close */}
             <div className="fixed inset-0" onClick={() => setMobileMenuOpen(false)} />
             {/* Sidebar */}
