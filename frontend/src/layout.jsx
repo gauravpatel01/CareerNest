@@ -20,11 +20,11 @@ export default function Layout({ children, currentPageName }) {
     setIsLoading(true);
     try {
       // Check if JWT exists in localStorage
-      const jwt = localStorage.getItem('jwt');
+      const jwt = localStorage.getItem("jwt");
       if (jwt) {
         // In a real app, you would verify the JWT with your backend
         // For now, we'll create a mock user object
-        const userData = localStorage.getItem('user');
+        const userData = localStorage.getItem("user");
         if (userData) {
           setUser(JSON.parse(userData));
         } else {
@@ -32,7 +32,7 @@ export default function Layout({ children, currentPageName }) {
           setUser({
             full_name: "Demo User",
             email: "demo@example.com",
-            role: "student"
+            role: "student",
           });
         }
       } else {
@@ -55,7 +55,7 @@ export default function Layout({ children, currentPageName }) {
     { name: "Jobs", href: createPageUrl("Jobs") },
     { name: "Internships", href: createPageUrl("Internships") },
     { name: "About", href: createPageUrl("About") },
-    { name: "FAQ", href: createPageUrl("FAQ") }
+    { name: "FAQ", href: createPageUrl("FAQ") },
   ];
 
   const isActive = (href) => location.pathname === href;
@@ -75,15 +75,16 @@ export default function Layout({ children, currentPageName }) {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex space-x-8">
+            <nav className="hidden lg:flex space-x-8">
               {navItems.map((item) => (
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`px-3 py-2 text-sm font-medium transition-colors duration-200 ${isActive(item.href)
-                    ? "text-blue-600 border-b-2 border-blue-600"
-                    : "text-gray-700 hover:text-blue-600"
-                    }`}
+                  className={`px-3 py-2 text-sm font-medium transition-colors duration-200 ${
+                    isActive(item.href)
+                      ? "text-blue-600 border-b-2 border-blue-600"
+                      : "text-gray-700 hover:text-blue-600"
+                  }`}
                 >
                   {item.name}
                 </Link>
@@ -91,7 +92,7 @@ export default function Layout({ children, currentPageName }) {
             </nav>
 
             {/* Auth Buttons and Profile */}
-            <div className="hidden md:flex items-center space-x-3">
+            <div className="hidden lg:flex items-center space-x-3">
               {isLoading ? (
                 <div className="w-48 h-8 bg-gray-200 rounded animate-pulse"></div>
               ) : user ? (
@@ -113,29 +114,26 @@ export default function Layout({ children, currentPageName }) {
             {/* Mobile menu button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-md text-gray-700 hover:bg-gray-100"
+              className="block lg:hidden p-2 rounded-md text-gray-700 hover:bg-gray-100"
             >
-              {mobileMenuOpen ? (
-                <X className="w-6 h-6" />
-              ) : (
-                <Menu className="w-6 h-6" />
-              )}
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-white border-t">
+          <div className="lg:hidden bg-white border-t">
             <div className="px-2 pt-2 pb-3 space-y-1">
               {navItems.map((item) => (
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`block px-3 py-2 text-base font-medium transition-colors duration-200 ${isActive(item.href)
-                    ? "text-blue-600 bg-blue-50"
-                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-                    }`}
+                  className={`block px-3 py-2 text-base font-medium transition-colors duration-200 ${
+                    isActive(item.href)
+                      ? "text-blue-600 bg-blue-50"
+                      : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                  }`}
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {item.name}
@@ -193,18 +191,42 @@ export default function Layout({ children, currentPageName }) {
             <div>
               <h3 className="text-lg font-semibold mb-4">For Job Seekers</h3>
               <ul className="space-y-2 text-gray-400 text-sm">
-                <li><Link to={createPageUrl("Jobs")} className="hover:text-white transition-colors">Browse Jobs</Link></li>
-                <li><Link to={createPageUrl("Internships")} className="hover:text-white transition-colors">Find Internships</Link></li>
-                <li><Link to={createPageUrl("StudentAuth")} className="hover:text-white transition-colors">Student Login</Link></li>
+                <li>
+                  <Link to={createPageUrl("Jobs")} className="hover:text-white transition-colors">
+                    Browse Jobs
+                  </Link>
+                </li>
+                <li>
+                  <Link to={createPageUrl("Internships")} className="hover:text-white transition-colors">
+                    Find Internships
+                  </Link>
+                </li>
+                <li>
+                  <Link to={createPageUrl("StudentAuth")} className="hover:text-white transition-colors">
+                    Student Login
+                  </Link>
+                </li>
               </ul>
             </div>
 
             <div>
               <h3 className="text-lg font-semibold mb-4">For Employers</h3>
               <ul className="space-y-2 text-gray-400 text-sm">
-                <li><Link to={createPageUrl("RecruiterAuth")} className="hover:text-white transition-colors">Post a Job</Link></li>
-                <li><Link to={createPageUrl("RecruiterAuth")} className="hover:text-white transition-colors">Recruiter Login</Link></li>
-                <li><Link to={createPageUrl("About")} className="hover:text-white transition-colors">About Us</Link></li>
+                <li>
+                  <Link to={createPageUrl("RecruiterAuth")} className="hover:text-white transition-colors">
+                    Post a Job
+                  </Link>
+                </li>
+                <li>
+                  <Link to={createPageUrl("RecruiterAuth")} className="hover:text-white transition-colors">
+                    Recruiter Login
+                  </Link>
+                </li>
+                <li>
+                  <Link to={createPageUrl("About")} className="hover:text-white transition-colors">
+                    About Us
+                  </Link>
+                </li>
               </ul>
             </div>
 

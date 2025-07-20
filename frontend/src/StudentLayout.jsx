@@ -19,16 +19,16 @@ export default function StudentLayout({ children }) {
   const checkUser = async () => {
     setIsLoading(true);
     try {
-      const jwt = localStorage.getItem('jwt');
+      const jwt = localStorage.getItem("jwt");
       if (jwt) {
-        const userData = localStorage.getItem('user');
+        const userData = localStorage.getItem("user");
         if (userData) {
           setUser(JSON.parse(userData));
         } else {
           setUser({
             full_name: "Demo Student",
             email: "student@example.com",
-            role: "student"
+            role: "student",
           });
         }
       } else {
@@ -41,11 +41,11 @@ export default function StudentLayout({ children }) {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('jwt');
-    localStorage.removeItem('user');
+    localStorage.removeItem("jwt");
+    localStorage.removeItem("user");
     setUser(null);
     setIsLoading(false);
-    navigate('/p/home');
+    navigate("/p/home");
   };
 
   const goToNotifications = () => {
@@ -91,7 +91,7 @@ export default function StudentLayout({ children }) {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex space-x-8">
+            <nav className="hidden lg:flex space-x-8">
               <Link
                 to={createPageUrl("Home")}
                 className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200"
@@ -133,7 +133,7 @@ export default function StudentLayout({ children }) {
             </nav>
 
             {/* Auth Buttons and Profile */}
-            <div className="hidden md:flex items-center space-x-3">
+            <div className="hidden lg:flex items-center space-x-3">
               {isLoading ? (
                 <div className="w-48 h-8 bg-gray-200 rounded animate-pulse"></div>
               ) : user ? (
@@ -144,10 +144,10 @@ export default function StudentLayout({ children }) {
                     <Button variant="outline" className="text-blue-600 border-blue-600 hover:bg-blue-50">
                       Student Sign In
                     </Button>
-                </Link>
+                  </Link>
                   <Link to={createPageUrl("RecruiterAuth")}>
                     <Button className="bg-blue-600 hover:bg-blue-700">Recruiter</Button>
-                </Link>
+                  </Link>
                 </>
               )}
             </div>
@@ -155,7 +155,7 @@ export default function StudentLayout({ children }) {
             {/* Mobile menu button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-md text-gray-700 hover:bg-gray-100"
+              className="block lg:hidden p-2 rounded-md text-gray-700 hover:bg-gray-100"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -164,7 +164,7 @@ export default function StudentLayout({ children }) {
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-white border-t">
+          <div className="sm:block lg:hidden bg-white border-t">
             <div className="px-2 pt-2 pb-3 space-y-1">
               <Link
                 to={createPageUrl("Home")}
@@ -198,13 +198,13 @@ export default function StudentLayout({ children }) {
               >
                 Resume
               </Link>
-                <Link
+              <Link
                 to={createPageUrl("applications")}
-                  className={`block px-3 py-2 text-base font-medium transition-colors duration-200 ${
+                className={`block px-3 py-2 text-base font-medium transition-colors duration-200 ${
                   isActive(createPageUrl("applications"))
-                      ? "text-blue-600 bg-blue-50"
-                      : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-                  }`}
+                    ? "text-blue-600 bg-blue-50"
+                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 My Applications
@@ -226,7 +226,7 @@ export default function StudentLayout({ children }) {
                       </Link>
                       <Link to={createPageUrl("RecruiterAuth")}>
                         <Button className="w-full bg-blue-600 hover:bg-blue-700">Recruiter</Button>
-                </Link>
+                      </Link>
                     </>
                   )}
                 </div>
@@ -237,9 +237,7 @@ export default function StudentLayout({ children }) {
       </header>
 
       {/* Main Content Area */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {children}
-      </main>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">{children}</main>
     </div>
   );
 }

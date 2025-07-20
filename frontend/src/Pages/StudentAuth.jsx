@@ -19,6 +19,7 @@ import {
   EyeOff,
   AlertCircle,
   ArrowLeft,
+  CheckCircle,
 } from "lucide-react";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 
@@ -152,7 +153,7 @@ export default function StudentAuth() {
         }
 
         // Call backend API for email login
-        const res = await fetch("/api/auth/student/login", {
+        const res = await fetch(`${backendURL}/api/auth/student/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: formData.email, password: formData.password }),
@@ -229,11 +230,11 @@ export default function StudentAuth() {
         setError("Password must include a letter, a number, and a special character.");
         return;
       }
-      
+
       // Call backend API for student registration
-      const res = await fetch('/api/auth/student/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch(`${backendURL}/api/auth/student/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           full_name: formData.full_name,
           email: formData.email,
@@ -245,19 +246,19 @@ export default function StudentAuth() {
           graduation_year: formData.graduation_year,
           skills: formData.skills,
           experience: formData.experience,
-          bio: formData.bio
-        })
+          bio: formData.bio,
+        }),
       });
-      
+
       if (!res.ok) {
         const errorData = await res.json();
-        throw new Error(errorData.error || 'Registration failed');
+        throw new Error(errorData.error || "Registration failed");
       }
-      
+
       const data = await res.json();
-      localStorage.setItem('jwt', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      
+      localStorage.setItem("jwt", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
       // On success, switch to sign-in mode and show a success message
       setIsLogin(true);
       setError("");

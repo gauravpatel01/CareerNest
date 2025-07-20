@@ -19,16 +19,16 @@ export default function RecruiterLayout({ children }) {
   const checkUser = async () => {
     setIsLoading(true);
     try {
-      const jwt = localStorage.getItem('jwt');
+      const jwt = localStorage.getItem("jwt");
       if (jwt) {
-        const userData = localStorage.getItem('user');
+        const userData = localStorage.getItem("user");
         if (userData) {
           setUser(JSON.parse(userData));
         } else {
           setUser({
             full_name: "Demo Recruiter",
             email: "recruiter@example.com",
-            role: "recruiter"
+            role: "recruiter",
           });
         }
       } else {
@@ -41,15 +41,11 @@ export default function RecruiterLayout({ children }) {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('jwt');
-    localStorage.removeItem('user');
+    localStorage.removeItem("jwt");
+    localStorage.removeItem("user");
     setUser(null);
     setIsLoading(false);
-    navigate('/p/home');
-  };
-
-  const goToNotifications = () => {
-    navigate("/notifications");
+    navigate("/p/home");
   };
 
   const navItems = [
@@ -90,8 +86,7 @@ export default function RecruiterLayout({ children }) {
       {/* Header */}
       <header className="bg-white shadow-sm border-b sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            {/* Logo */}
+          <div className="flex flex-wrap justify-between items-center h-16 gap-4">
             <Link to={createPageUrl("Home")} className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
                 <Briefcase className="w-5 h-5 text-white" />
@@ -99,42 +94,19 @@ export default function RecruiterLayout({ children }) {
               <span className="text-xl font-bold text-gray-900">CareerNest</span>
             </Link>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex space-x-8">
-              <Link
-                to={createPageUrl("Home")}
-                className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200"
-              >
-                Home
-              </Link>
-              <Link
-                to={createPageUrl("Jobs")}
-                className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200"
-              >
-                Jobs
-              </Link>
-              <Link
-                to={createPageUrl("Internships")}
-                className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200"
-              >
-                Internships
-              </Link>
-              <Link
-                to={createPageUrl("About")}
-                className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200"
-              >
-                About
-              </Link>
-              <Link
-                to={createPageUrl("FAQ")}
-                className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200"
-              >
-                FAQ
-              </Link>
+            <nav className="hidden lg:flex flex-wrap gap-4">
+              {["Home", "Jobs", "Internships", "About", "FAQ"].map((page) => (
+                <Link
+                  key={page}
+                  to={createPageUrl(page)}
+                  className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200"
+                >
+                  {page}
+                </Link>
+              ))}
             </nav>
 
-            {/* Auth Buttons and Profile */}
-            <div className="hidden md:flex items-center space-x-3">
+            <div className="hidden lg:flex items-center gap-3">
               {isLoading ? (
                 <div className="w-48 h-8 bg-gray-200 rounded animate-pulse"></div>
               ) : user ? (
@@ -153,63 +125,34 @@ export default function RecruiterLayout({ children }) {
               )}
             </div>
 
-            {/* Mobile menu button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-md text-gray-700 hover:bg-gray-100"
+              className="sm:block lg:hidden p-2 rounded-md text-gray-700 hover:bg-gray-100"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-white border-t">
+          <div className="sm:block lg:hidden bg-white border-t">
             <div className="px-2 pt-2 pb-3 space-y-1">
-              <Link
-                to={createPageUrl("Home")}
-                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Home
-              </Link>
-              <Link
-                to={createPageUrl("Jobs")}
-                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Jobs
-              </Link>
-              <Link
-                to={createPageUrl("Internships")}
-                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Internships
-              </Link>
-              <Link
-                to={createPageUrl("About")}
-                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                About
-              </Link>
-              <Link
-                to={createPageUrl("FAQ")}
-                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                FAQ
-              </Link>
+              {["Home", "Jobs", "Internships", "About", "FAQ"].map((page) => (
+                <Link
+                  key={page}
+                  to={createPageUrl(page)}
+                  className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {page}
+                </Link>
+              ))}
               <div className="pt-4 pb-3 border-t border-gray-200">
                 <div className="flex flex-col space-y-2 px-3">
                   {isLoading ? (
                     <div className="w-full h-10 bg-gray-200 rounded animate-pulse my-2"></div>
                   ) : user ? (
-                    <div className="px-1 py-2">
-                      <UserProfileDropdown user={user} onLogout={handleLogout} />
-                    </div>
+                    <UserProfileDropdown user={user} onLogout={handleLogout} />
                   ) : (
                     <>
                       <Link to={createPageUrl("StudentAuth")}>
@@ -230,7 +173,7 @@ export default function RecruiterLayout({ children }) {
       </header>
 
       {/* Main Content with Sidebar */}
-      <div className="flex bg-white font-sans">
+      <div className="flex flex-col lg:flex-row bg-white font-sans">
         {/* Sidebar */}
         <aside className="w-full lg:w-80 bg-blue-50 shadow-lg lg:rounded-xl m-0 lg:m-4 p-4 space-y-6">
           <h2 className="text-lg font-bold flex items-center gap-2 text-gray-800 border-b pb-2">
@@ -245,9 +188,7 @@ export default function RecruiterLayout({ children }) {
                 to={item.href}
                 onClick={item.onClick}
                 className={`block bg-white hover:bg-blue-100 p-4 rounded-xl border-l-4 shadow-sm transition-colors duration-200 ${
-                  isActive(item.href)
-                    ? "border-blue-500 bg-blue-50"
-                    : "border-transparent hover:border-blue-300"
+                  isActive(item.href) ? "border-blue-500 bg-blue-50" : "border-transparent hover:border-blue-300"
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -265,10 +206,8 @@ export default function RecruiterLayout({ children }) {
         </aside>
 
         {/* Main Content Area */}
-        <main className="flex-1 p-6 bg-gray-50">
-          {children}
-        </main>
+        <main className="flex-1 px-2 sm:px-4 py-4 bg-gray-50">{children}</main>
       </div>
     </div>
   );
-} 
+}
