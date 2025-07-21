@@ -41,4 +41,15 @@ router.post('/seed-internships', async (req, res) => {
   }
 });
 
+// Add internship creation endpoint for recruiters
+router.post('/internships/create', async (req, res) => {
+  try {
+    const internship = new Internship(req.body);
+    await internship.save();
+    res.status(201).json({ message: 'Internship created successfully', internship });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to create internship.' });
+  }
+});
+
 module.exports = router; 

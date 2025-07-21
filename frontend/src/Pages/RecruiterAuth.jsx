@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Eye, EyeOff, AlertCircle, Mail, Phone } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, AlertCircle, Mail, Phone, CheckCircle } from "lucide-react";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 
 export default function RecruiterAuth() {
@@ -246,12 +246,14 @@ export default function RecruiterAuth() {
       
       const data = await res.json();
       localStorage.setItem('jwt', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      
-      // On success, switch to sign-in mode and show a success message
-      setIsLogin(true);
-      setError("");
-      setSuccessMessage("Registration successful! Please sign in to continue.");
+      localStorage.setItem('user', JSON.stringify({
+        name: data.recruiter?.name || data.recruiter?.full_name || 'Recruiter User',
+        email: data.recruiter?.email || 'recruiter@example.com',
+        company_name: data.recruiter?.company_name || '',
+        role: 'recruiter',
+      }));
+      window.location.href = createPageUrl('recruiterdashboard');
+      return;
     } catch (error) {
       setError(error.message || "Sign up failed. Please try again.");
       console.error("Sign up error:", error);
@@ -575,104 +577,62 @@ export default function RecruiterAuth() {
         )}
         {successMessage && (
           <div className="mb-6 p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg flex items-center">
-            <AlertCircle className="w-4 h-4 mr-2" />
+            <CheckCircle className="w-4 h-4 mr-2" />
             {successMessage}
           </div>
         )}
 
-        {/* Login Method Toggle */}
-        <div className="flex mb-6 bg-gray-100 rounded-lg p-1">
-          <button
-            onClick={() => setLoginMethod("email")}
-            className={`flex-1 flex items-center justify-center py-2 px-4 rounded-md font-medium transition-colors ${
-              loginMethod === "email" ? "bg-white text-gray-900 shadow-sm" : "text-gray-600 hover:text-gray-900"
-            }`}
-          >
-            <Mail className="w-4 h-4 mr-2" />
-            Email
-          </button>
-          <button
-            onClick={() => setLoginMethod("phone")}
-            className={`flex-1 flex items-center justify-center py-2 px-4 rounded-md font-medium transition-colors ${
-              loginMethod === "phone" ? "bg-white text-gray-900 shadow-sm" : "text-gray-600 hover:text-gray-900"
-            }`}
-          >
-            <Phone className="w-4 h-4 mr-2" />
-            Phone
-          </button>
-        </div>
-
+        {/* Login Form - Only Email Login Allowed */}
         <form onSubmit={handleLogin} className="space-y-6">
-          {/* Email/Phone Input */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {loginMethod === "email" ? "Email" : "Phone Number"}
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
             <Input
-              name={loginMethod === "email" ? "email" : "phone"}
-              type={loginMethod === "email" ? "email" : "tel"}
-              value={loginMethod === "email" ? formData.email : formData.phone}
+              name="email"
+              type="email"
+              value={formData.email}
               onChange={handleInputChange}
-              placeholder={loginMethod === "email" ? "Enter your email" : "Enter your phone number"}
+              placeholder="Enter your email"
               className="h-12"
               required
             />
           </div>
-
-          {/* Password Input (only for email login) */}
-          {loginMethod === "email" && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
-              <div className="relative">
-                <Input
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  placeholder="Password"
-                  className="h-12 pr-10"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Forgot Password */}
-          {loginMethod === "email" && (
-            <div className="text-right">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+            <div className="relative">
+              <Input
+                name="password"
+                type={showPassword ? "text" : "password"}
+                value={formData.password}
+                onChange={handleInputChange}
+                placeholder="Password"
+                className="h-12 pr-10"
+                required
+              />
               <button
                 type="button"
-                onClick={handleForgotPassword}
-                className="text-sm text-gray-600 hover:text-gray-900"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
               >
-                Forgot password
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
             </div>
-          )}
-
-          {/* Login Button */}
+          </div>
+          <div className="text-right">
+            <button
+              type="button"
+              onClick={handleForgotPassword}
+              className="text-sm text-gray-600 hover:text-gray-900"
+            >
+              Forgot password
+            </button>
+          </div>
           <Button
             type="submit"
             disabled={isLoading}
             className="w-full bg-gray-900 hover:bg-gray-800 text-white py-3 h-12 rounded-lg font-medium"
           >
-            {isLoading
-              ? loginMethod === "phone"
-                ? "Sending OTP..."
-                : "Signing in..."
-              : loginMethod === "phone"
-              ? "Send OTP"
-              : "Login"}
+            {isLoading ? "Signing in..." : "Login"}
           </Button>
-
-          {/* Google Sign In */}
           <GoogleOAuthProvider clientId={clientId}>
             <GoogleLogin
               onSuccess={handleGoogleLoginSuccess}
@@ -687,7 +647,7 @@ export default function RecruiterAuth() {
         <div className="text-center mt-8">
           <p className="text-gray-600">
             Don't have an account?{" "}
-            <button onClick={() => setIsLogin(false)} className="font-semibold text-gray-900 hover:text-indigo-600">
+            <button onClick={() => setIsLogin(false)} className="font-semibold text-gray-900 hover:text-blue-600">
               Sign up for free
             </button>
           </p>

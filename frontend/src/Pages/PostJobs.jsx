@@ -4,9 +4,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate } from "react-router-dom";
+import axios from 'axios';
 
-const jobTypes = ["Full-time", "Part-time", "Contract", "Internship"];
-const experienceLevels = ["Entry Level", "Mid Level", "Senior Level", "Executive"];
 const locations = ["Noida", "Delhi", "Pune", "Mumbai", "Bangalore", "Hyderabad"];
 
 export default function PostJob() {
@@ -14,28 +13,25 @@ export default function PostJob() {
   const [form, setForm] = useState({
     title: "",
     location: "",
-    salary_min: "",
-    salary_max: "",
-    job_type: "Full-time",
-    experience_level: "Entry Level",
+    stipend: "",
+    duration: "",
     description: "",
     requirements: [],
-    benefits: [],
     skills: [],
     remote_option: false,
   });
 
   const [recruiter, setRecruiter] = useState(null);
 
-  //   useEffect(() => {
-  //     const email = localStorage.getItem("email");
-  //     if (!email) return;
-
-  //     axios
-  //       .get(`/api/recruiter/profile?email=${email}`)
-  //       .then((res) => setRecruiter(res.data))
-  //       .catch((err) => console.error("Failed to load recruiter info", err));
-  //   }, []);
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    const jwt = localStorage.getItem('jwt');
+    if (!user || !jwt || user.role !== 'recruiter') {
+      navigate('/p/recruiterauth');
+    } else {
+      setRecruiter(user);
+    }
+  }, [navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -52,32 +48,35 @@ export default function PostJob() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!recruiter) return;
+    if (!recruiter) {
+      alert('Only recruiters can post internships. Please log in as a recruiter.');
+      navigate('/p/recruiterauth');
+      return;
+    }
 
     const payload = {
       ...form,
-      salary_min: Number(form.salary_min),
-      salary_max: Number(form.salary_max),
       posted_by: recruiter.email,
       company: recruiter.company_name,
-      company_logo: recruiter.company_logo,
+      // Add more recruiter info if needed
     };
 
     try {
-      await axios.post("/api/jobs/create", payload);
-      navigate("/recruiterdashboard");
+      // Replace with your backend internship creation endpoint
+      await axios.post("/api/internships/create", payload);
+      navigate("/p/internships");
     } catch (error) {
-      console.error("Job creation failed", error);
+      console.error("Internship creation failed", error);
     }
   };
 
   return (
     <div className="max-w-3xl mx-auto p-6">
-      <h2 className="text-2xl font-bold mb-6">Post a New Job</h2>
+      <h2 className="text-2xl font-bold mb-6">Post a New Internship</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label htmlFor="title" className="block mb-1 font-medium">
-            Job Title
+            Internship Title
           </label>
           <Input id="title" name="title" value={form.title} onChange={handleChange} required />
         </div>
@@ -103,53 +102,18 @@ export default function PostJob() {
           </select>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="salary_min" className="block mb-1 font-medium">
-              Salary Min (₹)
-            </label>
-            <Input type="number" id="salary_min" name="salary_min" value={form.salary_min} onChange={handleChange} />
-          </div>
-          <div>
-            <label htmlFor="salary_max" className="block mb-1 font-medium">
-              Salary Max (₹)
-            </label>
-            <Input type="number" id="salary_max" name="salary_max" value={form.salary_max} onChange={handleChange} />
-          </div>
+        <div>
+          <label htmlFor="stipend" className="block mb-1 font-medium">
+            Stipend (₹)
+          </label>
+          <Input type="text" id="stipend" name="stipend" value={form.stipend} onChange={handleChange} required />
         </div>
 
         <div>
-          <label htmlFor="job_type" className="block mb-1 font-medium">
-            Job Type
+          <label htmlFor="duration" className="block mb-1 font-medium">
+            Duration
           </label>
-          <select
-            id="job_type"
-            name="job_type"
-            value={form.job_type}
-            onChange={handleChange}
-            className="w-full border rounded px-3 py-2"
-          >
-            {jobTypes.map((type) => (
-              <option key={type}>{type}</option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label htmlFor="experience_level" className="block mb-1 font-medium">
-            Experience Level
-          </label>
-          <select
-            id="experience_level"
-            name="experience_level"
-            value={form.experience_level}
-            onChange={handleChange}
-            className="w-full border rounded px-3 py-2"
-          >
-            {experienceLevels.map((level) => (
-              <option key={level}>{level}</option>
-            ))}
-          </select>
+          <Input type="text" id="duration" name="duration" value={form.duration} onChange={handleChange} required />
         </div>
 
         <div>
@@ -168,18 +132,6 @@ export default function PostJob() {
             name="requirements"
             value={form.requirements.join(", ")}
             onChange={(e) => handleArrayChange(e, "requirements")}
-          />
-        </div>
-
-        <div>
-          <label htmlFor="benefits" className="block mb-1 font-medium">
-            Benefits (comma separated)
-          </label>
-          <Input
-            id="benefits"
-            name="benefits"
-            value={form.benefits.join(", ")}
-            onChange={(e) => handleArrayChange(e, "benefits")}
           />
         </div>
 
@@ -206,8 +158,8 @@ export default function PostJob() {
           </label>
         </div>
 
-        <Button variant="default" className="bg-blue-500 hover:bg-blue-600 h w-full">
-          Post Job
+        <Button variant="default" className="bg-blue-500 hover:bg-blue-600 w-full">
+          Post Internship
         </Button>
       </form>
     </div>
