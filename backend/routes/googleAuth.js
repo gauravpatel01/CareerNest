@@ -177,7 +177,14 @@ router.post('/auth/student/register', async (req, res) => {
       bio
     });
 
-    await user.save();
+    try {
+      await user.save();
+    } catch (err) {
+      if (err.code === 11000) {
+        return res.status(409).json({ error: 'Email already registered' });
+      }
+      throw err;
+    }
 
     // Create JWT
     const token = jwt.sign({ email, role: user.role }, JWT_SECRET, { expiresIn: '1d' });
@@ -228,7 +235,14 @@ router.post('/auth/recruiter/register', async (req, res) => {
       bio: `Company: ${company_name}, Size: ${company_size}, Industry: ${industry}, Job Title: ${job_title}, Website: ${company_website}, Description: ${company_description}`
     });
 
-    await user.save();
+    try {
+      await user.save();
+    } catch (err) {
+      if (err.code === 11000) {
+        return res.status(409).json({ error: 'Email already registered' });
+      }
+      throw err;
+    }
 
     // Create JWT
     const token = jwt.sign({ email, role: user.role }, JWT_SECRET, { expiresIn: '1d' });
