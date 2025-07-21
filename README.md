@@ -8,3 +8,5 @@ cd backend
 npm install mongoose
 cd frontend
 npm install jspdf
+cd backend
+npm install axios
