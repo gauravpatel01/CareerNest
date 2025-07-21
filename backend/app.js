@@ -12,6 +12,7 @@ const Internship = require("./models/Internship");
 const seedRoutes = require("./routes/seed");
 const googleAuthRoutes = require("./routes/googleAuth");
 const otpAuthRoutes = require('./routes/otpAuth');
+const recruiterAuthRoutes = require('./routes/recruiterAuth');
 
 const app = express();
 
@@ -23,9 +24,10 @@ app.use(
   })
 );
 app.use(express.json());
-app.use(seedRoutes);
+app.use('/api', seedRoutes);
 app.use("/api", googleAuthRoutes);
 app.use('/api', otpAuthRoutes);
+app.use('/api', recruiterAuthRoutes);
 
 // Connect to MongoDB with better error handling
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/careernest";
