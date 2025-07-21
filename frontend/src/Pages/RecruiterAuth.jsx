@@ -104,10 +104,12 @@ export default function RecruiterAuth() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ credential: credentialResponse.credential, user_type: "recruiter" }),
       });
-      if (!res.ok) throw new Error("Google login failed");
       const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Google login failed");
+        return;
+      }
       localStorage.setItem("jwt", data.token);
-
       // Store user data in localStorage using actual data from backend
       const userData = {
         full_name: data.user?.name || data.user?.full_name || "Recruiter User",
@@ -116,10 +118,9 @@ export default function RecruiterAuth() {
         role: "recruiter",
       };
       localStorage.setItem("user", JSON.stringify(userData));
-
-      window.location.href = createPageUrl("recruiterdashboard");
+      window.location.href = createPageUrl("recruiterprofileview");
     } catch (error) {
-      setError("Google login failed. Please try again.");
+      setError(error.message || "Google login failed. Please try again.");
       console.error("Google login error:", error);
     } finally {
       setIsLoading(false);
@@ -172,7 +173,7 @@ export default function RecruiterAuth() {
         localStorage.setItem("jwt", "mock-jwt-token");
       }
 
-      window.location.href = createPageUrl("recruiterdashboard");
+      window.location.href = createPageUrl("recruiterprofileview");
     } catch (error) {
       setError(
         error.message ||

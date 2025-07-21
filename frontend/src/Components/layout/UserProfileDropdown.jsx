@@ -104,7 +104,7 @@ export default function UserProfileDropdown({ user, onLogout }) {
 
         <DropdownMenuItem asChild>
           <Link
-            to={createPageUrl(isRecruiter ? "recruiterdashboard" : "studentdashboard")}
+            to={createPageUrl(isRecruiter ? "recruiterprofileview" : "profileview")}
             className="flex items-center"
           >
             <UserIcon className="w-4 h-4 mr-2" />

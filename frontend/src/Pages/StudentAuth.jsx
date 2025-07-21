@@ -75,7 +75,7 @@ export default function StudentAuth() {
     if (jwt && userData) {
       const user = JSON.parse(userData);
       if (user.role === "student") {
-        navigate(createPageUrl("studentdashboard"));
+        navigate(createPageUrl("profileview"));
       }
     }
   }, [navigate]);
@@ -133,7 +133,7 @@ export default function StudentAuth() {
       };
       localStorage.setItem("user", JSON.stringify(userData));
 
-      window.location.href = createPageUrl("studentdashboard");
+      window.location.href = createPageUrl("profileview");
     } catch (error) {
       setError("Google login failed. Please try again.");
       console.error("Google login error:", error);
@@ -173,7 +173,7 @@ export default function StudentAuth() {
     if (data.success) {
       localStorage.setItem("jwt", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
-      window.location.href = createPageUrl("studentdashboard");
+      window.location.href = createPageUrl("profileview");
     } else {
       setError(data.message || "Invalid OTP");
     }
@@ -203,7 +203,7 @@ export default function StudentAuth() {
         const data = await res.json();
         localStorage.setItem("jwt", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
-        window.location.href = createPageUrl("studentdashboard");
+        window.location.href = createPageUrl("profileview");
       }
       // Remove phone login mock user/token logic
     } catch (error) {
