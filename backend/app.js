@@ -13,12 +13,7 @@ const jobRoutes = require("./routes/jobRoutes");
 const applicationRoutes = require("./routes/applicationRoutes");
 const seedRoutes = require("./routes/seed");
 const googleAuthRoutes = require("./routes/googleAuth");
-const otpAuthRoutes = require("./routes/otpAuth");
 
-const app = express();
-
-// Connect to database
-connectDB();
 
 // Setup middleware
 setupMiddleware(app);
