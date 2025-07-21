@@ -476,10 +476,55 @@ export default function Layout({ children, currentPageName }) {
           </div>
 
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
-            <p>&copy; 2024 CareerNest. All rights reserved. Made with ❤️ in India</p>
+            <p>&copy; 2025 CareerNest. All rights reserved. Made with ❤️ in India</p>
           </div>
         </div>
       </footer>
     </div>
   );
 }
+
+
+
+
+// Admin
+
+
+const AdminLayout = ({ children }) => (
+    <div className="min-h-screen w-full flex bg-gray-50">
+        <aside className="w-64 bg-white border-r flex-shrink-0 hidden md:flex flex-col">
+            <div className="h-16 border-b flex items-center px-6">
+                <Link to={createPageUrl("Home")} className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
+                        <Briefcase className="w-5 h-5 text-indigo-600" />
+                    </div>
+                    <span className="font-bold text-xl text-gray-800">CareerNest</span>
+                </Link>
+            </div>
+            <nav className="flex-1 px-4 py-4 space-y-2">
+                <Link to={createPageUrl("Admin")} className="flex items-center gap-3 px-4 py-2 text-sm font-medium bg-indigo-50 text-indigo-700 rounded-lg">
+                    <LayoutDashboard className="h-5 w-5" />
+                    Dashboard
+                </Link>
+                
+            </nav>
+            <div className="px-4 py-4 border-t">
+                 <Button variant="ghost" className="w-full justify-start text-gray-600">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Logout
+                 </Button>
+            </div>
+        </aside>
+        <div className="flex-1 flex flex-col">
+             <header className="h-16 border-b bg-white flex md:hidden items-center px-6">
+                <h1 className="font-semibold text-lg">Admin Panel</h1>
+            </header>
+            <div className="flex-1 overflow-auto">
+                {children}
+            </div>
+        </div>
+    </div>
+);
+
+
+
