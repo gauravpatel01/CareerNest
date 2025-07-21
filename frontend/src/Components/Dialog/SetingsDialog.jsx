@@ -8,7 +8,7 @@ import {
   AlertDialogFooter,
   AlertDialogCancel,
   AlertDialogAction,
-} from "@/components/ui/dialog";
+} from "@/Components/ui/studentdialog";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";

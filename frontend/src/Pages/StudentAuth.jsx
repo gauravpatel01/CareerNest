@@ -49,6 +49,8 @@ export default function StudentAuth() {
   const [passwordMessage, setPasswordMessage] = useState(
     "Password must be at least 8 characters and include letters, numbers, and a special character."
   );
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState("");
   // Remove passwordLength state and generatePassword function
 
   //password generation
@@ -73,7 +75,7 @@ export default function StudentAuth() {
     if (jwt && userData) {
       const user = JSON.parse(userData);
       if (user.role === "student") {
-        navigate(createPageUrl("studentdashboard"));
+        navigate(createPageUrl("profileview"));
       }
     }
   }, [navigate]);
@@ -131,7 +133,7 @@ export default function StudentAuth() {
       };
       localStorage.setItem("user", JSON.stringify(userData));
 
-      window.location.href = createPageUrl("studentdashboard");
+      window.location.href = createPageUrl("profileview");
     } catch (error) {
       setError("Google login failed. Please try again.");
       console.error("Google login error:", error);
@@ -140,53 +142,70 @@ export default function StudentAuth() {
     }
   };
 
+  const handleSendOtp = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+    const res = await fetch("/api/auth/send-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone: formData.phone }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      setOtpSent(true);
+    } else {
+      setError(data.message || "Failed to send OTP");
+    }
+    setIsLoading(false);
+  };
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+    const res = await fetch("/api/auth/verify-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone: formData.phone, otp }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      localStorage.setItem("jwt", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      window.location.href = createPageUrl("profileview");
+    } else {
+      setError(data.message || "Invalid OTP");
+    }
+    setIsLoading(false);
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-
     try {
       if (loginMethod === "email") {
         if (!formData.email || !formData.password) {
           setError("Please fill in all required fields");
           return;
         }
-
         // Call backend API for email login
         const res = await fetch(`${backendURL}/api/auth/student/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: formData.email, password: formData.password }),
         });
-
         if (!res.ok) {
           const errorData = await res.json();
           throw new Error(errorData.error || "Login failed");
         }
-
         const data = await res.json();
         localStorage.setItem("jwt", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
-      } else {
-        // loginMethod === "phone"
-        if (!formData.phone) {
-          setError("Please enter your phone number");
-          return;
-        }
-
-        // For phone login, create a mock user (in real app, implement OTP verification)
-        const userData = {
-          full_name: "Demo Student",
-          name: "Demo Student",
-          email: formData.phone + "@example.com",
-          role: "student",
-        };
-
-        localStorage.setItem("user", JSON.stringify(userData));
-        localStorage.setItem("jwt", "mock-jwt-token");
+        window.location.href = createPageUrl("profileview");
       }
-
-      window.location.href = createPageUrl("studentdashboard");
+      // Remove phone login mock user/token logic
     } catch (error) {
       setError(
         error.message ||
@@ -625,88 +644,131 @@ export default function StudentAuth() {
           </button>
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-6">
-          {/* Email/Phone Input */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {loginMethod === "email" ? "Email" : "Phone Number"}
-            </label>
-            <Input
-              name={loginMethod === "email" ? "email" : "phone"}
-              type={loginMethod === "email" ? "email" : "tel"}
-              value={loginMethod === "email" ? formData.email : formData.phone}
-              onChange={handleInputChange}
-              placeholder={loginMethod === "email" ? "Enter your email" : "Enter your phone number"}
-              className="h-12"
-              required
-            />
-          </div>
-
-          {/* Password Input (only for email login) */}
-          {loginMethod === "email" && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
-              <div className="relative">
+        {loginMethod === "phone" ? (
+          !otpSent ? (
+            <form onSubmit={handleSendOtp} className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
                 <Input
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  value={formData.password}
+                  name="phone"
+                  type="tel"
+                  value={formData.phone}
                   onChange={handleInputChange}
-                  placeholder="Password"
-                  className="h-12 pr-10"
-                  min="8"
-                  max="64"
+                  placeholder="Enter your phone number"
+                  className="h-12"
                   required
                 />
+              </div>
+              <Button type="submit" disabled={isLoading} className="w-full bg-gray-900 hover:bg-gray-800 text-white py-3 h-12 rounded-lg font-medium">
+                {isLoading ? "Sending OTP..." : "Send OTP"}
+              </Button>
+              {error && <div className="text-red-600 text-sm mt-2">{error}</div>}
+            </form>
+          ) : (
+            <form onSubmit={handleVerifyOtp} className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Enter OTP</label>
+                <Input
+                  name="otp"
+                  type="text"
+                  value={otp}
+                  onChange={e => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                  placeholder="Enter the OTP"
+                  className="h-12"
+                  required
+                />
+              </div>
+              <Button type="submit" disabled={isLoading} className="w-full bg-gray-900 hover:bg-gray-800 text-white py-3 h-12 rounded-lg font-medium">
+                {isLoading ? "Verifying..." : "Verify OTP"}
+              </Button>
+              {error && <div className="text-red-600 text-sm mt-2">{error}</div>}
+            </form>
+          )
+        ) : (
+          <form onSubmit={handleLogin} className="space-y-6">
+            {/* Email/Password login form remains here */}
+            {/* Email/Phone Input */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {loginMethod === "email" ? "Email" : "Phone Number"}
+              </label>
+              <Input
+                name={loginMethod === "email" ? "email" : "phone"}
+                type={loginMethod === "email" ? "email" : "tel"}
+                value={loginMethod === "email" ? formData.email : formData.phone}
+                onChange={handleInputChange}
+                placeholder={loginMethod === "email" ? "Enter your email" : "Enter your phone number"}
+                className="h-12"
+                required
+              />
+            </div>
+
+            {/* Password Input (only for email login) */}
+            {loginMethod === "email" && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                <div className="relative">
+                  <Input
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    placeholder="Password"
+                    className="h-12 pr-10"
+                    min="8"
+                    max="64"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                  >
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Forgot Password */}
+            {loginMethod === "email" && (
+              <div className="text-right">
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                  onClick={handleForgotPassword}
+                  className="text-sm text-gray-600 hover:text-gray-900"
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  Forgot password
                 </button>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Forgot Password */}
-          {loginMethod === "email" && (
-            <div className="text-right">
-              <button
-                type="button"
-                onClick={handleForgotPassword}
-                className="text-sm text-gray-600 hover:text-gray-900"
-              >
-                Forgot password
-              </button>
-            </div>
-          )}
+            {/* Login Button */}
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-gray-900 hover:bg-gray-800 text-white py-3 h-12 rounded-lg font-medium"
+            >
+              {isLoading
+                ? loginMethod === "phone"
+                  ? "Sending OTP..."
+                  : "Signing in..."
+                : loginMethod === "phone"
+                ? "Send OTP"
+                : "Login"}
+            </Button>
 
-          {/* Login Button */}
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-gray-900 hover:bg-gray-800 text-white py-3 h-12 rounded-lg font-medium"
-          >
-            {isLoading
-              ? loginMethod === "phone"
-                ? "Sending OTP..."
-                : "Signing in..."
-              : loginMethod === "phone"
-              ? "Send OTP"
-              : "Login"}
-          </Button>
-
-          {/* Google Sign In */}
-          <GoogleOAuthProvider clientId={clientId}>
-            <GoogleLogin
-              onSuccess={handleGoogleLoginSuccess}
-              onError={() => setError("Google login failed. Please try again.")}
-              width="100%"
-              useOneTap
-            />
-          </GoogleOAuthProvider>
-        </form>
+            {/* Google Sign In */}
+            <GoogleOAuthProvider clientId={clientId}>
+              <GoogleLogin
+                onSuccess={handleGoogleLoginSuccess}
+                onError={() => setError("Google login failed. Please try again.")}
+                width="100%"
+                useOneTap
+              />
+            </GoogleOAuthProvider>
+          </form>
+        )}
 
         {/* Sign Up Link */}
         <div className="text-center mt-8">

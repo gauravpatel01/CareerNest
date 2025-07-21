@@ -20,6 +20,8 @@ import MyApplications from "./Pages/MyApplications";
 import PostJobs from "./Pages/PostJobs";
 import ProtectedRoute from "./Components/auth/ProtectedRoute";
 import SettingsPage from "./Pages/SettingsPage";
+import AdminPage from "./Pages/Admin";
+import ProfileView from "./Pages/ProfileView";
 
 export default function App() {
   return (
@@ -64,6 +66,16 @@ export default function App() {
             <ProtectedRoute requiredRole="student">
               <StudentLayout>
                 <UpdateProfile />
+              </StudentLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/p/profileview"
+          element={
+            <ProtectedRoute requiredRole="student">
+              <StudentLayout>
+                <ProfileView />
               </StudentLayout>
             </ProtectedRoute>
           }
@@ -222,6 +234,16 @@ export default function App() {
           }
         />
         <Route
+          path="/p/recruiterprofileview"
+          element={
+            <ProtectedRoute requiredRole="recruiter">
+              <RecruiterLayout>
+                <ProfileView />
+              </RecruiterLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/p/post-jobs"
           element={
             <ProtectedRoute requiredRole="recruiter">
@@ -229,6 +251,15 @@ export default function App() {
                 <PostJobs />
               </RecruiterLayout>
             </ProtectedRoute>
+          }
+        />
+        {/* Admin */}
+        <Route
+          path="/p/adminpage"
+          element={
+            <Layout>
+              <AdminPage />
+            </Layout>
           }
         />
 

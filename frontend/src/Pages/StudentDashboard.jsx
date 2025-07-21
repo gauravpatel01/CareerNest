@@ -11,7 +11,29 @@ export default function StudentDashboard() {
   const [durationFilter, setDurationFilter] = useState("all");
 
   useEffect(() => {
+    // Get student name from localStorage
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      try {
+        const user = JSON.parse(userData);
+        setStudentName(user.full_name || user.name || "Student");
+      } catch (e) {
+        setStudentName("Student");
+      }
+    }
     loadInternships();
+    const jwt = localStorage.getItem("jwt");
+    if (!jwt) return;
+    fetch(`${import.meta.env.VITE_BACKEND_URL || ""}/api/user/profile`, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${jwt}` },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.user) setProfile(data.user);
+        else setError("Failed to load profile");
+      })
+      .catch(() => setError("Failed to load profile"));
   }, []);
 
   const loadInternships = async () => {
@@ -35,31 +57,32 @@ export default function StudentDashboard() {
   if (isLoading) return <LoadingSpinner />;
 
   return (
-    <div className="min-h-screen bg-white font-sans">
-      {/* Main Section */}
-      <div className="flex flex-col">
-        <main className="p-6">
-          <div className="bg-blue-100 border-l-4 border-blue-400 shadow p-6 rounded-xl mb-6">
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Welcome, Username! 👋</h2>
-            <p className="text-gray-600 text-sm">
-              Explore the latest internships and build your career with confidence
-            </p>
-          </div>
-
-          {/* Featured Opportunities */}
-          <div>
-            <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">Featured Opportunities</h3>
-            <div className="space-y-4 max-w-4xl w-full mx-auto px-2">
-              {internships.slice(0, 6).map((internship) => (
-                <JobCard key={internship.id} job={internship} />
-              ))}
+    <>
+      <div className="min-h-screen bg-white font-sans">
+        {/* Main Section */}
+        <div className="flex flex-col">
+          <main className="p-6">
+            <div className="bg-blue-100 border-l-4 border-blue-400 shadow p-6 rounded-xl mb-6">
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">Welcome, Username! 👋</h2>
+              <p className="text-gray-600 text-sm">
+                Explore the latest internships and build your career with confidence
+              </p>
             </div>
-          </div>
-        </main>
-      </div>
 
-      {/* Chatbot */}
-      <Chatbot />
-    </div>
+              {/* Featured Opportunities */}
+              <div>
+                <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">Featured Opportunities</h3>
+                <div className="space-y-4 max-w-4xl w-full mx-auto px-2">
+                  {internships.slice(0, 6).map((internship) => (
+                    <JobCard key={internship.id} job={internship} />
+                  ))}
+                </div>
+              </div>
+            </main>
+          </div>
+        </div>
+        {/* Chatbot */}
+        <Chatbot />
+    </>
   );
 }
