@@ -1,8 +1,12 @@
 const express = require("express");
 require("dotenv").config();
 
+// Create the Express app
+const app = express();
+
 // Import configurations and middleware
 const connectDB = require("./config/database");
+connectDB();
 const setupMiddleware = require("./middleware");
 const { errorHandler, notFound } = require("./middleware/errorHandler");
 
@@ -25,7 +29,6 @@ app.use("/api/jobs", jobRoutes);
 app.use("/api/applications", applicationRoutes);
 app.use("/api", seedRoutes);
 app.use("/api", googleAuthRoutes);
-app.use("/api", otpAuthRoutes);
 
 // Legacy routes for backward compatibility
 app.use("/", userRoutes); // Legacy routes without /api prefix
