@@ -9,8 +9,19 @@ export default function StudentDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [locationFilter, setLocationFilter] = useState("all");
   const [durationFilter, setDurationFilter] = useState("all");
+  const [studentName, setStudentName] = useState("Student");
 
   useEffect(() => {
+    // Get student name from localStorage
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      try {
+        const user = JSON.parse(userData);
+        setStudentName(user.full_name || user.name || "Student");
+      } catch (e) {
+        setStudentName("Student");
+      }
+    }
     loadInternships();
   }, []);
 
@@ -40,7 +51,7 @@ export default function StudentDashboard() {
       <div className="flex flex-col">
         <main className="p-6">
           <div className="bg-blue-100 border-l-4 border-blue-400 shadow p-6 rounded-xl mb-6">
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Welcome, Username! 👋</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">Welcome, {studentName}! 👋</h2>
             <p className="text-gray-600 text-sm">
               Explore the latest internships and build your career with confidence
             </p>
