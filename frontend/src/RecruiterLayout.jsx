@@ -370,9 +370,9 @@ export default function RecruiterLayout({ children }) {
       </header>
 
       {/* Main Content with Sidebar */}
-      <div className="flex flex-col lg:flex-row bg-white font-sans">
+      <div className="flex lg:flex-row bg-white font-sans ">
         {/* Sidebar */}
-        <aside className="w-full lg:w-80 bg-blue-50 shadow-lg lg:rounded-xl m-0 lg:m-4 p-4 space-y-6">
+        <aside className="hidden lg:block lg:w-80 bg-blue-50 shadow-lg lg:rounded-xl m-0 lg:m-4 p-4 space-y-6">
           <h2 className="text-lg font-bold flex items-center gap-2 text-gray-800 border-b pb-2">
             <Building className="w-5 h-5" />
             Recruiter Dashboard
