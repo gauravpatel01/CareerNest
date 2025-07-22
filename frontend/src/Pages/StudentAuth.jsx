@@ -622,153 +622,68 @@ export default function StudentAuth() {
           </div>
         )}
 
-        {/* Login Method Toggle */}
-        <div className="flex mb-6 bg-gray-100 rounded-lg p-1">
-          <button
-            onClick={() => setLoginMethod("email")}
-            className={`flex-1 flex items-center justify-center py-2 px-4 rounded-md font-medium transition-colors ${
-              loginMethod === "email" ? "bg-white text-gray-900 shadow-sm" : "text-gray-600 hover:text-gray-900"
-            }`}
-          >
-            <Mail className="w-4 h-4 mr-2" />
-            Email
-          </button>
-          <button
-            onClick={() => setLoginMethod("phone")}
-            className={`flex-1 flex items-center justify-center py-2 px-4 rounded-md font-medium transition-colors ${
-              loginMethod === "phone" ? "bg-white text-gray-900 shadow-sm" : "text-gray-600 hover:text-gray-900"
-            }`}
-          >
-            <Phone className="w-4 h-4 mr-2" />
-            Phone
-          </button>
-        </div>
-
-        {loginMethod === "phone" ? (
-          !otpSent ? (
-            <form onSubmit={handleSendOtp} className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                <Input
-                  name="phone"
-                  type="tel"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  placeholder="Enter your phone number"
-                  className="h-12"
-                  required
-                />
-              </div>
-              <Button type="submit" disabled={isLoading} className="w-full bg-gray-900 hover:bg-gray-800 text-white py-3 h-12 rounded-lg font-medium">
-                {isLoading ? "Sending OTP..." : "Send OTP"}
-              </Button>
-              {error && <div className="text-red-600 text-sm mt-2">{error}</div>}
-            </form>
-          ) : (
-            <form onSubmit={handleVerifyOtp} className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Enter OTP</label>
-                <Input
-                  name="otp"
-                  type="text"
-                  value={otp}
-                  onChange={e => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                  placeholder="Enter the OTP"
-                  className="h-12"
-                  required
-                />
-              </div>
-              <Button type="submit" disabled={isLoading} className="w-full bg-gray-900 hover:bg-gray-800 text-white py-3 h-12 rounded-lg font-medium">
-                {isLoading ? "Verifying..." : "Verify OTP"}
-              </Button>
-              {error && <div className="text-red-600 text-sm mt-2">{error}</div>}
-            </form>
-          )
-        ) : (
-          <form onSubmit={handleLogin} className="space-y-6">
-            {/* Email/Password login form remains here */}
-            {/* Email/Phone Input */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {loginMethod === "email" ? "Email" : "Phone Number"}
-              </label>
+        {/* Login Form - Only Email Login Allowed */}
+        <form onSubmit={handleLogin} className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+            <Input
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              placeholder="Enter your email"
+              className="h-12"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+            <div className="relative">
               <Input
-                name={loginMethod === "email" ? "email" : "phone"}
-                type={loginMethod === "email" ? "email" : "tel"}
-                value={loginMethod === "email" ? formData.email : formData.phone}
+                name="password"
+                type={showPassword ? "text" : "password"}
+                value={formData.password}
                 onChange={handleInputChange}
-                placeholder={loginMethod === "email" ? "Enter your email" : "Enter your phone number"}
-                className="h-12"
+                placeholder="Password"
+                className="h-12 pr-10"
+                min="8"
+                max="64"
                 required
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
             </div>
-
-            {/* Password Input (only for email login) */}
-            {loginMethod === "email" && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                <div className="relative">
-                  <Input
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    placeholder="Password"
-                    className="h-12 pr-10"
-                    min="8"
-                    max="64"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-                  >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Forgot Password */}
-            {loginMethod === "email" && (
-              <div className="text-right">
-                <button
-                  type="button"
-                  onClick={handleForgotPassword}
-                  className="text-sm text-gray-600 hover:text-gray-900"
-                >
-                  Forgot password
-                </button>
-              </div>
-            )}
-
-            {/* Login Button */}
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-gray-900 hover:bg-gray-800 text-white py-3 h-12 rounded-lg font-medium"
+          </div>
+          <div className="text-right">
+            <button
+              type="button"
+              onClick={handleForgotPassword}
+              className="text-sm text-gray-600 hover:text-gray-900"
             >
-              {isLoading
-                ? loginMethod === "phone"
-                  ? "Sending OTP..."
-                  : "Signing in..."
-                : loginMethod === "phone"
-                ? "Send OTP"
-                : "Login"}
-            </Button>
-
-            {/* Google Sign In */}
-            <GoogleOAuthProvider clientId={clientId}>
-              <GoogleLogin
-                onSuccess={handleGoogleLoginSuccess}
-                onError={() => setError("Google login failed. Please try again.")}
-                width="100%"
-                useOneTap
-              />
-            </GoogleOAuthProvider>
-          </form>
-        )}
+              Forgot password
+            </button>
+          </div>
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-gray-900 hover:bg-gray-800 text-white py-3 h-12 rounded-lg font-medium"
+          >
+            {isLoading ? "Signing in..." : "Login"}
+          </Button>
+          <GoogleOAuthProvider clientId={clientId}>
+            <GoogleLogin
+              onSuccess={handleGoogleLoginSuccess}
+              onError={() => setError("Google login failed. Please try again.")}
+              width="100%"
+              useOneTap
+            />
+          </GoogleOAuthProvider>
+        </form>
 
         {/* Sign Up Link */}
         <div className="text-center mt-8">

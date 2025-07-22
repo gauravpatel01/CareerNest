@@ -10,9 +10,31 @@ export default function JobCard({ job, isInternship = false }) {
   const formatSalary = (min, max) => {
     if (!min && !max) return "Salary not disclosed";
     if (min && max) {
-      return `₹${(min / 100000).toFixed(1)}L - ₹${(max / 100000).toFixed(1)}L`;
+      return isInternship
+        ? `₹${(min / 1000).toFixed(1)}K - ₹${(max / 1000).toFixed(1)}K`
+        : `₹${(min / 100000).toFixed(1)}L - ₹${(max / 100000).toFixed(1)}L`;
     }
-    return min ? `₹${(min / 100000).toFixed(1)}L+` : `Up to ₹${(max / 100000).toFixed(1)}L`;
+    return min
+      ? isInternship
+        ? `₹${(min / 1000).toFixed(1)}K+`
+        : `₹${(min / 100000).toFixed(1)}L+`
+      : isInternship
+      ? `Up to ₹${(max / 1000).toFixed(1)}K`
+      : `Up to ₹${(max / 100000).toFixed(1)}L`;
+  };
+
+  // Helper to format stipend in thousands (K)
+  const formatStipend = (stipend) => {
+    if (!stipend) return '';
+    // Extract numeric part from stipend string
+    const match = stipend.toString().replace(/,/g, '').match(/\d+/);
+    if (match) {
+      const value = parseInt(match[0], 10);
+      if (!isNaN(value)) {
+        return `₹${(value / 1000).toFixed(1)}K`;
+      }
+    }
+    return stipend; // fallback to original if not a number
   };
 
   const getExperienceBadgeColor = (level) => {
@@ -66,7 +88,11 @@ export default function JobCard({ job, isInternship = false }) {
           <div className="text-right">
             <div className="flex items-center text-green-600 font-semibold mb-2">
               <IndianRupee className="w-4 h-4 mr-1" />
-              <span>{formatSalary(job.salary_min, job.salary_max)}</span>
+              {isInternship && job.stipend ? (
+                <span>{formatStipend(job.stipend)}</span>
+              ) : (
+                <span>{formatSalary(job.salary_min, job.salary_max)}</span>
+              )}
             </div>
             <div className="flex items-center text-gray-500 text-sm">
               <Clock className="w-4 h-4 mr-1" />
