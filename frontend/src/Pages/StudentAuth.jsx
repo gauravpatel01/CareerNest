@@ -476,8 +476,8 @@ export default function StudentAuth() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="High School">High School</SelectItem>
-                          <SelectItem value="Bachelor's">Bachelor's Degree</SelectItem>
-                          <SelectItem value="Master's">Master's Degree</SelectItem>
+                          <SelectItem value="Bachelor's Degree">Bachelor's Degree</SelectItem>
+                          <SelectItem value="Master's Degree">Master's Degree</SelectItem>
                           <SelectItem value="PhD">PhD</SelectItem>
                         </SelectContent>
                       </Select>
@@ -660,11 +660,7 @@ export default function StudentAuth() {
             </div>
           </div>
           <div className="text-right">
-            <button
-              type="button"
-              onClick={handleForgotPassword}
-              className="text-sm text-gray-600 hover:text-gray-900"
-            >
+            <button type="button" onClick={handleForgotPassword} className="text-sm text-gray-600 hover:text-gray-900">
               Forgot password
             </button>
           </div>
