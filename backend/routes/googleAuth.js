@@ -64,6 +64,10 @@ router.post('/auth/google', async (req, res) => {
         email,
         password: '', // No password for Google users
         role: user_type,
+        phone: '', // Default empty string
+        location: 'Noida', // Default location
+        education_level: "Bachelor's Degree", // Default education level
+        skills: [], // Default empty array
       });
       try {
         await user.save();
