@@ -221,7 +221,7 @@ export default function RecruiterAuth() {
       }
       
       // Call backend API for recruiter registration
-      const res = await fetch('/api/auth/recruiter/register', {
+      const res = await fetch(`${backendURL}/api/auth/recruiter/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
