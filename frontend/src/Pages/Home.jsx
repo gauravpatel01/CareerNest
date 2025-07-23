@@ -50,7 +50,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-              Find Your Dream Internship and Volunteering Jobs in <span className="text-yellow-400">India</span>
+              Find Your Dream Internship and Volunteering Opportunity WorldWide <span className="text-yellow-400">India</span>
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto">
               Connect with top companies across Mumbai, Delhi, Bangalore, Pune, Hyderabad, and Noida
