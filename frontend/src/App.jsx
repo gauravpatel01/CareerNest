@@ -22,6 +22,8 @@ import ProtectedRoute from "./Components/auth/ProtectedRoute";
 import SettingsPage from "./Pages/SettingsPage";
 import AdminPage from "./Pages/Admin";
 import ProfileView from "./Pages/ProfileView";
+import ManageJobs from "./Pages/ManageJobs";
+import EditJob from "./Pages/EditJob";
 
 export default function App() {
   return (
@@ -249,6 +251,26 @@ export default function App() {
             <ProtectedRoute requiredRole="recruiter">
               <RecruiterLayout>
                 <PostJobs />
+              </RecruiterLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/p/manage-jobs"
+          element={
+            <ProtectedRoute requiredRole="recruiter">
+              <RecruiterLayout>
+                <ManageJobs />
+              </RecruiterLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/p/edit-job"
+          element={
+            <ProtectedRoute requiredRole="recruiter">
+              <RecruiterLayout>
+                <EditJob />
               </RecruiterLayout>
             </ProtectedRoute>
           }
