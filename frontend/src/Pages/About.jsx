@@ -67,7 +67,13 @@ export default function About() {
             About CareerNest
           </h1>
           <p className="text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto">
-            India's most trusted job portal, connecting ambitious professionals with leading companies across the nation since 2020.
+            CareerNest aims to become the world’s largest platform for internships and volunteer opportunities, 
+            empowering every Indian to gain real industry experience. Backed by Suvidha Foundation, 
+            an international NGO since 1995, our mission is to provide equal access to skill-building opportunities 
+            through startups, private firms, incubators, and NGOs. We connect students and professionals with 
+            recruiters from across the country—offering both remote and on-site roles. Recruiters can easily post 
+            their requirements, while candidates can explore roles matching their skills. CareerNest is not just a 
+            portal, but a movement to make career opportunities accessible to every aspiring Indian.
           </p>
         </div>
       </section>
@@ -101,7 +107,7 @@ export default function About() {
                 Our Mission
               </h2>
               <p className="text-lg text-gray-600 mb-6">
-                To democratize access to career opportunities across India by creating a transparent, 
+                To democratize access to career opportunities across world-wide by creating a transparent, 
                 efficient, and user-friendly platform that benefits both job seekers and employers.
               </p>
               <p className="text-lg text-gray-600 mb-8">
