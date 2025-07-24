@@ -35,22 +35,38 @@ export default function Home() {
   ];
 
   const topCompanies = [
-    { name: "TCS", logo: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=80&h=80&fit=crop&crop=face" },
-    {
-      name: "Infosys",
-      logo: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=80&h=80&fit=crop&crop=face",
-    },
-    { name: "Wipro", logo: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=80&h=80&fit=crop&crop=face" },
-    { name: "HCL", logo: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=80&h=80&fit=crop&crop=face" },
-    {
-      name: "Accenture",
-      logo: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=80&h=80&fit=crop&crop=face",
-    },
-    {
-      name: "Cognizant",
-      logo: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=80&h=80&fit=crop&crop=face",
-    },
+    { name: "TCS", logo: "https://logo.clearbit.com/tcs.com" },
+    { name: "Infosys", logo: "https://logo.clearbit.com/infosys.com" },
+    { name: "Wipro", logo: "https://logo.clearbit.com/wipro.com" },
+    { name: "HCL", logo: "https://logo.clearbit.com/hcltech.com" },
+    { name: "Accenture", logo: "https://logo.clearbit.com/accenture.com" },
+    { name: "Microsoft", logo: "https://logo.clearbit.com/microsoft.com" },
+    { name: "Cognizant", logo: "https://logo.clearbit.com/cognizant.com" },
+    { name: "Deloitte", logo: "https://logo.clearbit.com/deloitte.com" },
+    { name: "United Nations Volunteers", logo: "https://logo.clearbit.com/unv.org" },
+    { name: "VSO ", logo: "https://logo.clearbit.com/vsointernational.org" },
+    { name: "The Intern Group", logo: "https://logo.clearbit.com/theinterngroup.com" },
+    { name: "Amazon", logo: "https://logo.clearbit.com/amazon.com" },
+    { name: "Facebook", logo: "https://logo.clearbit.com/facebook.com" },
+    { name: "Apple", logo: "https://logo.clearbit.com/apple.com" },
+    { name: "IBM", logo: "https://logo.clearbit.com/ibm.com" },
+    { name: "Google", logo: "https://logo.clearbit.com/google.com" },
+    { name: "Flipkart", logo: "https://logo.clearbit.com/flipkart.com" },
+    { name: "Capgemini", logo: "https://logo.clearbit.com/capgemini.com" },
+    { name: "Oracle", logo: "https://logo.clearbit.com/oracle.com" },
+    { name: "Volunteer World", logo: "https://logo.clearbit.com/volunteerworld.com" },
+    { name: "Projects Abroad", logo: "https://logo.clearbit.com/projects-abroad.org" },
+    { name: "AIESEC", logo: "https://logo.clearbit.com/aiesec.org" },
+    { name: "SAP", logo: "https://logo.clearbit.com/sap.com" },
+    { name: "Adobe", logo: "https://logo.clearbit.com/adobe.com" },
+    { name: "Cisco", logo: "https://logo.clearbit.com/cisco.com" },
+    { name: "Intel", logo: "https://logo.clearbit.com/intel.com" },
+    { name: "Salesforce", logo: "https://logo.clearbit.com/salesforce.com" },
+    { name: "World Endeavors", logo: "https://logo.clearbit.com/worldendeavors.com" },
+    { name: "Frontier", logo: "https://logo.clearbit.com/bestgapyear.co.uk" },
   ];
+  // Duplicate companies for seamless infinite scroll
+  const marqueeCompanies = [...topCompanies, ...topCompanies];
 
   return (
     <div className="min-h-screen">
@@ -62,6 +78,7 @@ export default function Home() {
               Find Your Dream Internship and Volunteering Opportunity <span className="text-yellow-400">WorldWide</span>
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto">
+
              Connect with leading companies, startups, universities & NGOs around the world-remote or on‑site.
             </p>
 
@@ -212,18 +229,34 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Top Companies Hiring</h2>
-            <p className="text-xl text-gray-600">Join thousands of professionals at India's leading companies</p>
+            <p className="text-xl text-gray-600">Join thousands of professionals at World's leading companies</p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
-            {topCompanies.map((company, index) => (
-              <div key={index} className="text-center group cursor-pointer">
-                <div className="w-20 h-20 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:shadow-lg transition-shadow duration-200">
-                  <img src={company.logo} alt={company.name} className="w-16 h-16 rounded-lg object-cover" />
+          <div className="overflow-x-hidden w-full">
+            <div
+              className="flex animate-marquee whitespace-nowrap"
+              style={{ animation: "marquee 90s linear infinite" }}
+            >
+              {marqueeCompanies.map((company, index) => (
+                <div
+                  key={index}
+                  className="flex-shrink-0 w-1/2 md:w-1/3 lg:w-1/6 px-4 text-center group cursor-pointer"
+                >
+                  <div className="w-20 h-20 bg-white border border-gray-200 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:shadow-lg transition-shadow duration-200">
+                    <img
+                      src={company.logo}
+                      alt={company.name}
+                      className="w-16 h-16 object-contain"
+                      style={{ background: "#fff" }}
+                      onError={(e) => {
+                        e.target.src = "https://via.placeholder.com/64?text=Logo";
+                      }}
+                    />
+                  </div>
+                  <p className="font-medium text-gray-900">{company.name}</p>
                 </div>
-                <p className="font-medium text-gray-900">{company.name}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>

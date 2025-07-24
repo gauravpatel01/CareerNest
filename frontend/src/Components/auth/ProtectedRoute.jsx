@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
-import { createPageUrl } from '../utils';
+import React, { useState, useEffect } from "react";
+import { Navigate, useLocation } from "react-router-dom";
+import { createPageUrl } from "../utils";
 
 const ProtectedRoute = ({ children, requiredRole = null }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -14,9 +14,9 @@ const ProtectedRoute = ({ children, requiredRole = null }) => {
 
   const checkAuth = () => {
     try {
-      const jwt = localStorage.getItem('jwt');
-      const userData = localStorage.getItem('user');
-      
+      const jwt = localStorage.getItem("jwt");
+      const userData = localStorage.getItem("user");
+
       if (jwt && userData) {
         const parsedUser = JSON.parse(userData);
         setUser(parsedUser);
@@ -26,7 +26,7 @@ const ProtectedRoute = ({ children, requiredRole = null }) => {
         setUser(null);
       }
     } catch (error) {
-      console.error('Auth check error:', error);
+      console.error("Auth check error:", error);
       setIsAuthenticated(false);
       setUser(null);
     } finally {
@@ -45,27 +45,39 @@ const ProtectedRoute = ({ children, requiredRole = null }) => {
     );
   }
 
+  // Admin protected route logic
+  if (requiredRole === "admin") {
+    const adminAuth = localStorage.getItem("admin-auth");
+    if (adminAuth !== "true") {
+      return <Navigate to={createPageUrl("adminauth")} replace state={{ from: location }} />;
+    }
+    // If admin-auth is present, allow access
+    return children;
+  }
+
   if (!isAuthenticated) {
     // Redirect to appropriate login page based on the route
-    const isStudentRoute = location.pathname.includes('student') || 
-                          location.pathname.includes('editresume') || 
-                          location.pathname.includes('updateprofile') ||
-                          location.pathname.includes('uploadresume') ||
-                          location.pathname.includes('applications');
-    
-    const loginPath = isStudentRoute ? createPageUrl('studentauth') : createPageUrl('recruiterauth');
-    
+    const isStudentRoute =
+      location.pathname.includes("student") ||
+      location.pathname.includes("editresume") ||
+      location.pathname.includes("updateprofile") ||
+      location.pathname.includes("uploadresume") ||
+      location.pathname.includes("applications");
+
+    const loginPath = isStudentRoute ? createPageUrl("studentauth") : createPageUrl("recruiterauth");
+
     return <Navigate to={loginPath} replace state={{ from: location }} />;
   }
 
   // Check role requirement if specified
   if (requiredRole && user && user.role !== requiredRole) {
     // Redirect to appropriate dashboard based on user role
-    const dashboardPath = user.role === 'student' ? createPageUrl('studentdashboard') : createPageUrl('recruiterdashboard');
+    const dashboardPath =
+      user.role === "student" ? createPageUrl("studentdashboard") : createPageUrl("recruiterdashboard");
     return <Navigate to={dashboardPath} replace />;
   }
 
   return children;
 };
 
-export default ProtectedRoute; 
+export default ProtectedRoute;

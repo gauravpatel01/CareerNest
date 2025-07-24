@@ -15,6 +15,12 @@ import {
   MessageCircle,
   FileText,
   LogOut,
+  LayoutDashboard,
+  User as UserIcon,
+  Linkedin,
+  Instagram,
+  Facebook,
+  Twitter,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Chatbot from "./Components/Chatbot";
@@ -410,7 +416,8 @@ export default function Layout({ children, currentPageName }) {
                 <span className="text-xl font-bold">CareerNest</span>
               </div>
               <p className="text-gray-400 text-sm">
-                India's leading job portal connecting talented students with top companies across major cities.
+                Global platform connecting passionate individuals with impactful volunteer opportunities and internships
+                across leading organizations worldwide.
               </p>
             </div>
 
@@ -474,9 +481,37 @@ export default function Layout({ children, currentPageName }) {
               </ul>
             </div>
           </div>
+          {/* Admin Login Section */}
+          {!user && (
+            <div className="mt-8 flex justify-center">
+              <Link to={createPageUrl("adminauth")} className="no-underline">
+                <Button
+                  className="flex items-center gap-2 px-6 py-2 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold shadow-lg hover:from-indigo-600 hover:to-blue-600 hover:scale-105 transition-all duration-200 border-2 border-transparent hover:border-white"
+                  style={{ minWidth: 160 }}
+                >
+                  <UserIcon className="w-5 h-5" />
+                  Admin Login
+                </Button>
+              </Link>
+            </div>
+          )}
 
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
-            <p>&copy; 2025 CareerNest. All rights reserved. Made with ❤️ in India</p>
+            <p>&copy; 2025 CareerNest. All rights reserved.</p>
+            <div className="flex justify-center items-center gap-6 mt-4">
+              <a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                <Linkedin className="w-6 h-6 hover:scale-110 transition-transform text-gray-400" />
+              </a>
+              <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                <Instagram className="w-6 h-6 hover:scale-110 transition-transform text-gray-400" />
+              </a>
+              <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                <Facebook className="w-6 h-6 hover:scale-110 transition-transform text-gray-400" />
+              </a>
+              <a href="https://www.twitter.com/" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+                <Twitter className="w-6 h-6 hover:scale-110 transition-transform text-gray-400" />
+              </a>
+            </div>
           </div>
         </div>
       </footer>
@@ -484,47 +519,54 @@ export default function Layout({ children, currentPageName }) {
   );
 }
 
-
-
-
 // Admin
 
+export const AdminLayout = ({ children }) => {
+  const navigate = useNavigate();
 
-const AdminLayout = ({ children }) => (
+  const handleAdminLogout = async () => {
+    // Remove admin session from localStorage
+    localStorage.removeItem("admin-auth");
+    // Optionally call backend logout endpoint here
+    // try {
+    //   await fetch('/api/admin/logout', { method: 'POST', credentials: 'include' });
+    // } catch (e) { /* handle error if needed */ }
+    navigate("/p/home");
+  };
+
+  return (
     <div className="min-h-screen w-full flex bg-gray-50">
-        <aside className="w-64 bg-white border-r flex-shrink-0 hidden md:flex flex-col">
-            <div className="h-16 border-b flex items-center px-6">
-                <Link to={createPageUrl("Home")} className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
-                        <Briefcase className="w-5 h-5 text-indigo-600" />
-                    </div>
-                    <span className="font-bold text-xl text-gray-800">CareerNest</span>
-                </Link>
+      <aside className="w-64 bg-white border-r flex-shrink-0 hidden md:flex flex-col">
+        <div className="h-16 border-b flex items-center px-6">
+          <Link to={createPageUrl("Home")} className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
+              <Briefcase className="w-5 h-5 text-indigo-600" />
             </div>
-            <nav className="flex-1 px-4 py-4 space-y-2">
-                <Link to={createPageUrl("Admin")} className="flex items-center gap-3 px-4 py-2 text-sm font-medium bg-indigo-50 text-indigo-700 rounded-lg">
-                    <LayoutDashboard className="h-5 w-5" />
-                    Dashboard
-                </Link>
-                
-            </nav>
-            <div className="px-4 py-4 border-t">
-                 <Button variant="ghost" className="w-full justify-start text-gray-600">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Logout
-                 </Button>
-            </div>
-        </aside>
-        <div className="flex-1 flex flex-col">
-             <header className="h-16 border-b bg-white flex md:hidden items-center px-6">
-                <h1 className="font-semibold text-lg">Admin Panel</h1>
-            </header>
-            <div className="flex-1 overflow-auto">
-                {children}
-            </div>
+            <span className="font-bold text-xl text-gray-800">CareerNest</span>
+          </Link>
         </div>
+        <nav className="flex-1 px-4 py-4 space-y-2">
+          <Link
+            to={createPageUrl("adminpage")}
+            className="flex items-center gap-3 px-4 py-2 text-sm font-medium bg-indigo-50 text-indigo-700 rounded-lg"
+          >
+            <LayoutDashboard className="h-5 w-5" />
+            Dashboard
+          </Link>
+        </nav>
+        <div className="px-4 py-4 border-t">
+          <Button variant="ghost" className="w-full justify-start text-gray-600" onClick={handleAdminLogout}>
+            <LogOut className="mr-2 h-4 w-4" />
+            Logout
+          </Button>
+        </div>
+      </aside>
+      <div className="flex-1 flex flex-col">
+        <header className="h-16 border-b bg-white flex md:hidden items-center px-6">
+          <h1 className="font-semibold text-lg">Admin Panel</h1>
+        </header>
+        <div className="flex-1 overflow-auto">{children}</div>
+      </div>
     </div>
-);
-
-
-
+  );
+};
