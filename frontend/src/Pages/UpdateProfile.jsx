@@ -22,6 +22,9 @@ export default function UpdateProfile() {
     },
     github: "",
     linkedin: "",
+    facebook: "",
+    instagram: "",
+    twitter: "",
     portfolio: "",
     about: "",
     image: null,
@@ -78,6 +81,17 @@ export default function UpdateProfile() {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        // 2MB
+        setError("Image size should not exceed 2MB.");
+        return;
+      }
+      if (file.type !== "image/jpeg" && file.type !== "image/jpg") {
+        setError("Only JPG/JPEG images are allowed.");
+        return;
+      }
+    }
     setProfile((prev) => ({ ...prev, image: file }));
     const reader = new FileReader();
     reader.onloadend = () => setPreviewUrl(reader.result);
@@ -175,7 +189,13 @@ export default function UpdateProfile() {
             </div>
           </div>
           {/* Hidden File Input */}
-          <input type="file" id="profilePicInput" accept="image/*" onChange={handleImageChange} className="hidden" />
+          <input
+            type="file"
+            id="profilePicInput"
+            accept="image/jpeg,image/jpg"
+            onChange={handleImageChange}
+            className="hidden"
+          />
           {/* Optional: Hint Text */}
           <p className="text-sm text-gray-500">Tap the photo to upload or update</p>
         </div>
@@ -206,10 +226,30 @@ export default function UpdateProfile() {
           <div>
             <h2 className="text-xl font-semibold text-blue-600 mb-2">Address</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input name="street" value={profile.address?.street || ""} onChange={handleAddressChange} placeholder="Street" />
-              <Input name="city" value={profile.address?.city || ""} onChange={handleAddressChange} placeholder="City" />
-              <Input name="state" value={profile.address?.state || ""} onChange={handleAddressChange} placeholder="State" />
-              <Input name="zip" value={profile.address?.zip || ""} onChange={handleAddressChange} placeholder="ZIP Code" />
+              <Input
+                name="street"
+                value={profile.address?.street || ""}
+                onChange={handleAddressChange}
+                placeholder="Street"
+              />
+              <Input
+                name="city"
+                value={profile.address?.city || ""}
+                onChange={handleAddressChange}
+                placeholder="City"
+              />
+              <Input
+                name="state"
+                value={profile.address?.state || ""}
+                onChange={handleAddressChange}
+                placeholder="State"
+              />
+              <Input
+                name="zip"
+                value={profile.address?.zip || ""}
+                onChange={handleAddressChange}
+                placeholder="ZIP Code"
+              />
             </div>
           </div>
           {/* Student or Recruiter Info */}
@@ -217,12 +257,32 @@ export default function UpdateProfile() {
             <>
               <div>
                 <h2 className="text-xl font-semibold text-blue-600 mb-2">Company Details</h2>
-                <Input name="company_name" value={profile.company_name} onChange={handleChange} placeholder="Company Name" />
-                <Input name="company_size" value={profile.company_size} onChange={handleChange} placeholder="Company Size" />
+                <Input
+                  name="company_name"
+                  value={profile.company_name}
+                  onChange={handleChange}
+                  placeholder="Company Name"
+                />
+                <Input
+                  name="company_size"
+                  value={profile.company_size}
+                  onChange={handleChange}
+                  placeholder="Company Size"
+                />
                 <Input name="industry" value={profile.industry} onChange={handleChange} placeholder="Industry" />
                 <Input name="job_title" value={profile.job_title} onChange={handleChange} placeholder="Job Title" />
-                <Input name="company_website" value={profile.company_website} onChange={handleChange} placeholder="Company Website" />
-                <Input name="company_description" value={profile.company_description} onChange={handleChange} placeholder="Company Description" />
+                <Input
+                  name="company_website"
+                  value={profile.company_website}
+                  onChange={handleChange}
+                  placeholder="Company Website"
+                />
+                <Input
+                  name="company_description"
+                  value={profile.company_description}
+                  onChange={handleChange}
+                  placeholder="Company Description"
+                />
                 <Input name="location" value={profile.location} onChange={handleChange} placeholder="Location" />
               </div>
             </>
@@ -287,6 +347,14 @@ export default function UpdateProfile() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input name="github" value={profile.github} onChange={handleChange} placeholder="GitHub Profile" />
               <Input name="linkedin" value={profile.linkedin} onChange={handleChange} placeholder="LinkedIn Profile" />
+              <Input name="facebook" value={profile.facebook} onChange={handleChange} placeholder="Facebook Profile" />
+              <Input
+                name="instagram"
+                value={profile.instagram}
+                onChange={handleChange}
+                placeholder="Instagram Profile"
+              />
+              <Input name="twitter" value={profile.twitter} onChange={handleChange} placeholder="Twitter Profile" />
               <Input
                 name="portfolio"
                 value={profile.portfolio}
@@ -319,4 +387,3 @@ export default function UpdateProfile() {
     </div>
   );
 }
-

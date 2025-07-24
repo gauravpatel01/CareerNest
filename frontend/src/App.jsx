@@ -1,5 +1,5 @@
 import React from "react";
-import Layout from "./layout";
+import Layout, { AdminLayout } from "./layout";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./Pages/Home";
 import About from "./Pages/About";
@@ -24,6 +24,8 @@ import AdminPage from "./Pages/Admin";
 import ProfileView from "./Pages/ProfileView";
 import ManageJobs from "./Pages/ManageJobs";
 import EditJob from "./Pages/EditJob";
+import Analytics from "./Pages/Analytics";
+import AdminAuth from "./Pages/AdminAuth";
 
 export default function App() {
   return (
@@ -275,13 +277,26 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/p/analytics"
+          element={
+            <ProtectedRoute requiredRole="recruiter">
+              <RecruiterLayout>
+                <Analytics />
+              </RecruiterLayout>
+            </ProtectedRoute>
+          }
+        />
         {/* Admin */}
+        <Route path="/p/adminauth" element={<AdminAuth />} />
         <Route
           path="/p/adminpage"
           element={
-            <Layout>
-              <AdminPage />
-            </Layout>
+            <ProtectedRoute requiredRole="admin">
+              <AdminLayout>
+                <AdminPage />
+              </AdminLayout>
+            </ProtectedRoute>
           }
         />
 
