@@ -481,7 +481,7 @@ export default function Layout({ children, currentPageName }) {
               </ul>
             </div>
           </div>
-          {/* Admin Login Section */}
+          {/* Admin Login Section 
           {!user && (
             <div className="mt-8 flex justify-center">
               <Link to={createPageUrl("adminauth")} className="no-underline">
@@ -495,6 +495,7 @@ export default function Layout({ children, currentPageName }) {
               </Link>
             </div>
           )}
+          */}
 
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
             <p>&copy; 2025 CareerNest. All rights reserved.</p>

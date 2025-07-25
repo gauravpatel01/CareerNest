@@ -81,6 +81,7 @@ export default function RecruiterLayout({ children }) {
   const navItems = [
     { name: "Dashboard", href: createPageUrl("recruiterdashboard") },
     { name: "Post Jobs", href: createPageUrl("post-jobs") },
+    { name: "Post Internships", href: createPageUrl("post-internships") },
     { name: "Manage Jobs", href: createPageUrl("manage-jobs") },
     { name: "Applications", href: createPageUrl("applications") },
     { name: "Analytics", href: createPageUrl("analytics") },

@@ -52,12 +52,20 @@ export default function RecruiterDashboard() {
             <h1 className="text-3xl font-bold text-gray-900">Recruiter Dashboard</h1>
             <p className="text-gray-600">Welcome back, {user?.full_name || "Recruiter"}!</p>
           </div>
-          <Link to="/p/post-jobs">
+          <div className="flex gap-4">
+            <Link to="/p/post-jobs">
             <Button className="bg-blue-500 hover:bg-blue-600">
-              <Plus className="w-4 h-4 mr-2" />
+              <Plus className="w-4 h-4" />
               Post New Job
             </Button>
           </Link>
+          <Link to="/p/post-internships">
+            <Button className="bg-blue-500 hover:bg-blue-600">
+              <Plus className="w-4 h-4" />
+              Post New Internship
+            </Button>
+          </Link>
+          </div>
         </div>
 
         {/* Stats Cards */}
