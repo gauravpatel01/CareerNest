@@ -98,7 +98,7 @@ export default function App() {
           }
         />
         <Route
-          path="/p/job-details"
+          path="/p/job-details/:jobId"
           element={
             <Layout currentPageName="JobDetails">
               <JobDetails />

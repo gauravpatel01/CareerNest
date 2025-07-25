@@ -4,7 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate } from "react-router-dom";
-import axios from 'axios';
+import axios from "axios";
 
 const locations = ["Noida", "Delhi", "Pune", "Mumbai", "Bangalore", "Hyderabad"];
 
@@ -12,6 +12,7 @@ export default function PostJob() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
     title: "",
+    company: "",           // <-- added company here
     location: "",
     stipend: "",
     duration: "",
@@ -24,12 +25,18 @@ export default function PostJob() {
   const [recruiter, setRecruiter] = useState(null);
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    const jwt = localStorage.getItem('jwt');
-    if (!user || !jwt || user.role !== 'recruiter') {
-      navigate('/p/recruiterauth');
+    const user = JSON.parse(localStorage.getItem("user"));
+    const jwt = localStorage.getItem("jwt");
+
+    if (!user || !jwt || user.role !== "recruiter") {
+      navigate("/p/recruiterauth");
     } else {
       setRecruiter(user);
+      // Initialize company in form if available
+      setForm((prev) => ({
+        ...prev,
+        company: user.company_name || "",
+      }));
     }
   }, [navigate]);
 
@@ -48,25 +55,32 @@ export default function PostJob() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!recruiter) {
-      alert('Only recruiters can post internships. Please log in as a recruiter.');
-      navigate('/p/recruiterauth');
+      alert("Only recruiters can post internships. Please log in as a recruiter.");
+      navigate("/p/recruiterauth");
+      return;
+    }
+
+    if (!form.company || form.company.trim() === "") {
+      alert("Company name is required. Please update your profile or enter company name.");
       return;
     }
 
     const payload = {
       ...form,
+      stipend: String(form.stipend), // ensure stipend is string as per schema
       posted_by: recruiter.email,
-      company: recruiter.company_name,
-      // Add more recruiter info if needed
+      job_type: "Internship", // required field for validation
     };
 
     try {
-      // Replace with your backend internship creation endpoint
-      await axios.post("/api/internships/create", payload);
+      console.log("Payload being sent:", payload);
+      await axios.post("/api/jobs", payload);
       navigate("/p/internships");
     } catch (error) {
-      console.error("Internship creation failed", error);
+      console.error("Internship creation failed", error.response?.data || error.message);
+      alert(error.response?.data?.error || "Failed to post internship. Please check all fields.");
     }
   };
 
@@ -79,6 +93,19 @@ export default function PostJob() {
             Internship Title
           </label>
           <Input id="title" name="title" value={form.title} onChange={handleChange} required />
+        </div>
+
+        <div>
+          <label htmlFor="company" className="block mb-1 font-medium">
+            Company Name
+          </label>
+          <Input
+            id="company"
+            name="company"
+            value={form.company}
+            onChange={handleChange}
+            required
+          />
         </div>
 
         <div>
@@ -158,7 +185,7 @@ export default function PostJob() {
           </label>
         </div>
 
-        <Button variant="default" className="bg-blue-500 hover:bg-blue-600 w-full">
+        <Button type="submit" variant="default" className="bg-blue-500 hover:bg-blue-600 w-full">
           Post Internship
         </Button>
       </form>

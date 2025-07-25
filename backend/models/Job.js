@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+
 const jobSchema = new mongoose.Schema(
   {
     title: {
@@ -24,7 +25,9 @@ const jobSchema = new mongoose.Schema(
       type: Number,
       min: 0,
     },
-    stipend: String, // For internships - can be used instead of salary_min/max
+    stipend: {
+      type: String, // For internships - can be used instead of salary_min/max
+    },
     job_type: {
       type: String,
       required: true,
@@ -69,19 +72,23 @@ const jobSchema = new mongoose.Schema(
       enum: ["active", "closed", "draft"],
       default: "active",
     },
-    company_logo: String, // Company logo URL
-    duration: String, // For internships
+    company_logo: {
+      type: String, // Company logo URL
+    },
+    duration: {
+      type: String, // For internships
+    },
     postedAt: {
       type: Date,
       default: Date.now,
     },
   },
   {
-    timestamps: true, // Adds createdAt and updatedAt
+    timestamps: true, // adds createdAt and updatedAt fields automatically
   }
 );
 
-// Index for better query performance
+// Indexes for faster queries
 jobSchema.index({ job_type: 1, location: 1, status: 1 });
 jobSchema.index({ posted_by: 1 });
 jobSchema.index({ status: 1, postedAt: -1 });

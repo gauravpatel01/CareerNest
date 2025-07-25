@@ -136,12 +136,12 @@ export default function JobCard({ job, isInternship = false }) {
             )}
           </div>
           <div className="flex space-x-2">
-            <Link to={`/p/job-details?id=${job.id}`}>
+            <Link to={`/p/job-details/${job._id}`}>
               <Button variant="outline" size="sm">
                 View Details
               </Button>
             </Link>
-            <Link to={`/p/job-details?id=${job.id}&apply=true`}>
+            <Link to={`/p/job-details/${job._id}?apply=true`}>
               <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
                 {isInternship ? "Apply for Internship" : "Apply Now"}
               </Button>
