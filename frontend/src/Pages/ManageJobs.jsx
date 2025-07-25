@@ -30,26 +30,13 @@ export default function ManageJobs() {
   const loadJobs = async (email) => {
     setIsLoading(true);
     try {
-      // TODO: Replace with real API call
-      // Example: const response = await axios.get(`/api/jobs?posted_by=${email}`);
-      // setJobs(response.data);
-      // Mocked jobs for now:
-      setJobs([
-        {
-          id: 1,
-          title: "Frontend Developer",
-          location: "Delhi",
-          job_type: "Full-time",
-          status: "active",
-        },
-        {
-          id: 2,
-          title: "Backend Developer",
-          location: "Bangalore",
-          job_type: "Part-time",
-          status: "closed",
-        },
-      ]);
+      const response = await fetch(`/api/jobs?posted_by=${encodeURIComponent(email)}`, {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+      const data = await response.json();
+      setJobs(data);
     } catch (error) {
       console.error("Error loading jobs:", error);
     } finally {
@@ -57,9 +44,28 @@ export default function ManageJobs() {
     }
   };
 
-  const handleDelete = (jobId) => {
-    // TODO: Implement delete logic (API call)
-    setJobs((prev) => prev.filter((job) => job.id !== jobId));
+  const handleDelete = async (jobId) => {
+    // Only allow valid MongoDB ObjectId (24 hex chars)
+    if (!jobId || typeof jobId !== 'string' || jobId.length !== 24) {
+      alert("Invalid job ID. Cannot delete.");
+      return;
+    }
+    try {
+      const res = await fetch(`/api/jobs/${jobId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+      if (res.ok) {
+        setJobs((prev) => prev.filter((job) => job._id !== jobId));
+      } else {
+        const err = await res.json();
+        alert(err.error || "Failed to delete internship/job.");
+      }
+    } catch (error) {
+      alert("Failed to delete internship/job.");
+    }
   };
 
   const handleView = (job) => {
@@ -67,7 +73,11 @@ export default function ManageJobs() {
     setShowDetails(true);
   };
   const handleEdit = (job) => {
-    navigate(`/p/edit-job?id=${job.id}`);
+    if (job._id && job._id.length === 24) {
+      navigate(`/p/edit-job/${job._id}`);
+    } else {
+      alert("Invalid job ID. Cannot edit.");
+    }
   };
 
   if (isLoading) {
@@ -95,7 +105,7 @@ export default function ManageJobs() {
               <div className="space-y-4">
                 {jobs.map((job) => (
                   <div
-                    key={job.id}
+                    key={job._id || job.id}
                     className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border rounded-lg gap-4 sm:gap-0"
                   >
                     <div className="w-full sm:w-auto">
@@ -134,7 +144,8 @@ export default function ManageJobs() {
                         variant="outline"
                         size="sm"
                         className="text-red-600 hover:text-red-700 flex-1 sm:flex-none"
-                        onClick={() => handleDelete(job.id)}
+                        onClick={() => handleDelete(job._id)}
+                        disabled={!job._id || job._id.length !== 24}
                       >
                         <Trash2 className="w-4 h-4 mr-1" />
                         Delete

@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const locations = ["Noida", "Delhi", "Pune", "Mumbai", "Bangalore", "Hyderabad"];
 const jobTypes = ["Full-time", "Part-time", "Contract", "Internship"];
@@ -14,38 +14,25 @@ export default function EditJob() {
   const [isLoading, setIsLoading] = useState(true);
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
+  const { jobId } = useParams();
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const jobId = urlParams.get("id");
     if (jobId) {
       loadJob(jobId);
     } else {
       navigate("/p/manage-jobs");
     }
     // eslint-disable-next-line
-  }, []);
+  }, [jobId]);
 
   const loadJob = async (jobId) => {
     setIsLoading(true);
     try {
-      // TODO: Replace with real API call
-      // const response = await axios.get(`/api/jobs/${jobId}`);
-      // setForm(response.data);
-      setForm({
-        id: jobId,
-        title: "Frontend Developer",
-        location: "Delhi",
-        salary_min: 600000,
-        salary_max: 1200000,
-        job_type: "Full-time",
-        experience_level: "Entry Level",
-        description: "Develop and maintain web applications.",
-        requirements: ["React", "JavaScript", "CSS"],
-        benefits: ["Health Insurance", "Remote Work"],
-        skills: ["React", "Redux", "HTML", "CSS"],
-        remote_option: true,
+      const response = await fetch(`/api/jobs/${jobId}`, {
+        headers: { "Content-Type": "application/json" }
       });
+      const data = await response.json();
+      setForm(data);
     } catch (error) {
       console.error("Error loading job:", error);
     } finally {
@@ -65,9 +52,17 @@ export default function EditJob() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Replace with real API call
-    setSuccess(true);
-    setTimeout(() => navigate("/p/manage-jobs"), 1200);
+    try {
+      await fetch(`/api/jobs/${jobId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form)
+      });
+      setSuccess(true);
+      setTimeout(() => navigate("/p/manage-jobs"), 1200);
+    } catch (error) {
+      alert("Failed to update job.");
+    }
   };
 
   if (isLoading || !form) return <div className="p-8 text-center">Loading...</div>;

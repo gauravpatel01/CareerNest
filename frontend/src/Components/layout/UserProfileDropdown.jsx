@@ -145,20 +145,6 @@ export default function UserProfileDropdown({ user, onLogout }) {
             </DropdownMenuItem>
 
             <DropdownMenuItem asChild>
-              <Link to={createPageUrl("editresume")} className="flex items-center">
-                <FileText className="w-4 h-4 mr-2" />
-                Edit Resume
-              </Link>
-            </DropdownMenuItem>
-
-            <DropdownMenuItem asChild>
-              <Link to={createPageUrl("uploadresume")} className="flex items-center">
-                <UploadCloud className="w-4 h-4 mr-2" />
-                Upload Resume
-              </Link>
-            </DropdownMenuItem>
-
-            <DropdownMenuItem asChild>
               <Link to={createPageUrl("settings")} className="flex items-center">
                 <Settings className="w-4 h-4 mr-2" />
                 Settings

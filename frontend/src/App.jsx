@@ -268,7 +268,7 @@ export default function App() {
           }
         />
         <Route
-          path="/p/edit-job"
+          path="/p/edit-job/:jobId"
           element={
             <ProtectedRoute requiredRole="recruiter">
               <RecruiterLayout>
