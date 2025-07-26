@@ -29,9 +29,8 @@ export default function Internships() {
 
  const loadInternships = async () => {
   try {
-    const response = await fetch("https://app.base44.com/api/apps/687508e8c02e10285e949016/entities/Job", {
+    const response = await fetch("/api/jobs", {
       headers: {
-        "api_key": "fc6a61ef692346c9b3d1d0749378bd8e",
         "Content-Type": "application/json"
       }
     });

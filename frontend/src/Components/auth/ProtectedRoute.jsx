@@ -71,10 +71,10 @@ const ProtectedRoute = ({ children, requiredRole = null }) => {
 
   // Check role requirement if specified
   if (requiredRole && user && user.role !== requiredRole) {
-    // Redirect to appropriate dashboard based on user role
-    const dashboardPath =
-      user.role === "student" ? createPageUrl("studentdashboard") : createPageUrl("recruiterdashboard");
-    return <Navigate to={dashboardPath} replace />;
+    // Redirect to appropriate page based on user role
+    const redirectPath =
+      user.role === "student" ? createPageUrl("Home") : createPageUrl("recruiterdashboard");
+    return <Navigate to={redirectPath} replace />;
   }
 
   return children;

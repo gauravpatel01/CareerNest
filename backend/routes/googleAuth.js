@@ -327,6 +327,68 @@ router.patch('/user/profile', authenticateJWT, async (req, res) => {
   }
 });
 
+// Update user password
+router.patch('/user/password', authenticateJWT, async (req, res) => {
+  try {
+    const email = req.user.email;
+    const { oldPassword, newPassword } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (!user.password) {
+      // Google user with no password set
+      if (!newPassword) {
+        return res.status(400).json({ error: 'New password is required.' });
+      }
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      user.password = hashedPassword;
+      await user.save();
+      return res.json({ message: 'Password set successfully.' });
+    }
+    // Normal user: require old password
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({ error: 'Old and new password are required.' });
+    }
+    // Check old password
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Old password is incorrect.' });
+    }
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+    res.json({ message: 'Password updated successfully.' });
+  } catch (err) {
+    console.error('Password update error:', err);
+    res.status(500).json({ error: 'Password update failed', details: err.message });
+  }
+});
+
+// Delete user account
+router.delete('/user/account', authenticateJWT, async (req, res) => {
+  try {
+    const email = req.user.email;
+    const user = await User.findOneAndDelete({ email });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    res.json({ message: 'Account deleted successfully' });
+  } catch (err) {
+    console.error('Account deletion error:', err);
+    res.status(500).json({ error: 'Account deletion failed', details: err.message });
+  }
+});
+
+// Check if user has password set
+router.get('/user/password-status', authenticateJWT, async (req, res) => {
+  try {
+    const email = req.user.email;
+    const user = await User.findOne({ email }).select('password');
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    res.json({ hasPassword: !!(user.password && user.password.trim()) });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to check password status' });
+  }
+});
+
 // Get current user profile
 router.get('/user/profile', authenticateJWT, async (req, res) => {
   try {

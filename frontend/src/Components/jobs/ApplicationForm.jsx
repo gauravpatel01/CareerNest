@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Upload, FileText, CheckCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function ApplicationForm({ job, onClose, onSuccess }) {
   const [formData, setFormData] = useState({
@@ -20,6 +21,37 @@ export default function ApplicationForm({ job, onClose, onSuccess }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState("");
+  const navigate = useNavigate();
+
+  // Authorization check
+  const userStr = localStorage.getItem("user");
+  let user = null;
+  try {
+    user = userStr && userStr !== "undefined" ? JSON.parse(userStr) : null;
+  } catch (e) {
+    user = null;
+  }
+  const jwt = localStorage.getItem("jwt");
+  const isStudent = user && jwt && user.role === "student";
+
+  if (!isStudent) {
+    return (
+      <Card className="max-w-2xl mx-auto">
+        <CardHeader>
+          <CardTitle className="text-2xl text-center">Apply for {job.title}</CardTitle>
+          <p className="text-center text-gray-600">at {job.company} • {job.location}</p>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center text-red-600 mb-4 font-semibold">
+            You must be logged in as a student to apply for this internship.
+          </div>
+          <div className="flex justify-center">
+            <Button onClick={() => navigate("/p/studentauth")}>Login as Student</Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const handleInputChange = (e) => {
     setFormData({
@@ -145,40 +177,20 @@ export default function ApplicationForm({ job, onClose, onSuccess }) {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Upload Resume *
+              Resume Link (Google Drive) *
             </label>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-              {formData.resume_url ? (
-                <div className="flex items-center justify-center space-x-2 text-green-600">
-                  <CheckCircle className="w-5 h-5" />
-                  <span>{uploadedFileName || "Resume uploaded successfully"}</span>
-                </div>
-              ) : (
-                <>
-                  <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-gray-600 mb-2">
-                    {isUploading ? "Uploading..." : "Click to upload your resume"}
-                  </p>
-                  <input
-                    type="file"
-                    accept=".pdf,.doc,.docx"
-                    onChange={handleFileUpload}
-                    disabled={isUploading}
-                    className="hidden"
-                    id="resume-upload"
-                  />
-                  <label
-                    htmlFor="resume-upload"
-                    className="cursor-pointer bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                  >
-                    {isUploading ? "Uploading..." : "Choose File"}
-                  </label>
-                  <p className="text-xs text-gray-500 mt-2">
-                    PDF, DOC, or DOCX (Max 5MB)
-                  </p>
-                </>
-              )}
-            </div>
+            <Input
+              name="resume_url"
+              value={formData.resume_url}
+              onChange={handleInputChange}
+              placeholder="Paste your Google Drive resume link here"
+              required
+              type="url"
+              pattern="https://drive.google.com/.*"
+            />
+            <p className="text-xs text-gray-500 mt-2">
+              Please provide a shareable Google Drive link to your resume (make sure it is accessible).
+            </p>
           </div>
 
           <div>

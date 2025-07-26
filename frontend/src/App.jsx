@@ -18,8 +18,10 @@ import UpdateProfile from "./Pages/UpdateProfile";
 import UploadResume from "./Pages/UploadResume";
 import MyApplications from "./Pages/MyApplications";
 import PostJobs from "./Pages/PostJobs";
+import PostInternship from "./Pages/PostInternship";
 import ProtectedRoute from "./Components/auth/ProtectedRoute";
 import SettingsPage from "./Pages/SettingsPage";
+import RecruiterSettings from "./Pages/RecruiterSettings";
 import AdminPage from "./Pages/Admin";
 import ProfileView from "./Pages/ProfileView";
 import ManageJobs from "./Pages/ManageJobs";
@@ -98,7 +100,7 @@ export default function App() {
           }
         />
         <Route
-          path="/p/job-details"
+          path="/p/job-details/:jobId"
           element={
             <Layout currentPageName="JobDetails">
               <JobDetails />
@@ -248,11 +250,31 @@ export default function App() {
           }
         />
         <Route
+          path="/p/recruitersettings"
+          element={
+            <ProtectedRoute requiredRole="recruiter">
+              <RecruiterLayout>
+                <RecruiterSettings />
+              </RecruiterLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/p/post-jobs"
           element={
             <ProtectedRoute requiredRole="recruiter">
               <RecruiterLayout>
                 <PostJobs />
+              </RecruiterLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/p/post-internships"
+          element={
+            <ProtectedRoute requiredRole="recruiter">
+              <RecruiterLayout>
+                <PostInternship />
               </RecruiterLayout>
             </ProtectedRoute>
           }
@@ -268,7 +290,7 @@ export default function App() {
           }
         />
         <Route
-          path="/p/edit-job"
+          path="/p/edit-job/:jobId"
           element={
             <ProtectedRoute requiredRole="recruiter">
               <RecruiterLayout>

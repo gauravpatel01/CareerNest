@@ -9,7 +9,7 @@ import { ArrowLeft } from "lucide-react";
 
 const locations = ["Noida", "Delhi", "Pune", "Mumbai", "Bangalore", "Hyderabad"];
 
-export default function PostJob() {
+export default function PostInternship() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
     title: "",
@@ -76,23 +76,23 @@ export default function PostJob() {
       ...form,
       stipend: String(form.stipend), // ensure stipend is string as per schema
       posted_by: recruiter.email,
-      job_type: "Job", // required field for validation
+      job_type: "Internship", // required field for validation
     };
 
     try {
       console.log("Payload being sent:", payload);
       await axios.post("/api/jobs", payload);
-      navigate("/p/jobs");
+      navigate("/p/internships");
     } catch (error) {
-      console.error("Job creation failed", error.response?.data || error.message);
-      alert(error.response?.data?.error || "Failed to post Job. Please check all fields.");
+      console.error("Internship creation failed", error.response?.data || error.message);
+      alert(error.response?.data?.error || "Failed to post internship. Please check all fields.");
     }
   };
 
   return (
     <div className="max-w-3xl mx-auto p-6">
 
-       {/* ⬅️ Back Button */}
+     {/* ⬅️ Back Button */}
       <button
         onClick={handleGoBack}
         className="flex items-center text-sm text-blue-600 hover:underline mb-4"
@@ -101,11 +101,11 @@ export default function PostJob() {
         Go Back
       </button>
       
-      <h2 className="text-2xl font-bold mb-6">Post a New Job</h2>
+      <h2 className="text-2xl font-bold mb-6">Post a New Internship</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label htmlFor="title" className="block mb-1 font-medium">
-            Job Title
+            Internship Title
           </label>
           <Input id="title" name="title" value={form.title} onChange={handleChange} required />
         </div>
@@ -201,7 +201,7 @@ export default function PostJob() {
         </div>
 
         <Button type="submit" variant="default" className="bg-blue-500 hover:bg-blue-600 w-full">
-          Post Job
+          Post Internship
         </Button>
       </form>
     </div>
