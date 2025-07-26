@@ -27,7 +27,6 @@ import ManageJobs from "./Pages/ManageJobs";
 import EditJob from "./Pages/EditJob";
 import Analytics from "./Pages/Analytics";
 import AdminAuth from "./Pages/AdminAuth";
-import PostInternship from "./Pages/PostInternship";
 
 export default function App() {
   return (
