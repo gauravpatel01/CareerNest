@@ -28,6 +28,7 @@ import ManageJobs from "./Pages/ManageJobs";
 import EditJob from "./Pages/EditJob";
 import Analytics from "./Pages/Analytics";
 import AdminAuth from "./Pages/AdminAuth";
+import Applications from "./Pages/Applications";
 
 export default function App() {
   return (
@@ -305,6 +306,16 @@ export default function App() {
             <ProtectedRoute requiredRole="recruiter">
               <RecruiterLayout>
                 <Analytics />
+              </RecruiterLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/p/job-applications"
+          element={
+            <ProtectedRoute requiredRole="recruiter">
+              <RecruiterLayout>
+                <Applications />
               </RecruiterLayout>
             </ProtectedRoute>
           }

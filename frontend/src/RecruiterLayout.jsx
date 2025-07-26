@@ -80,10 +80,10 @@ export default function RecruiterLayout({ children }) {
 
   const navItems = [
     { name: "Dashboard", href: createPageUrl("recruiterdashboard") },
-    { name: "Post Jobs", href: createPageUrl("post-jobs") },
-    { name: "Post Internships", href: createPageUrl("post-internships") },
+    // { name: "Post Jobs", href: createPageUrl("post-jobs") },
+    // { name: "Post Internships", href: createPageUrl("post-internships") },
     { name: "Manage Jobs", href: createPageUrl("manage-jobs") },
-    { name: "Applications", href: createPageUrl("applications") },
+    { name: "Applications", href: createPageUrl("job-applications") },
     { name: "Analytics", href: createPageUrl("analytics") },
   ];
 
@@ -319,7 +319,7 @@ export default function RecruiterLayout({ children }) {
                     <LayoutDashboard className="w-4 h-4 mr-3 inline" />
                     Dashboard
                   </button>
-                  <button
+                  {/* <button
                     onClick={() => handleNavigationClick(createPageUrl("post-jobs"))}
                     className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
                       isActive(createPageUrl("post-jobs"))
@@ -329,7 +329,7 @@ export default function RecruiterLayout({ children }) {
                   >
                     <Plus className="w-4 h-4 mr-3 inline" />
                     Post Jobs
-                  </button>
+                  </button> */}
                   <button
                     onClick={() => handleNavigationClick(createPageUrl("manage-jobs"))}
                     className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
@@ -342,9 +342,9 @@ export default function RecruiterLayout({ children }) {
                     Manage Jobs
                   </button>
                   <button
-                    onClick={() => handleNavigationClick(createPageUrl("applications"))}
+                    onClick={() => handleNavigationClick(createPageUrl("job-applications"))}
                     className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
-                      isActive(createPageUrl("applications"))
+                      isActive(createPageUrl("job-applications"))
                         ? "text-blue-600 bg-blue-50"
                         : "text-gray-900 hover:bg-gray-100"
                     }`}

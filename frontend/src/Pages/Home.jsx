@@ -78,8 +78,7 @@ export default function Home() {
               Find Your Dream Internship and Volunteering Opportunity <span className="text-yellow-400">WorldWide</span>
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto">
-
-             Connect with leading companies, startups, universities & NGOs around the world-remote or on‑site.
+              Connect with leading companies, startups, universities & NGOs around the world-remote or on‑site.
             </p>
 
             {/* Search Bar */}

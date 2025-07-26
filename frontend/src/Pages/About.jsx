@@ -8,7 +8,7 @@ export default function About() {
     { number: "1M+", label: "Job Seekers", icon: Users },
     { number: "50K+", label: "Active Jobs", icon: Target },
     { number: "10K+", label: "Companies", icon: Award },
-    { number: "95%", label: "Success Rate", icon: Heart }
+    { number: "95%", label: "Success Rate", icon: Heart },
   ];
 
   const team = [
@@ -17,45 +17,45 @@ export default function About() {
       role: "CEO & Founder",
       location: "Mumbai",
       image: "https://images.unsplash.com/photo-1494790108755-2616b612b5bb?w=300&h=300&fit=crop&crop=face",
-      bio: "Former HR Director at TCS with 15+ years in talent acquisition"
+      bio: "Former HR Director at TCS with 15+ years in talent acquisition",
     },
     {
       name: "Rahul Gupta",
       role: "CTO",
       location: "Bangalore",
       image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop&crop=face",
-      bio: "Ex-Infosys engineer, passionate about connecting talent with opportunities"
+      bio: "Ex-Infosys engineer, passionate about connecting talent with opportunities",
     },
     {
       name: "Anita Patel",
       role: "Head of Operations",
       location: "Pune",
       image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face",
-      bio: "Operations expert ensuring smooth platform experience for all users"
-    }
+      bio: "Operations expert ensuring smooth platform experience for all users",
+    },
   ];
 
   const values = [
     {
       title: "Transparency",
       description: "Clear job descriptions, honest salary ranges, and transparent hiring processes for all.",
-      icon: "🔍"
+      icon: "🔍",
     },
     {
       title: "Diversity",
       description: "Equal opportunities for all candidates regardless of background, promoting inclusive hiring.",
-      icon: "🌈"
+      icon: "🌈",
     },
     {
       title: "Excellence",
       description: "Connecting top talent with leading companies to drive mutual success and growth.",
-      icon: "⭐"
+      icon: "⭐",
     },
     {
       title: "Innovation",
       description: "Using cutting-edge technology to revolutionize job search and recruitment in India.",
-      icon: "🚀"
-    }
+      icon: "🚀",
+    },
   ];
 
   return (
@@ -63,17 +63,11 @@ export default function About() {
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            About CareerNest
-          </h1>
+          <h1 className="text-4xl md:text-6xl font-bold mb-6">About CareerNest</h1>
           <p className="text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto">
-            CareerNest aims to become the world’s largest platform for internships and volunteer opportunities, 
-            empowering every Indian to gain real industry experience. Backed by Suvidha Foundation, 
-            an international NGO since 1995, our mission is to provide equal access to skill-building opportunities 
-            through startups, private firms, incubators, and NGOs. We connect students and professionals with 
-            recruiters from across the country—offering both remote and on-site roles. Recruiters can easily post 
-            their requirements, while candidates can explore roles matching their skills. CareerNest is not just a 
-            portal, but a movement to make career opportunities accessible to every aspiring Indian.
+            CareerNest is a global go-to platform for internships and volunteer opportunities, connecting students and
+            professionals with startups, NGOs, and companies. Backed by Suvidha Foundation since 1995, we offer remote
+            and on-site roles to ensure equal access to skill-building experiences across the country.
           </p>
         </div>
       </section>
@@ -103,16 +97,14 @@ export default function About() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-                Our Mission
-              </h2>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Our Mission</h2>
               <p className="text-lg text-gray-600 mb-6">
-                To democratize access to career opportunities across world-wide by creating a transparent, 
-                efficient, and user-friendly platform that benefits both job seekers and employers.
+                To democratize access to career opportunities across world-wide by creating a transparent, efficient,
+                and user-friendly platform that benefits both job seekers and employers.
               </p>
               <p className="text-lg text-gray-600 mb-8">
-                We believe every talented individual deserves the chance to find meaningful work, 
-                and every company should have access to the best talent, regardless of their location or background.
+                We believe every talented individual deserves the chance to find meaningful work, and every company
+                should have access to the best talent, regardless of their location or background.
               </p>
               <div className="grid grid-cols-2 gap-4">
                 <div className="text-center p-4 bg-blue-50 rounded-lg">
@@ -141,14 +133,10 @@ export default function About() {
       <section className="bg-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Our Values
-            </h2>
-            <p className="text-xl text-gray-600">
-              The principles that guide everything we do
-            </p>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Our Values</h2>
+            <p className="text-xl text-gray-600">The principles that guide everything we do</p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {values.map((value, index) => (
               <Card key={index} className="text-center hover:shadow-lg transition-shadow duration-200">
@@ -167,14 +155,10 @@ export default function About() {
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Meet Our Team
-            </h2>
-            <p className="text-xl text-gray-600">
-              The passionate professionals behind CareerNest
-            </p>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Meet Our Team</h2>
+            <p className="text-xl text-gray-600">The passionate professionals behind CareerNest</p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {team.map((member, index) => (
               <Card key={index} className="text-center hover:shadow-lg transition-shadow duration-200">
@@ -202,14 +186,10 @@ export default function About() {
       <section className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Get in Touch
-            </h2>
-            <p className="text-xl text-blue-100">
-              Have questions? We'd love to hear from you
-            </p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Get in Touch</h2>
+            <p className="text-xl text-blue-100">Have questions? We'd love to hear from you</p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             <div>
               <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -219,7 +199,7 @@ export default function About() {
               <p className="text-blue-100">support@careernest.in</p>
               <p className="text-blue-100">careers@careernest.in</p>
             </div>
-            
+
             <div>
               <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Phone className="w-8 h-8" />
@@ -228,7 +208,7 @@ export default function About() {
               <p className="text-blue-100">+91 9876543210</p>
               <p className="text-blue-100 text-sm">Mon-Fri, 9AM-6PM IST</p>
             </div>
-            
+
             <div>
               <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <MapPin className="w-8 h-8" />
