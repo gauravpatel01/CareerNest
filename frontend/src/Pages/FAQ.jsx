@@ -19,51 +19,51 @@ export default function FAQ() {
     {
       id: 1,
       category: "students",
-      question: "How do I create a student account on CareerNest?",
+      question: "How do I create an impactful profile on CareerNest?",
       answer:
-        "Creating a student account is simple! Click on 'Student Sign In' in the header, then select 'Create Account'. Fill in your details including your educational background, skills, and preferences. Make sure to upload a professional resume to increase your chances of getting noticed by recruiters.",
+        "Fill in academic details, add projects, certifications, skills, and link your GitHub or portfolio.",
     },
     {
       id: 2,
       category: "students",
-      question: "Is CareerNest free for job seekers?",
+      question: "Why am I not receiving internship suggestions?",
       answer:
-        "Yes, CareerNest is completely free for all job seekers and students. You can browse jobs, apply to positions, create your profile, and use all our features without any cost. We believe everyone deserves access to career opportunities.",
+        "Update your skills and interests regularly and ensure your profile is at least 80% complete.",
     },
     {
       id: 3,
       category: "students",
-      question: "How can I improve my chances of getting hired?",
+      question: "Can I apply for multiple internships at once?",
       answer:
-        "To improve your chances: 1) Complete your profile 100% with all details, 2) Upload a professional resume and photo, 3) Add relevant skills and certifications, 4) Write a compelling profile summary, 5) Apply to jobs that match your qualifications, and 6) Follow up on applications when appropriate.",
+        "Yes, you can apply to as many listings as you qualify for, but tailor your resume for each role.",
     },
     {
       id: 4,
       category: "students",
-      question: "What types of jobs are available in India?",
+      question: "What kind of notifications or alerts will I receive as a student?",
       answer:
-        "We have opportunities across all major Indian cities including Mumbai, Delhi, Bangalore, Pune, Hyderabad, and Noida. Job types include software development, data analysis, marketing, sales, finance, HR, operations, and many more. Both entry-level positions and internships are available.",
+        "You’ll receive real-time alerts for new matching internships, application status updates, upcoming interviews, and career webinars.",
     },
     {
       id: 5,
       category: "students",
-      question: "How do I know if a company has viewed my application?",
+      question: "What kind of internships are available on CareerNest?",
       answer:
-        "You'll receive email notifications when recruiters view your profile or application. You can also check your application status in your dashboard. We provide real-time updates on whether your application is pending, under review, or has been shortlisted.",
+        "You'll find roles in software development, data science, design, and more, depending on your skills and interests.",
     },
     {
       id: 6,
       category: "recruiters",
-      question: "How can my company start posting jobs on CareerNest?",
+      question: "How do I attract high-quality candidates to my internship listings?",
       answer:
-        "To start posting jobs, click on 'Recruiter' in the header and create a company account. You'll need to verify your company email and provide basic company information. Once approved, you can post unlimited job listings and access our candidate database.",
+        "Write clear, detailed job descriptions and highlight learning opportunities or stipends.",
     },
     {
       id: 7,
       category: "recruiters",
-      question: "What are the costs for recruiters?",
+      question: "How can I manage multiple recruiters under one account?",
       answer:
-        "We offer flexible pricing plans for recruiters. Basic job posting starts at ₹5,000 per month for unlimited job posts. Premium plans include additional features like candidate search, priority listing, and dedicated support. Contact our sales team for custom enterprise solutions.",
+        "Create sub-accounts or request multi-user access from CareerNest support.",
     },
     {
       id: 8,
@@ -89,16 +89,16 @@ export default function FAQ() {
     {
       id: 11,
       category: "students",
-      question: "How do I prepare for interviews?",
+      question: "Can I update my application after submission?",
       answer:
-        "We provide interview preparation resources including common questions, tips for different job types, and guidance on presenting yourself professionally. Many companies also provide specific interview guidelines when they shortlist candidates.",
+        " No, but you can withdraw and reapply with updated details if the job is still open.",
     },
     {
       id: 12,
       category: "recruiters",
-      question: "What support do you provide for new recruiters?",
+      question: "How can I post an internship listing?",
       answer:
-        "New recruiters get dedicated onboarding support, including platform training, best practices for job posting, and tips for attracting quality candidates. Our support team is available Monday-Friday, 9AM-6PM IST to help with any questions.",
+        "Go to your dashboard → “Post Internship” → fill in role details, skills required, duration, and post it.",
     },
   ];
 
@@ -150,11 +150,10 @@ export default function FAQ() {
                 <button
                   key={category.id}
                   onClick={() => setActiveCategory(category.id)}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-full transition-colors ${
-                    activeCategory === category.id
-                      ? "bg-blue-600 text-white"
-                      : "bg-white text-gray-700 hover:bg-gray-100"
-                  }`}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-full transition-colors ${activeCategory === category.id
+                    ? "bg-blue-600 text-white"
+                    : "bg-white text-gray-700 hover:bg-gray-100"
+                    }`}
                 >
                   <IconComponent className="w-4 h-4" />
                   <span>{category.name}</span>
@@ -183,9 +182,8 @@ export default function FAQ() {
                   <div className="flex items-start space-x-3">
                     <Badge
                       variant="secondary"
-                      className={`mt-1 ${
-                        faq.category === "students" ? "bg-green-100 text-green-800" : "bg-blue-100 text-blue-800"
-                      }`}
+                      className={`mt-1 ${faq.category === "students" ? "bg-green-100 text-green-800" : "bg-blue-100 text-blue-800"
+                        }`}
                     >
                       {faq.category === "students" ? "Students" : "Recruiters"}
                     </Badge>
