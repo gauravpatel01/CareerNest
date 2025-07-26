@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { ArrowLeft } from "lucide-react";
 
 const locations = ["Noida", "Delhi", "Pune", "Mumbai", "Bangalore", "Hyderabad"];
 
@@ -39,6 +40,10 @@ export default function PostJob() {
       }));
     }
   }, [navigate]);
+
+   const handleGoBack = () => {
+    navigate(-1); // 👈 go to previous page
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -86,6 +91,16 @@ export default function PostJob() {
 
   return (
     <div className="max-w-3xl mx-auto p-6">
+
+       {/* ⬅️ Back Button */}
+      <button
+        onClick={handleGoBack}
+        className="flex items-center text-sm text-blue-600 hover:underline mb-4"
+      >
+        <ArrowLeft className="w-4 h-4 mr-1" />
+        Go Back
+      </button>
+      
       <h2 className="text-2xl font-bold mb-6">Post a New Job</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>

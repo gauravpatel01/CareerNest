@@ -9,6 +9,7 @@ import React, { useEffect, useState } from "react";
 import { Card } from "../Components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 // import axios from "axios";
+import { ArrowLeft } from "lucide-react";
 
 const COLORS = ["#2563eb", "#22c55e", "#f59e42"];
 
@@ -73,8 +74,22 @@ export default function Analytics() {
     { name: "Total", value: stats.totalPostings },
   ];
 
+  const handleGoBack = () => {
+    navigate(-1); // 👈 go to previous page
+  };
+
   return (
     <div className="max-w-6xl mx-auto py-6 px-2 sm:px-4 md:px-6 lg:px-8 w-full">
+
+       {/* ⬅️ Back Button */}
+      <button
+        onClick={handleGoBack}
+        className="flex items-center text-sm text-blue-600 hover:underline mb-4"
+      >
+        <ArrowLeft className="w-4 h-4 mr-1" />
+        Go Back
+      </button>
+
       <h1 className="text-2xl font-bold mb-6 text-gray-800">Recruiter Analytics</h1>
       {/* Stat Boxes */}
       <div className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-6 mb-8 w-full">
