@@ -1,8 +1,8 @@
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Input } from "../Components/ui/input";
+import { Button } from "../Components/ui/button";
 import { useState, useEffect, useRef } from "react";
 
-export default function SettingsPage() {
+export default function RecruiterSettings() {
   const [name, setName] = useState("");
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -15,10 +15,9 @@ export default function SettingsPage() {
   const oldPasswordRef = useRef(null);
 
   useEffect(() => {
-    // Detect if user is a Google user (no password set)
+    // Detect if recruiter is a Google user (no password set)
     const jwt = localStorage.getItem("jwt");
     if (!jwt) return;
-    
     fetch("/api/user/password-status", {
       headers: { Authorization: `Bearer ${jwt}` },
     })
@@ -44,7 +43,7 @@ export default function SettingsPage() {
     setPasswordStatus("");
     setShowPasswordSuccess(false);
     if (isGoogleUser) {
-      // Google user: only need new password and confirm
+      // Google recruiter: only need new password and confirm
       if (!newPassword || !confirmPassword) {
         setPasswordStatus("Please fill in all fields.");
         return;
@@ -77,13 +76,12 @@ export default function SettingsPage() {
         setNewPassword("");
         setConfirmPassword("");
         setIsGoogleUser(false); // Update state to show "Change Password" form
-        // Clear success message after 3 seconds
         setTimeout(() => setShowPasswordSuccess(false), 3000);
       } catch (err) {
         setPasswordStatus("An error occurred. Please try again.");
       }
     } else {
-      // Normal user: require old password
+      // Normal recruiter: require old password
       if (!oldPassword || !newPassword || !confirmPassword) {
         setPasswordStatus("Please fill in all fields.");
         return;
@@ -121,8 +119,6 @@ export default function SettingsPage() {
     }
   };
 
-
-
   const handleDeleteAccount = async () => {
     try {
       const jwt = localStorage.getItem("jwt");
@@ -133,20 +129,15 @@ export default function SettingsPage() {
           Authorization: `Bearer ${jwt}`,
         },
       });
-      
       if (!res.ok) {
         const err = await res.json();
         alert(err.error || "Failed to delete account. Please try again.");
         setShowDeleteConfirm(false);
         return;
       }
-      
-      // Account deleted successfully
-      
       // Clear all local storage
       localStorage.removeItem("jwt");
       localStorage.removeItem("user");
-      
       // Redirect to login page
       window.location.href = "/";
     } catch (err) {
@@ -191,7 +182,7 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-xl mx-auto p-6 bg-blue-50 rounded-lg">
-      <h1 className="text-2xl font-bold mb-2">Account Settings</h1>
+      <h1 className="text-2xl font-bold mb-2">Recruiter Account Settings</h1>
       <p className="text-sm text-gray-600 mb-6">Manage your credentials and account preferences.</p>
 
       {/* Name Update */}
@@ -212,7 +203,6 @@ export default function SettingsPage() {
             <p className="text-xs">You can now log in with either Google or email/password. Use the form below to change your password anytime.</p>
           </div>
         )}
-        
         {isGoogleUser ? (
           <>
             <label className="text-sm font-medium text-gray-700">Set Password</label>
@@ -293,4 +283,4 @@ export default function SettingsPage() {
       )}
     </div>
   );
-}
+} 

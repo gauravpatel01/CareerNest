@@ -132,46 +132,25 @@ export default function UserProfileDropdown({ user, onLogout }) {
 
         <DropdownMenuSeparator />
 
-        {isStudent ? (
-          // Student-specific settings
+        {isStudent || isRecruiter ? (
           <>
             <DropdownMenuLabel className="text-xs text-gray-500 font-normal">SETTINGS</DropdownMenuLabel>
 
             <DropdownMenuItem asChild>
-              <Link to={createPageUrl("updateprofile")} className="flex items-center">
+              <Link to={createPageUrl(isRecruiter ? "updateprofile" : "updateprofile")} className="flex items-center">
                 <UserIcon className="w-4 h-4 mr-2" />
                 Update Profile
               </Link>
             </DropdownMenuItem>
 
             <DropdownMenuItem asChild>
-              <Link to={createPageUrl("settings")} className="flex items-center">
+              <Link to={createPageUrl(isRecruiter ? "recruitersettings" : "settings")} className="flex items-center">
                 <Settings className="w-4 h-4 mr-2" />
                 Settings
               </Link>
             </DropdownMenuItem>
           </>
-        ) : (
-          // Recruiter-specific account management
-          <>
-            <DropdownMenuLabel className="text-xs text-gray-500 font-normal">ACCOUNT MANAGEMENT</DropdownMenuLabel>
-
-            <DropdownMenuItem onClick={handleChangePassword} className="flex items-center">
-              <Key className="w-4 h-4 mr-2" />
-              Change Password
-            </DropdownMenuItem>
-
-            <DropdownMenuItem onClick={handleChangeEmail} className="flex items-center">
-              <Mail className="w-4 h-4 mr-2" />
-              Change Email
-            </DropdownMenuItem>
-
-            <DropdownMenuItem onClick={handleDeleteAccount} className="flex items-center text-red-600">
-              <Trash2 className="w-4 h-4 mr-2" />
-              Delete Account
-            </DropdownMenuItem>
-          </>
-        )}
+        ) : null}
 
         <DropdownMenuSeparator />
 
