@@ -17,6 +17,7 @@ import {
   User,
   HelpCircle,
   MessageCircle,
+  Building,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createPageUrl } from "./Components/utils";
