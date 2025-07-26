@@ -6,6 +6,7 @@ import { Eye, Edit, Trash2, Plus } from "lucide-react";
 import LoadingSpinner from "../components/common/LoadingSpinner";
 import { Link, useNavigate } from "react-router-dom";
 import JobDetailsModal from "../Components/jobs/JobDetailsModal";
+import { ArrowLeft } from "lucide-react";
 
 export default function ManageJobs() {
   const [jobs, setJobs] = useState([]);
@@ -80,6 +81,10 @@ export default function ManageJobs() {
     }
   };
 
+  const handleGoBack = () => {
+    navigate(-1); // 👈 go to previous page
+  };
+
   if (isLoading) {
     return <LoadingSpinner />;
   }
@@ -87,6 +92,16 @@ export default function ManageJobs() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto px-2 sm:px-4 py-6 sm:py-8">
+
+         {/* ⬅️ Back Button */}
+      <button
+        onClick={handleGoBack}
+        className="flex items-center text-sm text-blue-600 hover:underline mb-4"
+      >
+        <ArrowLeft className="w-4 h-4 mr-1" />
+        Go Back
+      </button>
+      
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center sm:text-left">Manage Jobs</h1>
           <Link to="/p/post-jobs">
