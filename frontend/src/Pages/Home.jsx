@@ -14,7 +14,7 @@ export default function Home() {
       location: "Bangalore",
       salary: "₹8,00,000 - ₹12,00,000",
       type: "Full-time",
-      logo: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=64&h=64&fit=crop&crop=face",
+      logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSl-V84w4Unt2s_dfHPVy7Zvlj8klAFhLg_GA&s",
     },
     {
       title: "Data Analyst",
@@ -22,7 +22,7 @@ export default function Home() {
       location: "Pune",
       salary: "₹6,00,000 - ₹9,00,000",
       type: "Full-time",
-      logo: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=64&h=64&fit=crop&crop=face",
+      logo: "https://static.vecteezy.com/system/resources/previews/020/190/476/non_2x/infosys-logo-infosys-icon-free-free-vector.jpg",
     },
     {
       title: "Product Manager",
@@ -30,7 +30,7 @@ export default function Home() {
       location: "Delhi",
       salary: "₹15,00,000 - ₹25,00,000",
       type: "Full-time",
-      logo: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=64&h=64&fit=crop&crop=face",
+      logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGJttvwc43XIGrHyDv9HQqtFP49Qu9tEAXsQ&s",
     },
   ];
 
