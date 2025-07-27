@@ -155,12 +155,12 @@ export default function Layout({ children, currentPageName }) {
 
         {/* Mobile Navigation for Non-Students */}
         {mobileMenuOpen && (!user || user.role !== "student") && (
-          <div className="fixed inset-0 z-50 md:hidden">
+          <div className="fixed inset-0 z-50 lg:hidden">
             {/* Click outside to close */}
             <div className="fixed inset-0" onClick={() => setMobileMenuOpen(false)} />
             {/* Mobile Menu */}
             <div
-              className="fixed top-16 left-0 right-0 bg-white shadow-lg border-t"
+              className="fixed top-0 left-0 h-full w-2/3 max-w-sm bg-white shadow-xl overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="px-2 pt-2 pb-3 space-y-1">
@@ -168,7 +168,7 @@ export default function Layout({ children, currentPageName }) {
                   <Link
                     key={item.name}
                     to={item.href}
-                    className={`block px-3 py-2 text-base font-medium transition-colors duration-200 ${
+                    className={`block px-3 py-2 text-base rounded-lg font-medium transition-colors duration-200 ${
                       isActive(item.href)
                         ? "text-blue-600 bg-blue-50"
                         : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
@@ -289,7 +289,7 @@ export default function Layout({ children, currentPageName }) {
                       <User className="w-4 h-4 mr-3" />
                       Update Profile
                     </button>
-                    <button
+                    {/* <button
                       onClick={() => handleNavigationClick(createPageUrl("editResume"))}
                       className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex items-center"
                     >
@@ -309,7 +309,7 @@ export default function Layout({ children, currentPageName }) {
                         />
                       </svg>
                       Upload Resume
-                    </button>
+                    </button> */}
                     <button
                       onClick={() => handleNavigationClick(createPageUrl("settings"))}
                       className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex items-center"
@@ -371,7 +371,7 @@ export default function Layout({ children, currentPageName }) {
                   >
                     Internships
                   </button>
-                  <button
+                  {/* <button
                     onClick={() => handleNavigationClick(createPageUrl("editResume"))}
                     className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
                       isActive(createPageUrl("editResume"))
@@ -380,16 +380,14 @@ export default function Layout({ children, currentPageName }) {
                     }`}
                   >
                     Resume
-                  </button>
+                  </button> */}
                   <button
-                    onClick={() => handleNavigationClick(createPageUrl("applications"))}
+                    onClick={() => handleNavigationClick(createPageUrl("About"))}
                     className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
-                      isActive(createPageUrl("applications"))
-                        ? "text-blue-600 bg-blue-50"
-                        : "text-gray-900 hover:bg-gray-100"
+                      isActive(createPageUrl("About")) ? "text-blue-600 bg-blue-50" : "text-gray-900 hover:bg-gray-100"
                     }`}
                   >
-                    My Applications
+                    About
                   </button>
                 </nav>
               </div>

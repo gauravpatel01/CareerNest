@@ -29,6 +29,7 @@ import EditJob from "./Pages/EditJob";
 import Analytics from "./Pages/Analytics";
 import AdminAuth from "./Pages/AdminAuth";
 import Applications from "./Pages/Applications";
+import Preparation from "./Pages/Preparation";
 
 export default function App() {
   return (
@@ -173,6 +174,16 @@ export default function App() {
           }
         />
         <Route
+          path="/p/editprofile"
+          element={
+            <ProtectedRoute requiredRole="recruiter">
+              <RecruiterLayout>
+                <UpdateProfile />
+              </RecruiterLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/p/help"
           element={
             <ProtectedRoute requiredRole="student">
@@ -222,6 +233,18 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/p/preparation"
+          element={
+            <ProtectedRoute requiredRole="student">
+              <StudentLayout>
+                <Preparation />
+              </StudentLayout>
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/p/recruiterauth"
           element={

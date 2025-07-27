@@ -16,7 +16,7 @@ export default function About() {
       name: "Priya Sharma",
       role: "CEO & Founder",
       location: "Mumbai",
-      image: "https://images.unsplash.com/photo-1494790108755-2616b612b5bb?w=300&h=300&fit=crop&crop=face",
+      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face",
       bio: "Former HR Director at TCS with 15+ years in talent acquisition",
     },
     {
@@ -39,22 +39,22 @@ export default function About() {
     {
       title: "Transparency",
       description: "Clear job descriptions, honest salary ranges, and transparent hiring processes for all.",
-      icon: "🔍",
+      icon: "/transparency.png",
     },
     {
       title: "Diversity",
       description: "Equal opportunities for all candidates regardless of background, promoting inclusive hiring.",
-      icon: "🌈",
+      icon: "/diversity.png",
     },
     {
       title: "Excellence",
       description: "Connecting top talent with leading companies to drive mutual success and growth.",
-      icon: "⭐",
+      icon: "/excellence.png",
     },
     {
       title: "Innovation",
       description: "Using cutting-edge technology to revolutionize job search and recruitment in India.",
-      icon: "🚀",
+      icon: "/innovation.png",
     },
   ];
 
@@ -66,7 +66,7 @@ export default function About() {
           <h1 className="text-4xl md:text-6xl font-bold mb-6">About CareerNest</h1>
           <p className="text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto">
             CareerNest is a global go-to platform for internships and volunteer opportunities, connecting students and
-            professionals with startups, NGOs, and companies. Backed by Suvidha Foundation since 1995, we offer remote
+            professionals with startups, NGOs, and companies. Backed by Suvidha Foundation since 2020, we offer remote
             and on-site roles to ensure equal access to skill-building experiences across the country.
           </p>
         </div>
@@ -141,7 +141,9 @@ export default function About() {
             {values.map((value, index) => (
               <Card key={index} className="text-center hover:shadow-lg transition-shadow duration-200">
                 <CardContent className="p-6">
-                  <div className="text-4xl mb-4">{value.icon}</div>
+                  <div className="flex justify-center mb-4">
+                    <img src={value.icon} alt={`${value.title} icon`} className="w-16 h-16 object-contain" />
+                  </div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-3">{value.title}</h3>
                   <p className="text-gray-600">{value.description}</p>
                 </CardContent>
@@ -192,8 +194,8 @@ export default function About() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             <div>
-              <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Mail className="w-8 h-8" />
+              <div className="w-16 h-16  bg-blue-100  rounded-full flex items-center justify-center mx-auto mb-4">
+                <Mail className="text-blue-600 w-8 h-8" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Email Us</h3>
               <p className="text-blue-100">support@careernest.in</p>
@@ -201,8 +203,8 @@ export default function About() {
             </div>
 
             <div>
-              <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Phone className="w-8 h-8" />
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Phone className="text-blue-600 w-8 h-8" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Call Us</h3>
               <p className="text-blue-100">+91 9876543210</p>
@@ -210,8 +212,8 @@ export default function About() {
             </div>
 
             <div>
-              <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <MapPin className="w-8 h-8" />
+              <div className="w-16 h-16  bg-blue-100  rounded-full flex items-center justify-center mx-auto mb-4">
+                <MapPin className="text-blue-600 w-8 h-8" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Visit Us</h3>
               <p className="text-blue-100">123 Business District</p>

@@ -157,7 +157,9 @@ export default function UpdateProfile() {
         return;
       }
       setSuccess("Profile updated successfully!");
-      setTimeout(() => navigate("/p/profileview"), 1200);
+      const userRole = profile.role || localStorage.getItem("userRole");
+      const redirectPath = userRole === "recruiter" ? "/p/recruiterprofileview" : "/p/profileview";
+      setTimeout(() => navigate(redirectPath), 1200);
     } catch (err) {
       setError("Profile update failed");
     }
@@ -342,27 +344,68 @@ export default function UpdateProfile() {
             </>
           )}
           {/* Social Media */}
-          <div>
-            <h2 className="text-xl font-semibold text-blue-600 mb-2">Social Media Links</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input name="github" value={profile.github} onChange={handleChange} placeholder="GitHub Profile" />
-              <Input name="linkedin" value={profile.linkedin} onChange={handleChange} placeholder="LinkedIn Profile" />
-              <Input name="facebook" value={profile.facebook} onChange={handleChange} placeholder="Facebook Profile" />
-              <Input
-                name="instagram"
-                value={profile.instagram}
-                onChange={handleChange}
-                placeholder="Instagram Profile"
-              />
-              <Input name="twitter" value={profile.twitter} onChange={handleChange} placeholder="Twitter Profile" />
-              <Input
-                name="portfolio"
-                value={profile.portfolio}
-                onChange={handleChange}
-                placeholder="Portfolio Website"
-              />
-            </div>
-          </div>
+          {userRole === "student" ? (
+            <>
+              <div>
+                <h2 className="text-xl font-semibold text-blue-600 mb-2">Social Media Links</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Input name="github" value={profile.github} onChange={handleChange} placeholder="GitHub Profile" />
+                  <Input
+                    name="linkedin"
+                    value={profile.linkedin}
+                    onChange={handleChange}
+                    placeholder="LinkedIn Profile"
+                  />
+                  <Input
+                    name="facebook"
+                    value={profile.facebook}
+                    onChange={handleChange}
+                    placeholder="Facebook Profile"
+                  />
+                  <Input
+                    name="instagram"
+                    value={profile.instagram}
+                    onChange={handleChange}
+                    placeholder="Instagram Profile"
+                  />
+                  <Input name="twitter" value={profile.twitter} onChange={handleChange} placeholder="Twitter Profile" />
+                  <Input
+                    name="portfolio"
+                    value={profile.portfolio}
+                    onChange={handleChange}
+                    placeholder="Portfolio Website"
+                  />
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div>
+                <h2 className="text-xl font-semibold text-blue-600 mb-2">Social Media Links</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Input
+                    name="linkedin"
+                    value={profile.linkedin}
+                    onChange={handleChange}
+                    placeholder="LinkedIn Profile"
+                  />
+                  <Input
+                    name="facebook"
+                    value={profile.facebook}
+                    onChange={handleChange}
+                    placeholder="Facebook Profile"
+                  />
+                  <Input
+                    name="instagram"
+                    value={profile.instagram}
+                    onChange={handleChange}
+                    placeholder="Instagram Profile"
+                  />
+                  <Input name="twitter" value={profile.twitter} onChange={handleChange} placeholder="Twitter Profile" />
+                </div>
+              </div>
+            </>
+          )}
           {/* About Me */}
           <div>
             <h2 className="text-xl font-semibold text-blue-600 mb-2">About Me</h2>

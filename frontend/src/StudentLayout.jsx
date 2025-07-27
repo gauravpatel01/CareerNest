@@ -18,6 +18,9 @@ import {
   HelpCircle,
   MessageCircle,
   Building,
+  Home,
+  BriefcaseBusiness,
+  LucideBrainCog,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createPageUrl } from "./Components/utils";
@@ -137,7 +140,7 @@ export default function StudentLayout({ children }) {
               >
                 Internships
               </Link>
-              <Link
+              {/* <Link
                 to={createPageUrl("editResume")}
                 className={`px-3 py-2 text-sm font-medium transition-colors duration-200 ${
                   isActive(createPageUrl("editResume"))
@@ -146,7 +149,7 @@ export default function StudentLayout({ children }) {
                 }`}
               >
                 Resume
-              </Link>
+              </Link> */}
               <Link
                 to={createPageUrl("applications")}
                 className={`px-3 py-2 text-sm font-medium transition-colors duration-200 ${
@@ -197,7 +200,7 @@ export default function StudentLayout({ children }) {
           <div className="fixed inset-0" onClick={() => setMobileMenuOpen(false)} />
           {/* Sidebar */}
           <div
-            className="fixed left-0 top-0 h-full w-2/3 max-w-sm bg-white shadow-xl overflow-hidden"
+            className="fixed left-0 top-0 h-full w-3/4 max-w-sm bg-white shadow-xl overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* User Profile Section */}
@@ -274,7 +277,7 @@ export default function StudentLayout({ children }) {
                     <User className="w-4 h-4 mr-3" />
                     Update Profile
                   </button>
-                  <button
+                  {/* <button
                     onClick={() => handleNavigationClick(createPageUrl("editResume"))}
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex items-center"
                   >
@@ -294,7 +297,7 @@ export default function StudentLayout({ children }) {
                       />
                     </svg>
                     Upload Resume
-                  </button>
+                  </button> */}
                   <button
                     onClick={() => handleNavigationClick(createPageUrl("settings"))}
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex items-center"
@@ -336,7 +339,19 @@ export default function StudentLayout({ children }) {
                     isActive(createPageUrl("Home")) ? "text-blue-600 bg-blue-50" : "text-gray-900 hover:bg-gray-100"
                   }`}
                 >
+                  <Home className="w-4 h-4 mr-3 inline" />
                   Home
+                </button>
+                <button
+                  onClick={() => handleNavigationClick(createPageUrl("Studentdashboard"))}
+                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+                    isActive(createPageUrl("Studentdashboard"))
+                      ? "text-blue-600 bg-blue-50"
+                      : "text-gray-900 hover:bg-gray-100"
+                  }`}
+                >
+                  <LayoutDashboard className="w-4 h-4 mr-3 inline" />
+                  Dashboard
                 </button>
                 <button
                   onClick={() => handleNavigationClick(createPageUrl("Jobs"))}
@@ -344,6 +359,7 @@ export default function StudentLayout({ children }) {
                     isActive(createPageUrl("Jobs")) ? "text-blue-600 bg-blue-50" : "text-gray-900 hover:bg-gray-100"
                   }`}
                 >
+                  <Briefcase className="w-4 h-4 mr-3 inline" />
                   Jobs
                 </button>
                 <button
@@ -354,17 +370,8 @@ export default function StudentLayout({ children }) {
                       : "text-gray-900 hover:bg-gray-100"
                   }`}
                 >
+                  <BriefcaseBusiness className="w-4 h-4 mr-3 inline" />
                   Internships
-                </button>
-                <button
-                  onClick={() => handleNavigationClick(createPageUrl("editResume"))}
-                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
-                    isActive(createPageUrl("editResume"))
-                      ? "text-blue-600 bg-blue-50"
-                      : "text-gray-900 hover:bg-gray-100"
-                  }`}
-                >
-                  Resume
                 </button>
                 <button
                   onClick={() => handleNavigationClick(createPageUrl("applications"))}
@@ -374,7 +381,19 @@ export default function StudentLayout({ children }) {
                       : "text-gray-900 hover:bg-gray-100"
                   }`}
                 >
+                  <FileText className="w-4 h-4 mr-3 inline" />
                   My Applications
+                </button>
+                <button
+                  onClick={() => handleNavigationClick(createPageUrl("Preparation"))}
+                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+                    isActive(createPageUrl("Preparation"))
+                      ? "text-blue-600 bg-blue-50"
+                      : "text-gray-900 hover:bg-gray-100"
+                  }`}
+                >
+                  <LucideBrainCog className="w-4 h-4 mr-3 inline" />
+                  Preparation
                 </button>
               </nav>
             </div>
@@ -382,8 +401,39 @@ export default function StudentLayout({ children }) {
         </div>
       )}
 
-      {/* Main Content Area */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">{children}</main>
+      {/* Main Content with Sidebar */}
+      <div className="flex lg:flex-row bg-white font-sans">
+        {/* Sidebar */}
+        <aside className="hidden lg:block lg:w-80 bg-blue-50 shadow-lg lg:rounded-xl m-0 lg:m-4 p-4 space-y-6">
+          <h2 className="text-lg font-bold flex items-center gap-2 text-gray-800 border-b pb-2">
+            <Building className="w-5 h-5" />
+            Student Dashboard
+          </h2>
+
+          <nav className="space-y-4 text-sm font-semibold text-gray-800">
+            {[
+              { name: "Dashboard", href: createPageUrl("Studentdashboard") },
+              { name: "Jobs", href: createPageUrl("Jobs") },
+              { name: "Internships", href: createPageUrl("Internships") },
+              { name: "My Applications", href: createPageUrl("Applications") },
+              { name: "Preparation", href: createPageUrl("Preparation") },
+            ].map((item) => (
+              <Link
+                key={item.name}
+                to={item.href}
+                className={`block bg-white hover:bg-blue-100 p-4 rounded-xl border-l-4 shadow-sm transition-colors duration-200 ${
+                  isActive(item.href) ? "border-blue-500 bg-blue-50" : "border-transparent hover:border-blue-300"
+                }`}
+              >
+                {item.name}
+              </Link>
+            ))}
+          </nav>
+        </aside>
+
+        {/* Main Content Area */}
+        <main className="flex-1 px-2 sm:px-4 py-4 bg-gray-50">{children}</main>
+      </div>
     </div>
   );
 }
