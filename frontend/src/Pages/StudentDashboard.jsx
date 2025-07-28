@@ -7,6 +7,7 @@ export default function StudentDashboard() {
   const [internships, setInternships] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [studentName, setStudentName] = useState("");
   const [locationFilter, setLocationFilter] = useState("all");
   const [durationFilter, setDurationFilter] = useState("all");
 
@@ -69,20 +70,20 @@ export default function StudentDashboard() {
               </p>
             </div>
 
-              {/* Featured Opportunities */}
-              <div>
-                <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">Featured Opportunities</h3>
-                <div className="space-y-4 max-w-4xl w-full mx-auto px-2">
-                  {internships.slice(0, 6).map((internship) => (
-                    <JobCard key={internship.id} job={internship} />
-                  ))}
-                </div>
+            {/* Featured Opportunities */}
+            <div>
+              <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">Featured Opportunities</h3>
+              <div className="space-y-4 max-w-4xl w-full mx-auto px-2">
+                {internships.slice(0, 6).map((internship) => (
+                  <JobCard key={internship.id} job={internship} />
+                ))}
               </div>
-            </main>
-          </div>
+            </div>
+          </main>
         </div>
-        {/* Chatbot */}
-        <Chatbot />
+      </div>
+      {/* Chatbot */}
+      <Chatbot />
     </>
   );
 }

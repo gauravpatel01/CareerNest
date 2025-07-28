@@ -59,7 +59,7 @@ export default function RecruiterAuth() {
     if (jwt && userData) {
       const user = JSON.parse(userData);
       if (user.role === "recruiter") {
-        navigate(createPageUrl("recruiterdashboard"));
+        navigate(createPageUrl("home"));
       }
     }
   }, [navigate]);
@@ -118,7 +118,8 @@ export default function RecruiterAuth() {
         role: "recruiter",
       };
       localStorage.setItem("user", JSON.stringify(userData));
-      window.location.href = createPageUrl("Home");
+
+      window.location.href = createPageUrl("home");
     } catch (error) {
       setError(error.message || "Google login failed. Please try again.");
       console.error("Google login error:", error);
@@ -173,7 +174,8 @@ export default function RecruiterAuth() {
         localStorage.setItem("jwt", "mock-jwt-token");
       }
 
-      window.location.href = createPageUrl("Home");
+
+      window.location.href = createPageUrl("home");
     } catch (error) {
       setError(
         error.message ||
@@ -219,11 +221,11 @@ export default function RecruiterAuth() {
         setError("Password must include a letter, a number, and a special character.");
         return;
       }
-      
+
       // Call backend API for recruiter registration
       const res = await fetch(`${backendURL}/api/auth/recruiter/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           full_name: formData.full_name,
           email: formData.email,
@@ -235,24 +237,27 @@ export default function RecruiterAuth() {
           location: formData.location,
           job_title: formData.job_title,
           company_website: formData.company_website,
-          company_description: formData.company_description
-        })
+          company_description: formData.company_description,
+        }),
       });
-      
+
       if (!res.ok) {
         const errorData = await res.json();
-        throw new Error(errorData.error || 'Registration failed');
+        throw new Error(errorData.error || "Registration failed");
       }
-      
+
       const data = await res.json();
-      localStorage.setItem('jwt', data.token);
-      localStorage.setItem('user', JSON.stringify({
-        name: data.recruiter?.name || data.recruiter?.full_name || 'Recruiter User',
-        email: data.recruiter?.email || 'recruiter@example.com',
-        company_name: data.recruiter?.company_name || '',
-        role: 'recruiter',
-      }));
-      window.location.href = createPageUrl('recruiterdashboard');
+      localStorage.setItem("jwt", data.token);
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          name: data.recruiter?.name || data.recruiter?.full_name || "Recruiter User",
+          email: data.recruiter?.email || "recruiter@example.com",
+          company_name: data.recruiter?.company_name || "",
+          role: "recruiter",
+        })
+      );
+      window.location.href = createPageUrl("recruiterdashboard");
       return;
     } catch (error) {
       setError(error.message || "Sign up failed. Please try again.");
@@ -455,7 +460,6 @@ export default function RecruiterAuth() {
                         value={formData.industry}
                         onValueChange={(value) => handleSelectChange("industry", value)}
                       >
-                        
                         <SelectTrigger>
                           <SelectValue placeholder="Select industry" />
                         </SelectTrigger>
@@ -618,11 +622,7 @@ export default function RecruiterAuth() {
             </div>
           </div>
           <div className="text-right">
-            <button
-              type="button"
-              onClick={handleForgotPassword}
-              className="text-sm text-gray-600 hover:text-gray-900"
-            >
+            <button type="button" onClick={handleForgotPassword} className="text-sm text-gray-600 hover:text-gray-900">
               Forgot password
             </button>
           </div>

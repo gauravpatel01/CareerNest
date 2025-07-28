@@ -17,6 +17,7 @@ import {
   MessageCircle,
   BarChart3,
   Settings,
+  Home,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createPageUrl } from "./Components/utils";
@@ -80,10 +81,10 @@ export default function RecruiterLayout({ children }) {
 
   const navItems = [
     { name: "Dashboard", href: createPageUrl("recruiterdashboard") },
-    { name: "Post Jobs", href: createPageUrl("post-jobs") },
-    { name: "Post Internships", href: createPageUrl("post-internships") },
+    // { name: "Post Jobs", href: createPageUrl("post-jobs") },
+    // { name: "Post Internships", href: createPageUrl("post-internships") },
     { name: "Manage Jobs", href: createPageUrl("manage-jobs") },
-    { name: "Applications", href: createPageUrl("applications") },
+    { name: "Applications", href: createPageUrl("job-applications") },
     { name: "Analytics", href: createPageUrl("analytics") },
   ];
 
@@ -154,7 +155,7 @@ export default function RecruiterLayout({ children }) {
                 </>
               )}
             </div>
-
+            {/* Mobile menu button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="sm:block lg:hidden p-2 rounded-md text-gray-700 hover:bg-gray-100"
@@ -165,7 +166,7 @@ export default function RecruiterLayout({ children }) {
         </div>
 
         {/* Mobile Navigation for Non-Recruiters */}
-        {mobileMenuOpen && (!user || user.role !== "recruiter") && (
+        {/* {mobileMenuOpen && (!user || user.role !== "recruiter") && (
           <div className="block lg:hidden bg-white border-t">
             <div className="px-2 pt-2 pb-3 space-y-1">
               {["Home", "Jobs", "Internships", "About", "FAQ"].map((page) => (
@@ -200,126 +201,135 @@ export default function RecruiterLayout({ children }) {
               </div>
             </div>
           </div>
-        )}
-
-        {/* Mobile Sidebar for Recruiters */}
-        {mobileMenuOpen && user && user.role === "recruiter" && (
-          <div className="fixed inset-0 z-50 lg:hidden">
-            {/* Click outside to close */}
-            <div className="fixed inset-0" onClick={() => setMobileMenuOpen(false)} />
-            {/* Sidebar */}
-            <div
-              className="fixed left-0 top-0 h-full w-2/3 max-w-sm bg-white shadow-xl overflow-hidden"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* User Profile Section */}
-              <div className="p-6 border-b border-gray-200">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
-                      {user.full_name
-                        ? user.full_name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")
-                            .toUpperCase()
-                        : "R"}
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">{user.full_name || user.name || "Recruiter"}</p>
-                      <p className="text-xs text-gray-500">{user.email}</p>
-                    </div>
+        )} */}
+      </header>
+      {/* Mobile Sidebar for Recruiters */}
+      {mobileMenuOpen && user && user.role === "recruiter" && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          {/* Click outside to close */}
+          <div className="fixed inset-0" onClick={() => setMobileMenuOpen(false)} />
+          {/* Sidebar */}
+          <div
+            className="fixed left-0 top-0 h-full w-3/4 max-w-sm bg-white shadow-xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* User Profile Section */}
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
+                    {user.full_name
+                      ? user.full_name
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")
+                          .toUpperCase()
+                      : "R"}
                   </div>
-                  <button
-                    onClick={() => setMoreDropdownOpen(!moreDropdownOpen)}
-                    className="p-1 hover:bg-gray-100 rounded"
-                  >
-                    <ChevronDown
-                      className={`w-4 h-4 text-gray-500 transition-transform ${moreDropdownOpen ? "rotate-180" : ""}`}
-                    />
-                  </button>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">{user.full_name || user.name || "Recruiter"}</p>
+                    <p className="text-xs text-gray-500">{user.email}</p>
+                  </div>
                 </div>
-
-                {/* More Dropdown */}
-                {moreDropdownOpen && (
-                  <div className="mt-3 space-y-1">
-                    {/* Your Profile Section */}
-                    <button
-                      onClick={() => handleNavigationClick(createPageUrl("profile"))}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex items-center"
-                    >
-                      <User className="w-4 h-4 mr-3" />
-                      Your Profile
-                    </button>
-
-                    <div className="border-t border-gray-200 my-2"></div>
-
-                    {/* SUPPORT Section */}
-                    <div className="px-4 py-1">
-                      <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Support</p>
-                    </div>
-                    <button
-                      onClick={() => handleNavigationClick(createPageUrl("help"))}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex items-center"
-                    >
-                      <HelpCircle className="w-4 h-4 mr-3" />
-                      Help Center
-                    </button>
-                    <button
-                      onClick={() => handleNavigationClick(createPageUrl("contact"))}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex items-center"
-                    >
-                      <MessageCircle className="w-4 h-4 mr-3" />
-                      Contact Us
-                    </button>
-
-                    <div className="border-t border-gray-200 my-2"></div>
-
-                    {/* SETTINGS Section */}
-                    <div className="px-4 py-1">
-                      <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Settings</p>
-                    </div>
-                    <button
-                      onClick={() => handleNavigationClick(createPageUrl("updateProfile"))}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex items-center"
-                    >
-                      <User className="w-4 h-4 mr-3" />
-                      Update Profile
-                    </button>
-                    <button
-                      onClick={() => handleNavigationClick(createPageUrl("settings"))}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex items-center"
-                    >
-                      <Settings className="w-4 h-4 mr-3" />
-                      Settings
-                    </button>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center"
-                    >
-                      <LogOut className="w-4 h-4 mr-3" />
-                      Logout
-                    </button>
-                  </div>
-                )}
+                <button
+                  onClick={() => setMoreDropdownOpen(!moreDropdownOpen)}
+                  className="p-1 hover:bg-gray-100 rounded"
+                >
+                  <ChevronDown
+                    className={`w-4 h-4 text-gray-500 transition-transform ${moreDropdownOpen ? "rotate-180" : ""}`}
+                  />
+                </button>
               </div>
 
-              {/* Navigation Menu */}
-              <div className="flex-1 overflow-y-auto">
-                <nav className="p-4 space-y-1">
-                  {/* Main Navigation */}
+              {/* More Dropdown */}
+              {moreDropdownOpen && (
+                <div className="mt-3 space-y-1">
+                  {/* Your Profile Section */}
                   <button
-                    onClick={() => handleNavigationClick(createPageUrl("recruiterdashboard"))}
-                    className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
-                      isActive(createPageUrl("recruiterdashboard"))
-                        ? "text-blue-600 bg-blue-50"
-                        : "text-gray-900 hover:bg-gray-100"
-                    }`}
+                    onClick={() => handleNavigationClick(createPageUrl("profile"))}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex items-center"
                   >
-                    <LayoutDashboard className="w-4 h-4 mr-3 inline" />
-                    Dashboard
+                    <User className="w-4 h-4 mr-3" />
+                    Your Profile
+                  </button>
+
+                  <div className="border-t border-gray-200 my-2"></div>
+
+                  {/* SUPPORT Section */}
+                  <div className="px-4 py-1">
+                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Support</p>
+                  </div>
+                  <button
+                    onClick={() => handleNavigationClick(createPageUrl("help"))}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex items-center"
+                  >
+                    <HelpCircle className="w-4 h-4 mr-3" />
+                    Help Center
                   </button>
                   <button
+                    onClick={() => handleNavigationClick(createPageUrl("contact"))}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex items-center"
+                  >
+                    <MessageCircle className="w-4 h-4 mr-3" />
+                    Contact Us
+                  </button>
+
+                  <div className="border-t border-gray-200 my-2"></div>
+
+                  {/* SETTINGS Section */}
+                  <div className="px-4 py-1">
+                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Settings</p>
+                  </div>
+                  <button
+                    onClick={() => handleNavigationClick(createPageUrl("updateProfile"))}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex items-center"
+                  >
+                    <User className="w-4 h-4 mr-3" />
+                    Update Profile
+                  </button>
+                  <button
+                    onClick={() => handleNavigationClick(createPageUrl("settings"))}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex items-center"
+                  >
+                    <Settings className="w-4 h-4 mr-3" />
+                    Settings
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center"
+                  >
+                    <LogOut className="w-4 h-4 mr-3" />
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Navigation Menu */}
+            <div className="flex-1 overflow-y-auto">
+              <nav className="p-4 space-y-1">
+                {/* Main Navigation */}
+                <button
+                  onClick={() => handleNavigationClick(createPageUrl("Home"))}
+                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+                    isActive(createPageUrl("Home")) ? "text-blue-600 bg-blue-50" : "text-gray-900 hover:bg-gray-100"
+                  }`}
+                >
+                  <Home className="w-4 h-4 mr-3 inline" />
+                  Home
+                </button>
+                <button
+                  onClick={() => handleNavigationClick(createPageUrl("recruiterdashboard"))}
+                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+                    isActive(createPageUrl("recruiterdashboard"))
+                      ? "text-blue-600 bg-blue-50"
+                      : "text-gray-900 hover:bg-gray-100"
+                  }`}
+                >
+                  <LayoutDashboard className="w-4 h-4 mr-3 inline" />
+                  Dashboard
+                </button>
+                {/* <button
                     onClick={() => handleNavigationClick(createPageUrl("post-jobs"))}
                     className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
                       isActive(createPageUrl("post-jobs"))
@@ -329,46 +339,45 @@ export default function RecruiterLayout({ children }) {
                   >
                     <Plus className="w-4 h-4 mr-3 inline" />
                     Post Jobs
-                  </button>
-                  <button
-                    onClick={() => handleNavigationClick(createPageUrl("manage-jobs"))}
-                    className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
-                      isActive(createPageUrl("manage-jobs"))
-                        ? "text-blue-600 bg-blue-50"
-                        : "text-gray-900 hover:bg-gray-100"
-                    }`}
-                  >
-                    <Briefcase className="w-4 h-4 mr-3 inline" />
-                    Manage Jobs
-                  </button>
-                  <button
-                    onClick={() => handleNavigationClick(createPageUrl("applications"))}
-                    className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
-                      isActive(createPageUrl("applications"))
-                        ? "text-blue-600 bg-blue-50"
-                        : "text-gray-900 hover:bg-gray-100"
-                    }`}
-                  >
-                    <FileText className="w-4 h-4 mr-3 inline" />
-                    Applications
-                  </button>
-                  <button
-                    onClick={() => handleNavigationClick(createPageUrl("analytics"))}
-                    className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
-                      isActive(createPageUrl("analytics"))
-                        ? "text-blue-600 bg-blue-50"
-                        : "text-gray-900 hover:bg-gray-100"
-                    }`}
-                  >
-                    <BarChart3 className="w-4 h-4 mr-3 inline" />
-                    Analytics
-                  </button>
-                </nav>
-              </div>
+                  </button> */}
+                <button
+                  onClick={() => handleNavigationClick(createPageUrl("manage-jobs"))}
+                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+                    isActive(createPageUrl("manage-jobs"))
+                      ? "text-blue-600 bg-blue-50"
+                      : "text-gray-900 hover:bg-gray-100"
+                  }`}
+                >
+                  <Briefcase className="w-4 h-4 mr-3 inline" />
+                  Manage Jobs
+                </button>
+                <button
+                  onClick={() => handleNavigationClick(createPageUrl("job-applications"))}
+                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+                    isActive(createPageUrl("job-applications"))
+                      ? "text-blue-600 bg-blue-50"
+                      : "text-gray-900 hover:bg-gray-100"
+                  }`}
+                >
+                  <FileText className="w-4 h-4 mr-3 inline" />
+                  Applications
+                </button>
+                <button
+                  onClick={() => handleNavigationClick(createPageUrl("analytics"))}
+                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+                    isActive(createPageUrl("analytics"))
+                      ? "text-blue-600 bg-blue-50"
+                      : "text-gray-900 hover:bg-gray-100"
+                  }`}
+                >
+                  <BarChart3 className="w-4 h-4 mr-3 inline" />
+                  Analytics
+                </button>
+              </nav>
             </div>
           </div>
-        )}
-      </header>
+        </div>
+      )}
 
       {/* Main Content with Sidebar */}
       <div className="flex lg:flex-row bg-white font-sans ">

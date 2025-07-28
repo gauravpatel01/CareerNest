@@ -16,7 +16,7 @@ export default function ApplicationForm({ job, onClose, onSuccess }) {
     phone: "",
     experience: "",
     cover_letter: "",
-    resume_url: ""
+    resume_url: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -39,7 +39,9 @@ export default function ApplicationForm({ job, onClose, onSuccess }) {
       <Card className="max-w-2xl mx-auto">
         <CardHeader>
           <CardTitle className="text-2xl text-center">Apply for {job.title}</CardTitle>
-          <p className="text-center text-gray-600">at {job.company} • {job.location}</p>
+          <p className="text-center text-gray-600">
+            at {job.company} • {job.location}
+          </p>
         </CardHeader>
         <CardContent>
           <div className="text-center text-red-600 mb-4 font-semibold">
@@ -56,7 +58,7 @@ export default function ApplicationForm({ job, onClose, onSuccess }) {
   const handleInputChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -69,7 +71,7 @@ export default function ApplicationForm({ job, onClose, onSuccess }) {
       const result = await UploadFile({ file });
       setFormData({
         ...formData,
-        resume_url: result.file_url
+        resume_url: result.file_url,
       });
       setUploadedFileName(file.name);
     } catch (error) {
@@ -86,7 +88,7 @@ export default function ApplicationForm({ job, onClose, onSuccess }) {
     try {
       // Check if user is logged in
       const user = await User.me();
-      
+
       await Application.create({
         job_id: job.id,
         applicant_email: formData.applicant_email || user.email,
@@ -94,7 +96,7 @@ export default function ApplicationForm({ job, onClose, onSuccess }) {
         phone: formData.phone,
         experience: formData.experience,
         cover_letter: formData.cover_letter,
-        resume_url: formData.resume_url
+        resume_url: formData.resume_url,
       });
 
       onSuccess("Application submitted successfully!");
@@ -112,21 +114,17 @@ export default function ApplicationForm({ job, onClose, onSuccess }) {
   return (
     <Card className="max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle className="text-2xl text-center">
-          Apply for {job.title}
-        </CardTitle>
+        <CardTitle className="text-2xl text-center">Apply for {job.title}</CardTitle>
         <p className="text-center text-gray-600">
           at {job.company} • {job.location}
         </p>
       </CardHeader>
-      
+
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Full Name *
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
               <Input
                 name="applicant_name"
                 value={formData.applicant_name}
@@ -136,9 +134,7 @@ export default function ApplicationForm({ job, onClose, onSuccess }) {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address *
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
               <Input
                 name="applicant_email"
                 type="email"
@@ -152,20 +148,11 @@ export default function ApplicationForm({ job, onClose, onSuccess }) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Phone Number
-              </label>
-              <Input
-                name="phone"
-                value={formData.phone}
-                onChange={handleInputChange}
-                placeholder="+91 9876543210"
-              />
+              <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+              <Input name="phone" value={formData.phone} onChange={handleInputChange} placeholder="+91 9876543210" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Years of Experience
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Years of Experience</label>
               <Input
                 name="experience"
                 value={formData.experience}
@@ -176,9 +163,7 @@ export default function ApplicationForm({ job, onClose, onSuccess }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Resume Link (Google Drive) *
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Resume Link (Google Drive) *</label>
             <Input
               name="resume_url"
               value={formData.resume_url}
@@ -194,9 +179,7 @@ export default function ApplicationForm({ job, onClose, onSuccess }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Cover Letter
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Cover Letter</label>
             <Textarea
               name="cover_letter"
               value={formData.cover_letter}
@@ -207,12 +190,7 @@ export default function ApplicationForm({ job, onClose, onSuccess }) {
           </div>
 
           <div className="flex space-x-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-              className="flex-1"
-            >
+            <Button type="button" variant="outline" onClick={onClose} className="flex-1">
               Cancel
             </Button>
             <Button
