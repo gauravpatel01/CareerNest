@@ -17,6 +17,7 @@ const jobRoutes = require("./routes/jobRoutes");
 const applicationRoutes = require("./routes/applicationRoutes");
 const seedRoutes = require("./routes/seed");
 const googleAuthRoutes = require("./routes/googleAuth");
+const { router: adminAuthRoutes } = require("./routes/adminAuth");
 
 
 // Setup middleware
@@ -27,6 +28,7 @@ app.use("/api", indexRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/jobs", jobRoutes);
 app.use("/api/applications", applicationRoutes);
+app.use("/api/admin", adminAuthRoutes);
 app.use("/api", seedRoutes);
 app.use("/api", googleAuthRoutes);
 

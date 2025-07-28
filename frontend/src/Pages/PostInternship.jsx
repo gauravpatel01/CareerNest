@@ -76,12 +76,12 @@ export default function PostInternship() {
       ...form,
       stipend: String(form.stipend), // ensure stipend is string as per schema
       posted_by: recruiter.email,
-      job_type: "Internship", // required field for validation
+      // job_type: "Internship", // REMOVE this line, not needed for Internship model
     };
 
     try {
       console.log("Payload being sent:", payload);
-      await axios.post("/api/jobs", payload);
+      await axios.post("/api/internships/create", payload);
       navigate("/p/internships");
     } catch (error) {
       console.error("Internship creation failed", error.response?.data || error.message);

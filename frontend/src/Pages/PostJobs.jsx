@@ -76,12 +76,12 @@ export default function PostJob() {
       ...form,
       stipend: String(form.stipend), // ensure stipend is string as per schema
       posted_by: recruiter.email,
-      job_type: "Job", // required field for validation
+      job_type: "Full-time", // required field for validation
     };
 
     try {
       console.log("Payload being sent:", payload);
-      await axios.post("/api/jobs", payload);
+      const response = await axios.post("/api/jobs", payload);
       navigate("/p/jobs");
     } catch (error) {
       console.error("Job creation failed", error.response?.data || error.message);

@@ -23,6 +23,7 @@ import ProtectedRoute from "./Components/auth/ProtectedRoute";
 import SettingsPage from "./Pages/SettingsPage";
 import RecruiterSettings from "./Pages/RecruiterSettings";
 import AdminPage from "./Pages/Admin";
+import AdminSettings from "./Pages/AdminSettings";
 import ProfileView from "./Pages/ProfileView";
 import ManageJobs from "./Pages/ManageJobs";
 import EditJob from "./Pages/EditJob";
@@ -317,6 +318,16 @@ export default function App() {
             <ProtectedRoute requiredRole="admin">
               <AdminLayout>
                 <AdminPage />
+              </AdminLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/p/adminsettings"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <AdminLayout>
+                <AdminSettings />
               </AdminLayout>
             </ProtectedRoute>
           }

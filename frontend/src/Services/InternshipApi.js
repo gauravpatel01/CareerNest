@@ -1,22 +1,23 @@
-export const API_URL = 'https://app.base44.com/api/apps/6879acf793e21765c6c4b5c7/entities/Internship';
-export const API_KEY = 'fc6a61ef692346c9b3d1d0749378bd8e';
-
 export async function fetchInternshipsFromAPI() {
-  const response = await fetch(API_URL, {
+  const adminToken = localStorage.getItem("admin-token");
+  const response = await fetch('/api/internships', {
     headers: {
-      'api_key': API_KEY,
       'Content-Type': 'application/json',
+      'x-admin-auth': 'true',
+      'Authorization': `Bearer ${adminToken}`,
     },
   });
   return response.json();
 }
 
 export async function updateInternshipStatus(entityId, status) {
-  const response = await fetch(`${API_URL}/${entityId}`, {
+  const adminToken = localStorage.getItem("admin-token");
+  const response = await fetch(`/api/internships/${entityId}`, {
     method: 'PUT',
     headers: {
-      'api_key': API_KEY,
       'Content-Type': 'application/json',
+      'x-admin-auth': 'true',
+      'Authorization': `Bearer ${adminToken}`,
     },
     body: JSON.stringify({ status }),
   });

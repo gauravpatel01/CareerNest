@@ -30,20 +30,16 @@ export default function Jobs() {
 
     const loadJobs = async () => {
     try {
-      const response = await fetch(
-        `https://app.base44.com/api/apps/687508e8c02e10285e949016/entities/Job`,
-        {
-          headers: {
-            "api_key": "fc6a61ef692346c9b3d1d0749378bd8e",
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch('/api/jobs', {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       const data = await response.json();
-      console.log("Fetched jobs:", data);
-      setJobs(data.results || []); // ✅ fixed this line
+      // Only show approved jobs
+      setJobs((Array.isArray(data) ? data : []).filter(job => job.approval_status === 'approved'));
     } catch (error) {
-      console.error("Error loading jobs:", error);
+      console.error('Error loading jobs:', error);
     } finally {
       setIsLoading(false);
     }

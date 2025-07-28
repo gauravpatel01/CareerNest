@@ -72,6 +72,18 @@ const jobSchema = new mongoose.Schema(
       enum: ["active", "closed", "draft"],
       default: "active",
     },
+    // Add approval status for admin review
+    approval_status: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
+    },
+    // Admin review details
+    admin_review: {
+      reviewed_by: String, // Admin email
+      reviewed_at: Date,
+      comments: String,
+    },
     company_logo: {
       type: String, // Company logo URL
     },
@@ -92,5 +104,6 @@ const jobSchema = new mongoose.Schema(
 jobSchema.index({ job_type: 1, location: 1, status: 1 });
 jobSchema.index({ posted_by: 1 });
 jobSchema.index({ status: 1, postedAt: -1 });
+jobSchema.index({ approval_status: 1 }); // Add index for approval status
 
 module.exports = mongoose.model("Job", jobSchema);

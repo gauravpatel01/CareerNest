@@ -145,7 +145,7 @@ export default function RecruiterLayout({ children }) {
                 <>
                   <Link to={createPageUrl("StudentAuth")}>
                     <Button variant="outline" className="text-blue-600 border-blue-600 hover:bg-blue-50">
-                      Student Sign In
+                      Student
                     </Button>
                   </Link>
                   <Link to={createPageUrl("RecruiterAuth")}>
@@ -188,7 +188,7 @@ export default function RecruiterLayout({ children }) {
                     <>
                       <Link to={createPageUrl("StudentAuth")}>
                         <Button variant="outline" className="w-full text-blue-600 border-blue-600 hover:bg-blue-50">
-                          Student Sign In
+                          Student
                         </Button>
                       </Link>
                       <Link to={createPageUrl("RecruiterAuth")}>

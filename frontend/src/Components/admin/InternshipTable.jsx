@@ -22,6 +22,7 @@ export default function InternshipTable({ internships, onStatusChange, onViewDet
             <TableHead>Location</TableHead>
             <TableHead>Stipend</TableHead>
             <TableHead>Status</TableHead>
+            <TableHead>Posted</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -45,31 +46,37 @@ export default function InternshipTable({ internships, onStatusChange, onViewDet
                   {statusConfig[internship.status].label}
                 </Badge>
               </TableCell>
+              <TableCell>{internship.postedAt ? new Date(internship.postedAt).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) : "-"}</TableCell>
               <TableCell className="text-right">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => onViewDetails(internship)}>
-                      View Details
-                    </DropdownMenuItem>
-                    {internship.status !== 'approved' && (
-                      <DropdownMenuItem onClick={() => onStatusChange(internship.id, 'approved')} className="text-green-600 focus:text-green-600">
-                        <CheckCircle className="mr-2 h-4 w-4" />
-                        Approve
-                      </DropdownMenuItem>
-                    )}
-                    {internship.status !== 'rejected' && (
-                      <DropdownMenuItem onClick={() => onStatusChange(internship.id, 'rejected')} className="text-red-600 focus:text-red-600">
-                        <XCircle className="mr-2 h-4 w-4" />
-                        Reject
-                      </DropdownMenuItem>
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <div className="flex space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onViewDetails(internship)}
+                  >
+                    <MoreHorizontal className="w-4 h-4" />
+                  </Button>
+                  {internship.status === 'pending' && (
+                    <>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-green-600 hover:text-green-700"
+                        onClick={() => onStatusChange(internship.id, 'approved')}
+                      >
+                        <CheckCircle className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-red-600 hover:text-red-700"
+                        onClick={() => onStatusChange(internship.id, 'rejected')}
+                      >
+                        <XCircle className="w-4 h-4" />
+                      </Button>
+                    </>
+                  )}
+                </div>
               </TableCell>
             </TableRow>
           ))}

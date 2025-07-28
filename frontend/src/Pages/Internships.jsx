@@ -29,16 +29,16 @@ export default function Internships() {
 
  const loadInternships = async () => {
   try {
-    const response = await fetch("/api/jobs", {
+    const response = await fetch('/api/internships', {
       headers: {
-        "Content-Type": "application/json"
-      }
+        'Content-Type': 'application/json',
+      },
     });
     const data = await response.json();
-    const internshipJobs = data.filter((job) => job.job_type === "Internship");
-    setInternships(internshipJobs);
+    // Only show approved internships
+    setInternships((Array.isArray(data) ? data : []).filter(internship => internship.status === 'approved'));
   } catch (error) {
-    console.error("Error loading internships:", error);
+    console.error('Error loading internships:', error);
   } finally {
     setIsLoading(false);
   }
@@ -164,9 +164,10 @@ export default function Internships() {
         {/* Internship Listings */}
         <div className="grid gap-6">
           {filteredInternships.length > 0 ? (
-            filteredInternships.map((internship) => (
-              <JobCard key={internship.id} job={internship} isInternship={true} />
-            ))
+            filteredInternships.map((internship) => {
+              const mappedInternship = { ...internship, id: internship._id };
+              return <JobCard key={mappedInternship.id} job={mappedInternship} isInternship={true} />;
+            })
           ) : (
             <div className="text-center py-12">
               <GraduationCap className="w-16 h-16 text-gray-300 mx-auto mb-4" />

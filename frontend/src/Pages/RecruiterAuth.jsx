@@ -118,7 +118,7 @@ export default function RecruiterAuth() {
         role: "recruiter",
       };
       localStorage.setItem("user", JSON.stringify(userData));
-      window.location.href = createPageUrl("recruiterprofileview");
+      window.location.href = createPageUrl("Home");
     } catch (error) {
       setError(error.message || "Google login failed. Please try again.");
       console.error("Google login error:", error);
@@ -173,7 +173,7 @@ export default function RecruiterAuth() {
         localStorage.setItem("jwt", "mock-jwt-token");
       }
 
-      window.location.href = createPageUrl("recruiterprofileview");
+      window.location.href = createPageUrl("Home");
     } catch (error) {
       setError(
         error.message ||

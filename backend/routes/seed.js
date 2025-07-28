@@ -52,4 +52,34 @@ router.post('/internships/create', async (req, res) => {
   }
 });
 
+// PUT update internship status by id
+router.put('/internships/:id', async (req, res) => {
+  try {
+    const { status } = req.body;
+    const internship = await Internship.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true, runValidators: true }
+    );
+    if (!internship) {
+      return res.status(404).json({ error: 'Internship not found' });
+    }
+    res.json({ message: 'Internship status updated', internship });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update internship status.' });
+  }
+});
+
+// GET all internships (optionally filter by status)
+router.get('/internships', async (req, res) => {
+  try {
+    const { status } = req.query;
+    const filter = status ? { status } : {};
+    const internships = await Internship.find(filter).sort({ postedAt: -1 });
+    res.json(internships);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch internships.' });
+  }
+});
+
 module.exports = router; 

@@ -3,9 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Briefcase } from "lucide-react";
+import { Loader2, Briefcase, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-// Dummy Login Component
+import axios from "axios";
+
 export default function AdminAuth({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -13,23 +14,47 @@ export default function AdminAuth({ onLogin }) {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
 
-    // Dummy validation
-    setTimeout(() => {
-      if (email === "admin@careernest.com" && password === "1234") {
-        if (onLogin) onLogin();
-        localStorage.setItem("admin-auth", "true");
-        navigate("/p/adminpage");
-      } else {
-        setError("Invalid credentials. Use email : admin@careernest.com and password : 1234");
-      }
+    try {
+      const response = await axios.post("/api/admin/login", {
+        email,
+        password,
+      });
+
+      const { token, admin } = response.data;
+      
+      // Store admin token and data
+      localStorage.setItem("admin-token", token);
+      localStorage.setItem("admin-data", JSON.stringify(admin));
+      localStorage.setItem("admin-auth", "true");
+
+      if (onLogin) onLogin();
+      navigate("/p/adminpage");
+    } catch (error) {
+      console.error("Admin login error:", error);
+      setError(
+        error.response?.data?.error || 
+        "Login failed. Please check your credentials."
+      );
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
+
+  // Check if admin is already logged in
+  useEffect(() => {
+    const adminToken = localStorage.getItem("admin-token");
+    const adminAuth = localStorage.getItem("admin-auth");
+    
+    if (adminToken && adminAuth === "true") {
+      if (onLogin) onLogin();
+      navigate("/p/adminpage");
+    }
+  }, [navigate, onLogin]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
@@ -40,8 +65,8 @@ export default function AdminAuth({ onLogin }) {
               <Briefcase className="w-6 h-6 text-indigo-600" />
             </div>
           </div>
-          <CardTitle className="text-2xl">Welcome Back</CardTitle>
-          <CardDescription>Enter your details to access the admin panel.</CardDescription>
+          <CardTitle className="text-2xl">Admin Login</CardTitle>
+          <CardDescription>Enter your credentials to access the admin panel.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
@@ -50,7 +75,7 @@ export default function AdminAuth({ onLogin }) {
               <Input
                 id="email"
                 type="email"
-                placeholder="Enter your email"
+                placeholder="admin@careernest.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -67,11 +92,17 @@ export default function AdminAuth({ onLogin }) {
                 required
               />
             </div>
-            {error && <p className="text-sm text-red-500">{error}</p>}
-            <p className="text-xs text-center text-gray-500 pt-2">
-              Note: This is a demo login. Real authentication is handled by the platform.
-            </p>
-            <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700" disabled={isLoading}>
+            {error && (
+              <div className="flex items-center gap-2 text-sm text-red-500">
+                <AlertCircle className="w-4 h-4" />
+                {error}
+              </div>
+            )}
+            <Button 
+              type="submit" 
+              className="w-full bg-indigo-600 hover:bg-indigo-700" 
+              disabled={isLoading}
+            >
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Login
             </Button>

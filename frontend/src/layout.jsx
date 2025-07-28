@@ -133,7 +133,7 @@ export default function Layout({ children, currentPageName }) {
                 <>
                   <Link to={createPageUrl("StudentAuth")}>
                     <Button variant="outline" className="text-blue-600 border-blue-600 hover:bg-blue-50">
-                      Student Sign In
+                      Student
                     </Button>
                   </Link>
                   <Link to={createPageUrl("RecruiterAuth")}>
@@ -190,7 +190,7 @@ export default function Layout({ children, currentPageName }) {
                       <>
                         <Link to={createPageUrl("StudentAuth")} onClick={() => setMobileMenuOpen(false)}>
                           <Button variant="outline" className="w-full text-blue-600 border-blue-600 hover:bg-blue-50">
-                            Student Sign In
+                            Student
                           </Button>
                         </Link>
                         <Link to={createPageUrl("RecruiterAuth")} onClick={() => setMobileMenuOpen(false)}>
@@ -524,22 +524,16 @@ export default function Layout({ children, currentPageName }) {
 
 export const AdminLayout = ({ children }) => {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleAdminLogout = async () => {
-    // Remove admin session from localStorage
-    localStorage.removeItem("admin-auth");
-    // Optionally call backend logout endpoint here
-    // try {
-    //   await fetch('/api/admin/logout', { method: 'POST', credentials: 'include' });
-    // } catch (e) { /* handle error if needed */ }
-    navigate("/p/home");
-  };
+  // Remove handleAdminLogout and isSettingsPage logic since logout button will be removed
 
   return (
     <div className="min-h-screen w-full flex bg-gray-50">
       <aside className="w-64 bg-white border-r flex-shrink-0 hidden md:flex flex-col">
         <div className="h-16 border-b flex items-center px-6">
-          <Link to={createPageUrl("Home")} className="flex items-center gap-2">
+          <Link to={createPageUrl("Home")}
+            className="flex items-center gap-2">
             <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
               <Briefcase className="w-5 h-5 text-indigo-600" />
             </div>
@@ -554,13 +548,14 @@ export const AdminLayout = ({ children }) => {
             <LayoutDashboard className="h-5 w-5" />
             Dashboard
           </Link>
+          <Link
+            to={createPageUrl("adminsettings")}
+            className="flex items-center gap-3 px-4 py-2 text-sm font-medium bg-indigo-50 text-indigo-700 rounded-lg"
+          >
+            <User className="h-5 w-5" />
+            Settings
+          </Link>
         </nav>
-        <div className="px-4 py-4 border-t">
-          <Button variant="ghost" className="w-full justify-start text-gray-600" onClick={handleAdminLogout}>
-            <LogOut className="mr-2 h-4 w-4" />
-            Logout
-          </Button>
-        </div>
       </aside>
       <div className="flex-1 flex flex-col">
         <header className="h-16 border-b bg-white flex md:hidden items-center px-6">
