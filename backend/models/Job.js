@@ -72,17 +72,10 @@ const jobSchema = new mongoose.Schema(
       enum: ["active", "closed", "draft"],
       default: "active",
     },
-    // Add approval status for admin review
     approval_status: {
       type: String,
       enum: ["pending", "approved", "rejected"],
-      default: "pending",
-    },
-    // Admin review details
-    admin_review: {
-      reviewed_by: String, // Admin email
-      reviewed_at: Date,
-      comments: String,
+      default: "approved", // Changed from "pending" to "approved" for development
     },
     company_logo: {
       type: String, // Company logo URL

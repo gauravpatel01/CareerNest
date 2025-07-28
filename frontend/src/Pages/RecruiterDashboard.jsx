@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-// import { User } from "@/entities/User";
-// import { Job } from "@/entities/Job";
-// import { Application } from "@/entities/Application";
+import UserApi from "../Services/UserApi";
+import JobApi from "../Services/JobApi";
+import ApplicationApi from "../Services/ApplicationApi";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -21,13 +21,13 @@ export default function RecruiterDashboard() {
 
   const loadDashboardData = async () => {
     try {
-      const userData = await User.me();
+      const userData = await UserApi.me();
       setUser(userData);
 
-      const jobData = await Job.filter({ posted_by: userData.email });
+      const jobData = await JobApi.filter({ posted_by: userData.email });
       setJobs(jobData);
 
-      const applicationData = await Application.list();
+      const applicationData = await ApplicationApi.list();
       setApplications(applicationData);
     } catch (error) {
       console.error("Error loading dashboard data:", error);
