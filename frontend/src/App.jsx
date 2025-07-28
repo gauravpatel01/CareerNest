@@ -31,6 +31,7 @@ import Analytics from "./Pages/Analytics";
 import AdminAuth from "./Pages/AdminAuth";
 import Applications from "./Pages/Applications";
 import Preparation from "./Pages/Preparation";
+import Hackathons from "./Pages/Hackathons";
 
 export default function App() {
   return (
@@ -241,6 +242,17 @@ export default function App() {
             <ProtectedRoute requiredRole="student">
               <StudentLayout>
                 <Preparation />
+              </StudentLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/p/hackathons"
+          element={
+            <ProtectedRoute requiredRole="student">
+              <StudentLayout>
+                <Hackathons />
               </StudentLayout>
             </ProtectedRoute>
           }
