@@ -35,8 +35,8 @@ export default function Internships() {
       },
     });
     const data = await response.json();
-    // Only show approved internships
-    setInternships((Array.isArray(data) ? data : []).filter(internship => internship.status === 'approved'));
+    // Show all internships for development (including pending ones)
+    setInternships(Array.isArray(data) ? data : []);
   } catch (error) {
     console.error('Error loading internships:', error);
   } finally {

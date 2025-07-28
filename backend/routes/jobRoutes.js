@@ -1,6 +1,7 @@
 const express = require("express");
 const Job = require("../models/Job");
 const Internship = require("../models/Internship");
+const { authenticateJWT } = require("../middleware/auth");
 const router = express.Router();
 
 // Get all jobs/internships (only approved ones for students)
@@ -63,7 +64,7 @@ router.get("/:id", async (req, res, next) => {
 });
 
 // Create new job/internship
-router.post("/", async (req, res, next) => {
+router.post("/", authenticateJWT, async (req, res, next) => {
   try {
     const job = new Job(req.body);
     await job.save();
@@ -77,7 +78,7 @@ router.post("/", async (req, res, next) => {
 });
 
 // Update job/internship
-router.put("/:id", async (req, res, next) => {
+router.put("/:id", authenticateJWT, async (req, res, next) => {
   try {
     const job = await Job.findByIdAndUpdate(req.params.id, req.body, {
       new: true,

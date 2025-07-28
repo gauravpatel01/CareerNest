@@ -1,10 +1,11 @@
 const express = require("express");
 const Application = require("../models/Application");
 const Job = require("../models/Job");
+const { authenticateJWT } = require("../middleware/auth");
 const router = express.Router();
 
 // Get all applications
-router.get("/", async (req, res, next) => {
+router.get("/", authenticateJWT, async (req, res, next) => {
   try {
     const { status, applicant_email, job_id } = req.query;
     const filter = {};
@@ -41,7 +42,7 @@ router.get("/:id", async (req, res, next) => {
 });
 
 // Create new application
-router.post("/", async (req, res, next) => {
+router.post("/", authenticateJWT, async (req, res, next) => {
   try {
     const { job_id } = req.body;
 

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-// import { Application } from "@/entities/Application";
-// import { User } from "@/entities/User";
+import ApplicationApi from "../../Services/ApplicationApi";
+import UserApi from "../../Services/UserApi";
 // import { UploadFile } from "@/integrations/Core";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -87,9 +87,9 @@ export default function ApplicationForm({ job, onClose, onSuccess }) {
 
     try {
       // Check if user is logged in
-      const user = await User.me();
+      const user = await UserApi.me();
 
-      await Application.create({
+      await ApplicationApi.create({
         job_id: job.id,
         applicant_email: formData.applicant_email || user.email,
         applicant_name: formData.applicant_name || user.full_name,

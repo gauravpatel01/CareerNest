@@ -26,7 +26,7 @@ const internshipSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ["pending", "approved", "rejected"],
-      default: "pending",
+      default: "approved", // Changed from "pending" to "approved" for development
     },
     posted_by: String, // Email of recruiter who posted
     company_logo: String,
