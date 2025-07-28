@@ -81,7 +81,13 @@ export default function PostJob() {
 
     try {
       console.log("Payload being sent:", payload);
-      const response = await axios.post("/api/jobs", payload);
+      const jwt = localStorage.getItem("jwt");
+      const response = await axios.post("/api/jobs", payload, {
+        headers: {
+          'Authorization': `Bearer ${jwt}`,
+          'Content-Type': 'application/json'
+        }
+      });
       navigate("/p/jobs");
     } catch (error) {
       console.error("Job creation failed", error.response?.data || error.message);
