@@ -21,6 +21,7 @@ import {
   Home,
   BriefcaseBusiness,
   LucideBrainCog,
+  Rocket,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createPageUrl } from "./Components/utils";
@@ -395,6 +396,17 @@ export default function StudentLayout({ children }) {
                   <LucideBrainCog className="w-4 h-4 mr-3 inline" />
                   Preparation
                 </button>
+                <button
+                  onClick={() => handleNavigationClick(createPageUrl("Hackathons"))}
+                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+                    isActive(createPageUrl("Hackathons"))
+                      ? "text-blue-600 bg-blue-50"
+                      : "text-gray-900 hover:bg-gray-100"
+                  }`}
+                >
+                  <Rocket className="w-4 h-4 mr-3 inline" />
+                  Hackathons
+                </button>
               </nav>
             </div>
           </div>
@@ -413,10 +425,11 @@ export default function StudentLayout({ children }) {
           <nav className="space-y-4 text-sm font-semibold text-gray-800">
             {[
               { name: "Dashboard", href: createPageUrl("Studentdashboard") },
-              { name: "Jobs", href: createPageUrl("Jobs") },
-              { name: "Internships", href: createPageUrl("Internships") },
+              // { name: "Jobs", href: createPageUrl("Jobs") },
+              // { name: "Internships", href: createPageUrl("Internships") },
               { name: "My Applications", href: createPageUrl("Applications") },
               { name: "Preparation", href: createPageUrl("Preparation") },
+              { name: "Hackathons", href: createPageUrl("Hackathons") },
             ].map((item) => (
               <Link
                 key={item.name}
