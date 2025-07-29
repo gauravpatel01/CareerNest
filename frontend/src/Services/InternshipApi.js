@@ -20,11 +20,19 @@ export async function fetchInternships(filters = {}) {
       }
     });
 
+    const jwt = localStorage.getItem("jwt");
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    
+    // Add JWT token if available (for recruiter requests)
+    if (jwt) {
+      headers['Authorization'] = `Bearer ${jwt}`;
+    }
+
     const response = await fetch(`/api/internships?${queryParams}`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
     });
 
     if (!response.ok) {
@@ -34,6 +42,77 @@ export async function fetchInternships(filters = {}) {
     return await response.json();
   } catch (error) {
     console.error('Error fetching internships:', error);
+    throw error;
+  }
+}
+
+// Create new internship
+export async function createInternship(internshipData) {
+  try {
+    const jwt = localStorage.getItem("jwt");
+    const response = await fetch('/api/internships/create', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${jwt}`,
+      },
+      body: JSON.stringify(internshipData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create internship');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error creating internship:', error);
+    throw error;
+  }
+}
+
+// Update internship
+export async function updateInternship(internshipId, updateData) {
+  try {
+    const jwt = localStorage.getItem("jwt");
+    const response = await fetch(`/api/internships/${internshipId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${jwt}`,
+      },
+      body: JSON.stringify(updateData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update internship');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error updating internship:', error);
+    throw error;
+  }
+}
+
+// Delete internship
+export async function deleteInternship(internshipId) {
+  try {
+    const jwt = localStorage.getItem("jwt");
+    const response = await fetch(`/api/internships/${internshipId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${jwt}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete internship');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error deleting internship:', error);
     throw error;
   }
 }

@@ -6,14 +6,13 @@ import { Eye, Edit, Trash2, Plus } from "lucide-react";
 import LoadingSpinner from "../components/common/LoadingSpinner";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import { fetchInternships } from "../Services/InternshipApi";
+import { fetchInternships, deleteInternship } from "../Services/InternshipApi";
 
 export default function ManageInternships() {
   const [internships, setInternships] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [recruiter, setRecruiter] = useState(null);
-  const [showDetails, setShowDetails] = useState(false);
-  const [selectedInternship, setSelectedInternship] = useState(null);
+  const [showDetails, setShowDetails] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -41,44 +40,22 @@ export default function ManageInternships() {
   };
 
   const handleDelete = async (internshipId) => {
-    // Only allow valid MongoDB ObjectId (24 hex chars)
-    if (!internshipId || typeof internshipId !== 'string' || internshipId.length !== 24) {
-      alert("Invalid internship ID. Cannot delete.");
-      return;
-    }
-    try {
-      const res = await fetch(`/api/internships/${internshipId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json"
-        }
-      });
-      if (res.ok) {
-        setInternships((prev) => prev.filter((internship) => internship._id !== internshipId));
-      } else {
-        const err = await res.json();
-        alert(err.error || "Failed to delete internship.");
+    if (window.confirm("Are you sure you want to delete this internship?")) {
+      try {
+        await deleteInternship(internshipId);
+        setInternships(internships.filter(internship => internship._id !== internshipId));
+      } catch (error) {
+        console.error("Error deleting internship:", error);
+        alert("Failed to delete internship");
       }
-    } catch (error) {
-      alert("Failed to delete internship.");
     }
   };
 
-  const handleView = (internship) => {
-    setSelectedInternship(internship);
-    setShowDetails(true);
-  };
-
-  const handleEdit = (internship) => {
-    if (internship._id && internship._id.length === 24) {
-      navigate(`/p/edit-internship/${internship._id}`);
-    } else {
-      alert("Invalid internship ID. Cannot edit.");
-    }
-  };
-
-  const handleGoBack = () => {
-    navigate(-1); // 👈 go to previous page
+  const toggleDetails = (internshipId) => {
+    setShowDetails(prev => ({
+      ...prev,
+      [internshipId]: !prev[internshipId]
+    }));
   };
 
   if (isLoading) {
@@ -87,155 +64,119 @@ export default function ManageInternships() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-2 sm:px-4 py-6 sm:py-8">
-
-         {/* ⬅️ Back Button */}
-      <button
-        onClick={handleGoBack}
-        className="flex items-center text-sm text-blue-600 hover:underline mb-4"
-      >
-        <ArrowLeft className="w-4 h-4 mr-1" />
-        Go Back
-      </button>
-      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center sm:text-left">Manage Internships</h1>
+          <div className="flex items-center gap-4">
+            <Link to="/p/recruiterdashboard">
+              <Button variant="outline" size="sm">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Dashboard
+              </Button>
+            </Link>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Manage Internships</h1>
+              <p className="text-gray-600">Manage your internship postings</p>
+            </div>
+          </div>
           <Link to="/p/post-internships">
-            <Button className="bg-blue-500 hover:bg-blue-600 w-full sm:w-auto flex items-center justify-center">
+            <Button className="bg-blue-500 hover:bg-blue-600">
               <Plus className="w-4 h-4 mr-2" />
               Post New Internship
             </Button>
           </Link>
         </div>
-        <Card>
-          <CardHeader>
-            <CardTitle>Your Internship Postings</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {internships.length > 0 ? (
-              <div className="space-y-4">
-                {internships.map((internship) => (
-                  <div
-                    key={internship._id || internship.id}
-                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border rounded-lg gap-4 sm:gap-0"
-                  >
-                    <div className="w-full sm:w-auto">
-                      <h3 className="font-semibold text-gray-900 text-lg">{internship.title}</h3>
-                      <p className="text-sm text-gray-600">
-                        {internship.location} • {internship.duration}
+
+        {/* Internships List */}
+        <div className="space-y-6">
+          {internships.length > 0 ? (
+            internships.map((internship) => (
+              <Card key={internship._id}>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-4 mb-2">
+                        <h3 className="text-xl font-semibold text-gray-900">
+                          {internship.title}
+                        </h3>
+                        <Badge
+                          className={
+                            internship.status === "approved" ? "bg-green-100 text-green-800" :
+                            internship.status === "pending" ? "bg-yellow-100 text-yellow-800" :
+                            "bg-gray-100 text-gray-800"
+                          }
+                        >
+                          {internship.status || "pending"}
+                        </Badge>
+                      </div>
+                      <p className="text-gray-600 mb-2">
+                        {internship.company} • {internship.location} • {internship.duration}
                       </p>
-                      <Badge
-                        className={
-                          internship.status === "approved" ? "bg-green-100 text-green-800" : 
-                          internship.status === "pending" ? "bg-yellow-100 text-yellow-800" : 
-                          "bg-gray-100 text-gray-800"
-                        }
-                      >
-                        {internship.status}
-                      </Badge>
+                      <p className="text-sm text-gray-500 mb-2">
+                        Stipend: {internship.stipend}
+                      </p>
+                      
+                      {showDetails[internship._id] && (
+                        <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                          <h4 className="font-semibold mb-2">Description:</h4>
+                          <p className="text-gray-700 mb-3">{internship.description}</p>
+                          <h4 className="font-semibold mb-2">Requirements:</h4>
+                          <p className="text-gray-700">{internship.requirements}</p>
+                        </div>
+                      )}
                     </div>
-                    <div className="flex w-full sm:w-auto gap-2 justify-end">
+                    
+                    <div className="flex items-center space-x-2 ml-4">
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleView(internship)}
-                        className="flex-1 sm:flex-none"
+                        onClick={() => toggleDetails(internship._id)}
                       >
                         <Eye className="w-4 h-4 mr-1" />
-                        View
+                        {showDetails[internship._id] ? "Hide" : "View"}
                       </Button>
+                      <Link to={`/p/edit-internship/${internship._id}`}>
+                        <Button variant="outline" size="sm">
+                          <Edit className="w-4 h-4 mr-1" />
+                          Edit
+                        </Button>
+                      </Link>
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleEdit(internship)}
-                        className="flex-1 sm:flex-none"
-                      >
-                        <Edit className="w-4 h-4 mr-1" />
-                        Edit
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="text-red-600 hover:text-red-700 flex-1 sm:flex-none"
+                        className="text-red-600 hover:text-red-700"
                         onClick={() => handleDelete(internship._id)}
-                        disabled={!internship._id || internship._id.length !== 24}
                       >
                         <Trash2 className="w-4 h-4 mr-1" />
                         Delete
                       </Button>
                     </div>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <h3 className="text-lg font-semibold text-gray-600 mb-2">No internships posted yet</h3>
-                <p className="text-gray-500 mb-4">Start by posting your first internship to attract candidates</p>
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            <Card>
+              <CardContent className="p-8 text-center">
+                <div className="mb-4">
+                  <Plus className="w-12 h-12 text-gray-300 mx-auto" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-600 mb-2">
+                  No internships posted yet
+                </h3>
+                <p className="text-gray-500 mb-4">
+                  Start by posting your first internship to attract candidates
+                </p>
                 <Link to="/p/post-internships">
-                  <Button className="bg-blue-500 hover:bg-blue-600 w-full sm:w-auto flex items-center justify-center">
+                  <Button className="bg-blue-500 hover:bg-blue-600">
                     <Plus className="w-4 h-4 mr-2" />
                     Post Your First Internship
                   </Button>
                 </Link>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-        {showDetails && selectedInternship && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold">{selectedInternship.title}</h2>
-                <Button variant="outline" size="sm" onClick={() => setShowDetails(false)}>
-                  ✕
-                </Button>
-              </div>
-              <div className="space-y-4">
-                <div>
-                  <strong>Company:</strong> {selectedInternship.company}
-                </div>
-                <div>
-                  <strong>Location:</strong> {selectedInternship.location}
-                </div>
-                <div>
-                  <strong>Duration:</strong> {selectedInternship.duration}
-                </div>
-                <div>
-                  <strong>Stipend:</strong> {selectedInternship.stipend}
-                </div>
-                <div>
-                  <strong>Description:</strong> {selectedInternship.description}
-                </div>
-                {selectedInternship.requirements && (
-                  <div>
-                    <strong>Requirements:</strong>
-                    <ul className="list-disc list-inside mt-1">
-                      {selectedInternship.requirements.map((req, index) => (
-                        <li key={index}>{req}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                {selectedInternship.skills && (
-                  <div>
-                    <strong>Skills:</strong>
-                    <ul className="list-disc list-inside mt-1">
-                      {selectedInternship.skills.map((skill, index) => (
-                        <li key={index}>{skill}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                <div>
-                  <strong>Status:</strong> 
-                  <Badge className="ml-2">
-                    {selectedInternship.status}
-                  </Badge>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </div>
     </div>
   );

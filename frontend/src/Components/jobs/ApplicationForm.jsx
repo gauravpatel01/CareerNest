@@ -34,6 +34,9 @@ export default function ApplicationForm({ job, onClose, onSuccess }) {
   const jwt = localStorage.getItem("jwt");
   const isStudent = user && jwt && user.role === "student";
 
+  // Determine if this is an internship or job application
+  const isInternship = job.job_type === "Internship" || job.duration || job.stipend;
+
   if (!isStudent) {
     return (
       <Card className="max-w-2xl mx-auto">
@@ -45,7 +48,7 @@ export default function ApplicationForm({ job, onClose, onSuccess }) {
         </CardHeader>
         <CardContent>
           <div className="text-center text-red-600 mb-4 font-semibold">
-            You must be logged in as a student to apply for this internship.
+            You must be logged in as a student to apply for this {isInternship ? 'internship' : 'job'}.
           </div>
           <div className="flex justify-center">
             <Button onClick={() => navigate("/p/studentauth")}>Login as Student</Button>
@@ -89,17 +92,23 @@ export default function ApplicationForm({ job, onClose, onSuccess }) {
       // Check if user is logged in
       const user = await UserApi.me();
 
-      await ApplicationApi.create({
-        job_id: job.id,
+      const applicationData = {
         applicant_email: formData.applicant_email || user.email,
         applicant_name: formData.applicant_name || user.full_name,
         phone: formData.phone,
         experience: formData.experience,
         cover_letter: formData.cover_letter,
         resume_url: formData.resume_url,
-      });
+      };
 
-      onSuccess("Application submitted successfully!");
+      // Use appropriate API method based on whether it's a job or internship
+      if (isInternship) {
+        await ApplicationApi.createInternshipApplication(job.id || job._id, applicationData);
+      } else {
+        await ApplicationApi.createJobApplication(job.id || job._id, applicationData);
+      }
+
+      onSuccess(`${isInternship ? 'Internship' : 'Job'} application submitted successfully!`);
     } catch (error) {
       console.error("Error submitting application:", error);
       // If user not logged in, redirect to login
@@ -117,6 +126,7 @@ export default function ApplicationForm({ job, onClose, onSuccess }) {
         <CardTitle className="text-2xl text-center">Apply for {job.title}</CardTitle>
         <p className="text-center text-gray-600">
           at {job.company} • {job.location}
+          {isInternship && job.duration && ` • ${job.duration}`}
         </p>
       </CardHeader>
 
@@ -149,56 +159,79 @@ export default function ApplicationForm({ job, onClose, onSuccess }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-              <Input name="phone" value={formData.phone} onChange={handleInputChange} placeholder="+91 9876543210" />
+              <Input
+                name="phone"
+                value={formData.phone}
+                onChange={handleInputChange}
+                placeholder="+91 9876543210"
+              />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Years of Experience</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {isInternship ? 'Relevant Experience' : 'Years of Experience'}
+              </label>
               <Input
                 name="experience"
                 value={formData.experience}
                 onChange={handleInputChange}
-                placeholder="e.g., 2 years, Fresher"
+                placeholder={isInternship ? "Projects, coursework, etc." : "e.g., 3 years"}
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Resume Link (Google Drive) *</label>
-            <Input
-              name="resume_url"
-              value={formData.resume_url}
-              onChange={handleInputChange}
-              placeholder="Paste your Google Drive resume link here"
-              required
-              type="url"
-              pattern="https://drive.google.com/.*"
-            />
-            <p className="text-xs text-gray-500 mt-2">
-              Please provide a shareable Google Drive link to your resume (make sure it is accessible).
-            </p>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Cover Letter</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Cover Letter *</label>
             <Textarea
               name="cover_letter"
               value={formData.cover_letter}
               onChange={handleInputChange}
-              placeholder="Tell us why you're interested in this position and what makes you a great fit..."
-              rows={5}
+              placeholder={`Tell us why you're interested in this ${isInternship ? 'internship' : 'position'} and what makes you a great candidate...`}
+              rows={6}
+              required
             />
           </div>
 
-          <div className="flex space-x-4">
-            <Button type="button" variant="outline" onClick={onClose} className="flex-1">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Resume</label>
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+              {uploadedFileName ? (
+                <div className="flex items-center justify-center space-x-2">
+                  <FileText className="w-5 h-5 text-green-600" />
+                  <span className="text-green-600 font-medium">{uploadedFileName}</span>
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                </div>
+              ) : (
+                <div>
+                  <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                  <p className="text-gray-600 mb-2">Upload your resume (PDF, DOC, DOCX)</p>
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                    id="resume-upload"
+                  />
+                  <label
+                    htmlFor="resume-upload"
+                    className="cursor-pointer bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                  >
+                    Choose File
+                  </label>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="flex justify-end space-x-4">
+            <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
             <Button
               type="submit"
-              disabled={isSubmitting || !formData.resume_url}
-              className="flex-1 bg-blue-600 hover:bg-blue-700"
+              disabled={isSubmitting}
+              className="bg-blue-500 hover:bg-blue-600"
             >
-              {isSubmitting ? "Submitting..." : "Submit Application"}
+              {isSubmitting ? "Submitting..." : `Submit ${isInternship ? 'Internship' : 'Job'} Application`}
             </Button>
           </div>
         </form>
