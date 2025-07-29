@@ -32,6 +32,7 @@ import AdminAuth from "./Pages/AdminAuth";
 import Applications from "./Pages/Applications";
 import Preparation from "./Pages/Preparation";
 import Hackathons from "./Pages/Hackathons";
+import ManageInternships from "./Pages/ManageInternships";
 
 export default function App() {
   return (
@@ -322,6 +323,16 @@ export default function App() {
             <ProtectedRoute requiredRole="recruiter">
               <RecruiterLayout>
                 <ManageJobs />
+              </RecruiterLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/p/manage-internships"
+          element={
+            <ProtectedRoute requiredRole="recruiter">
+              <RecruiterLayout>
+                <ManageInternships />
               </RecruiterLayout>
             </ProtectedRoute>
           }

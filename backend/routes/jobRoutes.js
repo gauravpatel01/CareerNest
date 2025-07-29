@@ -7,7 +7,7 @@ const router = express.Router();
 // Get all jobs/internships (only approved ones for students)
 router.get("/", async (req, res, next) => {
   try {
-    const { job_type, location, status = "active" } = req.query;
+    const { job_type, location, status = "active", posted_by } = req.query;
     const filter = { status };
     
     // Only show approved jobs to students (unless admin is requesting)
@@ -18,6 +18,7 @@ router.get("/", async (req, res, next) => {
 
     if (job_type) filter.job_type = job_type;
     if (location) filter.location = location;
+    if (posted_by) filter.posted_by = posted_by;
 
     const jobs = await Job.find(filter).sort({ postedAt: -1 });
     res.json(jobs);
@@ -152,7 +153,12 @@ router.delete("/:id", async (req, res, next) => {
 // Get all internships (legacy - using Internship model)
 router.get("/internships", async (req, res, next) => {
   try {
-    const internships = await Internship.find();
+    const { posted_by } = req.query;
+    const filter = {};
+    
+    if (posted_by) filter.posted_by = posted_by;
+    
+    const internships = await Internship.find(filter);
     res.json(internships);
   } catch (error) {
     next(error);

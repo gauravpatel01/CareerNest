@@ -84,6 +84,7 @@ export default function RecruiterLayout({ children }) {
     // { name: "Post Jobs", href: createPageUrl("post-jobs") },
     // { name: "Post Internships", href: createPageUrl("post-internships") },
     { name: "Manage Jobs", href: createPageUrl("manage-jobs") },
+    { name: "Manage Internships", href: createPageUrl("manage-internships") },
     { name: "Applications", href: createPageUrl("job-applications") },
     { name: "Analytics", href: createPageUrl("analytics") },
   ];
@@ -350,6 +351,17 @@ export default function RecruiterLayout({ children }) {
                 >
                   <Briefcase className="w-4 h-4 mr-3 inline" />
                   Manage Jobs
+                </button>
+                <button
+                  onClick={() => handleNavigationClick(createPageUrl("manage-internships"))}
+                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+                    isActive(createPageUrl("manage-internships"))
+                      ? "text-blue-600 bg-blue-50"
+                      : "text-gray-900 hover:bg-gray-100"
+                  }`}
+                >
+                  <Plus className="w-4 h-4 mr-3 inline" />
+                  Manage Internships
                 </button>
                 <button
                   onClick={() => handleNavigationClick(createPageUrl("job-applications"))}

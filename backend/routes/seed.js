@@ -73,8 +73,12 @@ router.put('/internships/:id', async (req, res) => {
 // GET all internships (optionally filter by status)
 router.get('/internships', async (req, res) => {
   try {
-    const { status } = req.query;
-    const filter = status ? { status } : {};
+    const { status, posted_by } = req.query;
+    const filter = {};
+    
+    if (status) filter.status = status;
+    if (posted_by) filter.posted_by = posted_by;
+    
     const internships = await Internship.find(filter).sort({ postedAt: -1 });
     res.json(internships);
   } catch (err) {
