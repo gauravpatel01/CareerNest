@@ -2,8 +2,9 @@ const mongoose = require("mongoose");
 
 const connectDB = async () => {
   try {
+    //MONGODB_URI=mongodb://localhost:27017/careernest put this in backend/.env
     const MONGODB_URI =
-      process.env.MONGODB_URI || "mongodb://localhost:27017/careernest";
+      process.env.MONGODB_URI;
 
     await mongoose.connect(MONGODB_URI, {
       useNewUrlParser: true,
