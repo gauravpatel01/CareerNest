@@ -6,11 +6,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ArrowLeft } from "lucide-react";
+import { useToast } from "@/Components/common/ToastContext";
 
 const locations = ["Noida", "Delhi", "Pune", "Mumbai", "Bangalore", "Hyderabad"];
 
 export default function PostInternship() {
   const navigate = useNavigate();
+  const { showError, showSuccess, showWarning } = useToast();
   const [form, setForm] = useState({
     title: "",
     company: "",           // <-- added company here
@@ -62,13 +64,13 @@ export default function PostInternship() {
     e.preventDefault();
 
     if (!recruiter) {
-      alert("Only recruiters can post internships. Please log in as a recruiter.");
+      showError("Only recruiters can post internships. Please log in as a recruiter.");
       navigate("/p/recruiterauth");
       return;
     }
 
     if (!form.company || form.company.trim() === "") {
-      alert("Company name is required. Please update your profile or enter company name.");
+      showWarning("Company name is required. Please update your profile or enter company name.");
       return;
     }
 
@@ -81,11 +83,14 @@ export default function PostInternship() {
 
     try {
       console.log("Payload being sent:", payload);
-      await axios.post("/api/internships/create", payload);
+      const response = await axios.post("/api/internships/create", payload);
+      
+      // Show success message with approval notice
+      showSuccess("Internship posted successfully! Your internship is now pending admin approval. You will be notified once it's approved.");
       navigate("/p/internships");
     } catch (error) {
       console.error("Internship creation failed", error.response?.data || error.message);
-      alert(error.response?.data?.error || "Failed to post internship. Please check all fields.");
+      showError(error.response?.data?.error || "Failed to post internship. Please check all fields.");
     }
   };
 

@@ -9,9 +9,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Eye, EyeOff, AlertCircle, Mail, Phone, CheckCircle } from "lucide-react";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
+import { useToast } from "@/Components/common/ToastContext";
 
 export default function RecruiterAuth() {
   const navigate = useNavigate();
+  const { showSuccess } = useToast();
   const [isLogin, setIsLogin] = useState(true);
   const [loginMethod, setLoginMethod] = useState("email"); // "email" or "phone"
   const [passwordStrength, setPasswordStrength] = useState("");
@@ -93,13 +95,12 @@ export default function RecruiterAuth() {
       [name]: value,
     });
   };
-  const backendURL = import.meta.env.VITE_BACKEND_URL || "";
   const handleGoogleLoginSuccess = async (credentialResponse) => {
     setIsLoading(true);
     setError("");
     try {
       // Send credential to backend and get JWT
-      const res = await fetch(`${backendURL}/api/auth/google`, {
+      const res = await fetch(`/api/auth/google`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ credential: credentialResponse.credential, user_type: "recruiter" }),
@@ -141,7 +142,7 @@ export default function RecruiterAuth() {
         }
 
         // Call backend API for email login
-        const res = await fetch("/api/auth/recruiter/login", {
+        const res = await fetch(`/api/auth/recruiter/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: formData.email, password: formData.password }),
@@ -223,7 +224,7 @@ export default function RecruiterAuth() {
       }
 
       // Call backend API for recruiter registration
-      const res = await fetch(`${backendURL}/api/auth/recruiter/register`, {
+      const res = await fetch(`/api/auth/recruiter/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -269,7 +270,7 @@ export default function RecruiterAuth() {
 
   const handleForgotPassword = () => {
     setError("");
-    alert("Password reset instructions would be sent to your email");
+    showSuccess("Password reset instructions would be sent to your email");
   };
 
   if (!isLogin) {

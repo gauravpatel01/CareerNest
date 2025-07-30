@@ -1,8 +1,11 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect, useRef } from "react";
+import { getUserInfo, validateJWT } from "@/Components/utils";
+import { useToast } from "@/Components/common/ToastContext";
 
 export default function SettingsPage() {
+  const { showError, showSuccess } = useToast();
   const [name, setName] = useState("");
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -16,21 +19,37 @@ export default function SettingsPage() {
 
   useEffect(() => {
     // Detect if user is a Google user (no password set)
+    const userInfo = getUserInfo();
+    if (!userInfo || !userInfo.tokenValid) {
+      console.log("No valid JWT token found");
+      return;
+    }
+    
     const jwt = localStorage.getItem("jwt");
-    if (!jwt) return;
+    console.log("JWT token found:", jwt.substring(0, 20) + "...");
     
     fetch("/api/user/password-status", {
       headers: { Authorization: `Bearer ${jwt}` },
     })
-      .then((res) => res.json())
+      .then((res) => {
+        console.log("Password status response:", res.status);
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        }
+        return res.json();
+      })
       .then((data) => {
+        console.log("Password status data:", data);
         if (data.hasPassword === false) {
           setIsGoogleUser(true);
         } else {
           setIsGoogleUser(false);
         }
       })
-      .catch(() => setIsGoogleUser(false));
+      .catch((error) => {
+        console.error("Error checking password status:", error);
+        setIsGoogleUser(false);
+      });
   }, []);
 
   // Auto-focus old password field when switching to Change Password form
@@ -136,7 +155,7 @@ export default function SettingsPage() {
       
       if (!res.ok) {
         const err = await res.json();
-        alert(err.error || "Failed to delete account. Please try again.");
+        showError(err.error || "Failed to delete account. Please try again.");
         setShowDeleteConfirm(false);
         return;
       }
@@ -150,7 +169,7 @@ export default function SettingsPage() {
       // Redirect to login page
       window.location.href = "/";
     } catch (err) {
-      alert("An error occurred while deleting your account. Please try again.");
+      showError("An error occurred while deleting your account. Please try again.");
       setShowDeleteConfirm(false);
     }
   };
@@ -189,10 +208,64 @@ export default function SettingsPage() {
     }
   };
 
+  // Check if user is logged in
+  const userInfo = getUserInfo();
+  
+  if (!userInfo) {
+    return (
+      <div className="max-w-xl mx-auto p-6 bg-red-50 rounded-lg">
+        <h1 className="text-2xl font-bold mb-2 text-red-800">Authentication Required</h1>
+        <p className="text-sm text-red-600 mb-6">
+          You need to be logged in to access account settings. Please log in first.
+        </p>
+        <button 
+          onClick={() => window.location.href = "/p/recruiterauth"}
+          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
+        >
+          Go to Login
+        </button>
+      </div>
+    );
+  }
+
+  if (!userInfo.tokenValid) {
+    return (
+      <div className="max-w-xl mx-auto p-6 bg-yellow-50 rounded-lg">
+        <h1 className="text-2xl font-bold mb-2 text-yellow-800">Session Expired</h1>
+        <p className="text-sm text-yellow-600 mb-6">
+          Your session has expired. Please log in again to continue.
+        </p>
+        <p className="text-xs text-yellow-500 mb-4">Reason: {userInfo.tokenReason}</p>
+        <button 
+          onClick={() => {
+            localStorage.removeItem("jwt");
+            localStorage.removeItem("user");
+            window.location.href = "/p/recruiterauth";
+          }}
+          className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg"
+        >
+          Log In Again
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-xl mx-auto p-6 bg-blue-50 rounded-lg">
       <h1 className="text-2xl font-bold mb-2">Account Settings</h1>
       <p className="text-sm text-gray-600 mb-6">Manage your credentials and account preferences.</p>
+      
+      {/* Debug Information (remove in production) */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="mb-6 p-4 bg-gray-100 rounded-lg">
+          <h3 className="text-sm font-semibold mb-2">Debug Info:</h3>
+          <p className="text-xs text-gray-600">User: {userInfo.name} ({userInfo.role})</p>
+          <p className="text-xs text-gray-600">Token Valid: {userInfo.tokenValid ? 'Yes' : 'No'}</p>
+          {!userInfo.tokenValid && (
+            <p className="text-xs text-red-600">Reason: {userInfo.tokenReason}</p>
+          )}
+        </div>
+      )}
 
       {/* Name Update */}
       <div className="space-y-2 mb-6">

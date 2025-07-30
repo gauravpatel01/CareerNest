@@ -4,9 +4,23 @@ import { createPageUrl } from "../utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapPin, Clock, IndianRupee, Building, Users } from "lucide-react";
+import { MapPin, Clock, IndianRupee, Building, Users, AlertCircle, CheckCircle, XCircle } from "lucide-react";
 
 export default function JobCard({ job, isInternship = false }) {
+  // Check if user is a recruiter
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const isRecruiter = user.role === "recruiter";
+  const isMyJob = isRecruiter && job.posted_by === user.email;
+
+  const getApprovalStatusBadge = (status) => {
+    const variants = {
+      pending: "bg-yellow-100 text-yellow-800",
+      approved: "bg-green-100 text-green-800",
+      rejected: "bg-red-100 text-red-800",
+    };
+    return <Badge className={variants[status]}>{status}</Badge>;
+  };
+
   const formatSalary = (min, max) => {
     if (!min && !max) return "Salary not disclosed";
     if (min && max) {
@@ -108,6 +122,14 @@ export default function JobCard({ job, isInternship = false }) {
             {job.experience_level}
           </Badge>
           <Badge variant="secondary">{job.job_type}</Badge>
+                     {isMyJob && (
+             <div className="flex items-center gap-1">
+               {(job.approval_status === "pending" || job.status === "pending") && <AlertCircle className="w-3 h-3" />}
+               {(job.approval_status === "approved" || job.status === "approved") && <CheckCircle className="w-3 h-3" />}
+               {(job.approval_status === "rejected" || job.status === "rejected") && <XCircle className="w-3 h-3" />}
+               {getApprovalStatusBadge(job.approval_status || job.status)}
+             </div>
+           )}
           {job.skills && job.skills.slice(0, 3).map((skill, index) => (
             <Badge key={index} variant="outline" className="text-blue-600 border-blue-600">
               {skill}
@@ -141,11 +163,23 @@ export default function JobCard({ job, isInternship = false }) {
                 View Details
               </Button>
             </Link>
-            <Link to={`/p/job-details/${job._id}?apply=true`}>
-              <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                {isInternship ? "Apply for Internship" : "Apply Now"}
-              </Button>
-            </Link>
+                         {(job.approval_status === "approved" || job.status === "approved") && (
+               <Link to={`/p/job-details/${job._id}?apply=true`}>
+                 <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                   {isInternship ? "Apply for Internship" : "Apply Now"}
+                 </Button>
+               </Link>
+             )}
+             {(job.approval_status === "pending" || job.status === "pending") && (
+               <Button size="sm" variant="outline" disabled className="text-yellow-600">
+                 Pending Approval
+               </Button>
+             )}
+             {(job.approval_status === "rejected" || job.status === "rejected") && (
+               <Button size="sm" variant="outline" disabled className="text-red-600">
+                 Rejected
+               </Button>
+             )}
           </div>
         </div>
       </CardContent>

@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { Button } from "../Components/ui/button";
 import { Input } from "../Components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../Components/ui/select";
+import { useToast } from "@/Components/common/ToastContext";
 
 export default function ResumeBuilder() {
+  const { showSuccess } = useToast();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -40,7 +42,7 @@ export default function ResumeBuilder() {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Resume Data:", form);
-    alert("Resume data submitted to console.");
+    showSuccess("Resume data submitted to console.");
   };
 
   return (

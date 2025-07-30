@@ -7,6 +7,7 @@ import LoadingSpinner from "../components/common/LoadingSpinner";
 import { Link, useNavigate } from "react-router-dom";
 import JobDetailsModal from "../Components/jobs/JobDetailsModal";
 import { ArrowLeft } from "lucide-react";
+import { useToast } from "@/Components/common/ToastContext";
 
 export default function ManageJobs() {
   const [jobs, setJobs] = useState([]);
@@ -15,6 +16,7 @@ export default function ManageJobs() {
   const [showDetails, setShowDetails] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
   const navigate = useNavigate();
+  const { showError, showWarning } = useToast();
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -48,7 +50,7 @@ export default function ManageJobs() {
   const handleDelete = async (jobId) => {
     // Only allow valid MongoDB ObjectId (24 hex chars)
     if (!jobId || typeof jobId !== 'string' || jobId.length !== 24) {
-      alert("Invalid job ID. Cannot delete.");
+      showError("Invalid job ID. Cannot delete.");
       return;
     }
     try {
@@ -62,10 +64,10 @@ export default function ManageJobs() {
         setJobs((prev) => prev.filter((job) => job._id !== jobId));
       } else {
         const err = await res.json();
-        alert(err.error || "Failed to delete internship/job.");
+        showError(err.error || "Failed to delete internship/job.");
       }
     } catch (error) {
-      alert("Failed to delete internship/job.");
+      showError("Failed to delete internship/job.");
     }
   };
 
@@ -77,7 +79,7 @@ export default function ManageJobs() {
     if (job._id && job._id.length === 24) {
       navigate(`/p/edit-job/${job._id}`);
     } else {
-      alert("Invalid job ID. Cannot edit.");
+      showError("Invalid job ID. Cannot edit.");
     }
   };
 

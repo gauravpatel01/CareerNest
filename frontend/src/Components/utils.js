@@ -47,3 +47,53 @@ export function createPageUrl(pagePath) {
   // Otherwise, return just the base URL
   return baseUrl;
 }
+
+// JWT Token validation utility
+export const validateJWT = (token) => {
+  if (!token) return { valid: false, reason: "No token provided" };
+  
+  try {
+    // JWT tokens have 3 parts separated by dots
+    const parts = token.split('.');
+    if (parts.length !== 3) {
+      return { valid: false, reason: "Invalid token format" };
+    }
+    
+    // Decode the payload (second part)
+    const payload = JSON.parse(atob(parts[1]));
+    
+    // Check if token is expired
+    const currentTime = Math.floor(Date.now() / 1000);
+    if (payload.exp && payload.exp < currentTime) {
+      return { valid: false, reason: "Token expired", payload };
+    }
+    
+    return { valid: true, payload };
+  } catch (error) {
+    return { valid: false, reason: "Invalid token", error: error.message };
+  }
+};
+
+// Get user info from localStorage
+export const getUserInfo = () => {
+  const jwt = localStorage.getItem("jwt");
+  const user = localStorage.getItem("user");
+  
+  if (!jwt || !user) {
+    return null;
+  }
+  
+  try {
+    const userData = JSON.parse(user);
+    const tokenValidation = validateJWT(jwt);
+    
+    return {
+      ...userData,
+      tokenValid: tokenValidation.valid,
+      tokenReason: tokenValidation.reason
+    };
+  } catch (error) {
+    console.error("Error parsing user data:", error);
+    return null;
+  }
+};

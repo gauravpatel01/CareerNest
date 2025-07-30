@@ -96,9 +96,21 @@ export default function AdminPage() {
     }
   }, [isAuthenticated]);
 
-  const handleInternshipStatusChange = async (id, status) => {
+  const handleInternshipStatusChange = async (id, status, comments = "") => {
     try {
-      await updateInternshipStatus(id, status);
+      const adminToken = localStorage.getItem("admin-token");
+      const adminData = JSON.parse(localStorage.getItem("admin-data") || "{}");
+      
+      await axios.put(`/api/internships/${id}/approve`, 
+        { status, comments },
+        {
+          headers: {
+            'Authorization': `Bearer ${adminToken}`,
+            'x-admin-auth': 'true',
+            'x-admin-email': adminData.email || 'admin@careernest.com'
+          }
+        }
+      );
       await fetchInternships(); // refresh data after update
       if (isInternshipModalOpen) setIsInternshipModalOpen(false);
     } catch (error) {

@@ -75,7 +75,18 @@ const jobSchema = new mongoose.Schema(
     approval_status: {
       type: String,
       enum: ["pending", "approved", "rejected"],
-      default: "approved", // Changed from "pending" to "approved" for development
+      default: "pending", // Jobs require admin approval before being published
+    },
+    admin_review: {
+      reviewed_by: {
+        type: String, // Admin email who reviewed
+      },
+      reviewed_at: {
+        type: Date,
+      },
+      comments: {
+        type: String, // Admin comments for approval/rejection
+      },
     },
     company_logo: {
       type: String, // Company logo URL

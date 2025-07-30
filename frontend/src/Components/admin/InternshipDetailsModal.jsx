@@ -1,10 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import { CheckCircle, XCircle, MapPin, Briefcase, IndianRupee, Clock } from 'lucide-react';
 
 export default function InternshipDetailsModal({ isOpen, onOpenChange, internship, onStatusChange }) {
+  const [comments, setComments] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleStatusChange = async (status) => {
+    if (!internship) return;
+    
+    setIsLoading(true);
+    try {
+      await onStatusChange(internship.id, status, comments);
+      setComments("");
+    } catch (error) {
+      console.error("Failed to update status:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   if (!internship) return null;
 
   return (
@@ -41,18 +59,59 @@ export default function InternshipDetailsModal({ isOpen, onOpenChange, internshi
             </div>
           </div>
 
+          {/* Admin Review Info */}
+          {internship.admin_review && (
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <h3 className="font-semibold mb-2">Admin Review</h3>
+              <div className="space-y-2 text-sm">
+                <p><span className="font-medium">Reviewed by:</span> {internship.admin_review.reviewed_by}</p>
+                <p><span className="font-medium">Reviewed at:</span> {new Date(internship.admin_review.reviewed_at).toLocaleDateString()}</p>
+                {internship.admin_review.comments && (
+                  <p><span className="font-medium">Comments:</span> {internship.admin_review.comments}</p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Approval Actions */}
+          {internship.status === "pending" && (
+            <div className="space-y-4 border-t pt-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Comments (Optional)
+                </label>
+                <Textarea
+                  placeholder="Add any comments about your decision..."
+                  value={comments}
+                  onChange={(e) => setComments(e.target.value)}
+                  rows={3}
+                />
+              </div>
+              
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => handleStatusChange("approved")}
+                  disabled={isLoading}
+                  className="flex-1 bg-green-600 hover:bg-green-700"
+                >
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  Approve
+                </Button>
+                <Button
+                  onClick={() => handleStatusChange("rejected")}
+                  disabled={isLoading}
+                  variant="destructive"
+                  className="flex-1"
+                >
+                  <XCircle className="w-4 h-4 mr-2" />
+                  Reject
+                </Button>
+              </div>
+            </div>
+          )}
+
           <div className="flex justify-end gap-3 pt-4 border-t">
-             <Button variant="outline" onClick={() => onOpenChange(false)}>Close</Button>
-            {internship.status !== 'approved' && (
-              <Button onClick={() => onStatusChange(internship.id, 'approved')} className="bg-green-600 hover:bg-green-700">
-                <CheckCircle className="mr-2 h-4 w-4" /> Approve
-              </Button>
-            )}
-            {internship.status !== 'rejected' && (
-              <Button onClick={() => onStatusChange(internship.id, 'rejected')} className="bg-red-600 hover:bg-red-700">
-                <XCircle className="mr-2 h-4 w-4" /> Reject
-              </Button>
-            )}
+            <Button variant="outline" onClick={() => onOpenChange(false)}>Close</Button>
           </div>
         </div>
       </DialogContent>

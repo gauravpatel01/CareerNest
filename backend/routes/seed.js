@@ -46,13 +46,50 @@ router.post('/internships/create', async (req, res) => {
   try {
     const internship = new Internship(req.body);
     await internship.save();
-    res.status(201).json({ message: 'Internship created successfully', internship });
+    res.status(201).json({ 
+      message: 'Internship created successfully and pending admin approval', 
+      internship 
+    });
   } catch (err) {
     res.status(500).json({ error: 'Failed to create internship.' });
   }
 });
 
-// PUT update internship status by id
+// Admin approval endpoint for internships
+router.put('/internships/:id/approve', async (req, res) => {
+  try {
+    const { status, comments } = req.body;
+    const adminEmail = req.headers['x-admin-email'] || 'admin@careernest.com';
+    
+    const updateData = {
+      status,
+      admin_review: {
+        reviewed_by: adminEmail,
+        reviewed_at: new Date(),
+        comments: comments || ""
+      }
+    };
+
+    const internship = await Internship.findByIdAndUpdate(
+      req.params.id,
+      updateData,
+      { new: true, runValidators: true }
+    );
+    
+    if (!internship) {
+      return res.status(404).json({ error: 'Internship not found' });
+    }
+    
+    res.json({
+      message: `Internship ${status} successfully`,
+      internship,
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update internship status.' });
+  }
+});
+
+// PUT update internship status by id (legacy)
 router.put('/internships/:id', async (req, res) => {
   try {
     const { status } = req.body;
@@ -75,6 +112,13 @@ router.get('/internships', async (req, res) => {
   try {
     const { status } = req.query;
     const filter = status ? { status } : {};
+    
+    // Only show approved internships to students (unless admin is requesting)
+    const isAdmin = req.headers['x-admin-auth'] === 'true';
+    if (!isAdmin) {
+      filter.status = "approved";
+    }
+    
     const internships = await Internship.find(filter).sort({ postedAt: -1 });
     res.json(internships);
   } catch (err) {

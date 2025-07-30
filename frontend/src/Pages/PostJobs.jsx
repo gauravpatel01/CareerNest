@@ -6,11 +6,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ArrowLeft } from "lucide-react";
+import { useToast } from "@/Components/common/ToastContext";
 
 const locations = ["Noida", "Delhi", "Pune", "Mumbai", "Bangalore", "Hyderabad"];
 
 export default function PostJob() {
   const navigate = useNavigate();
+  const { showError, showSuccess, showWarning } = useToast();
   const [form, setForm] = useState({
     title: "",
     company: "",           // <-- added company here
@@ -62,13 +64,13 @@ export default function PostJob() {
     e.preventDefault();
 
     if (!recruiter) {
-      alert("Only recruiters can post internships. Please log in as a recruiter.");
+      showError("Only recruiters can post jobs. Please log in as a recruiter.");
       navigate("/p/recruiterauth");
       return;
     }
 
     if (!form.company || form.company.trim() === "") {
-      alert("Company name is required. Please update your profile or enter company name.");
+      showWarning("Company name is required. Please update your profile or enter company name.");
       return;
     }
 
@@ -88,10 +90,13 @@ export default function PostJob() {
           'Content-Type': 'application/json'
         }
       });
+      
+      // Show success message with approval notice
+      showSuccess("Job posted successfully! Your job is now pending admin approval. You will be notified once it's approved.");
       navigate("/p/jobs");
     } catch (error) {
       console.error("Job creation failed", error.response?.data || error.message);
-      alert(error.response?.data?.error || "Failed to post Job. Please check all fields.");
+      showError(error.response?.data?.error || "Failed to post Job. Please check all fields.");
     }
   };
 

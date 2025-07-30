@@ -22,8 +22,10 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
+import { useToast } from "@/Components/common/ToastContext";
 
 export default function StudentAuth() {
+  const { showSuccess } = useToast();
   const [isLogin, setIsLogin] = useState(true);
   const [loginMethod, setLoginMethod] = useState("email"); // "email" or "phone"
   const [showPassword, setShowPassword] = useState(false);
@@ -292,7 +294,7 @@ export default function StudentAuth() {
 
   const handleForgotPassword = () => {
     setError("");
-    alert("Password reset instructions would be sent to your email");
+    showSuccess("Password reset instructions would be sent to your email");
   };
 
   if (!isLogin) {

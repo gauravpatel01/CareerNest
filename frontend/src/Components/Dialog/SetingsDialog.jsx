@@ -13,8 +13,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { useToast } from "@/Components/common/ToastContext";
 
 export default function SettingsDialog() {
+  const { showError, showSuccess } = useToast();
   const [username, setUsername] = useState("");
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -22,18 +24,18 @@ export default function SettingsDialog() {
 
   const handleChangePassword = () => {
     if (!oldPassword || !newPassword || !confirmPassword) {
-      alert("Please fill in all fields.");
+      showError("Please fill in all fields.");
       return;
     }
     if (newPassword !== confirmPassword) {
-      alert("Passwords do not match.");
+      showError("Passwords do not match.");
       return;
     }
     console.log("Password changed.");
   };
 
   const handleResetPassword = () => {
-    alert("Reset link sent to your registered email.");
+    showSuccess("Reset link sent to your registered email.");
   };
 
   const handleDeleteAccount = () => {

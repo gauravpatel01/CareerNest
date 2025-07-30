@@ -4,6 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useNavigate, useParams } from "react-router-dom";
+import { useToast } from "@/Components/common/ToastContext";
 
 const locations = ["Noida", "Delhi", "Pune", "Mumbai", "Bangalore", "Hyderabad"];
 const jobTypes = ["Full-time", "Part-time", "Contract", "Internship"];
@@ -15,6 +16,7 @@ export default function EditJob() {
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
   const { jobId } = useParams();
+  const { showError, showSuccess } = useToast();
 
   useEffect(() => {
     if (jobId) {
@@ -61,7 +63,7 @@ export default function EditJob() {
       setSuccess(true);
       setTimeout(() => navigate("/p/manage-jobs"), 1200);
     } catch (error) {
-      alert("Failed to update job.");
+      showError("Failed to update job.");
     }
   };
 

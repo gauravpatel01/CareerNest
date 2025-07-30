@@ -11,10 +11,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { User as UserIcon, Settings, HelpCircle, Mail, Shield, Key, Trash2, LogOut, ChevronDown, FileText, UploadCloud } from "lucide-react";
+import { useToast } from "@/Components/common/ToastContext";
 
 export default function UserProfileDropdown({ user, onLogout }) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const navigate = useNavigate();
+  const { showInfo } = useToast();
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -44,19 +46,19 @@ export default function UserProfileDropdown({ user, onLogout }) {
 
   const handleChangePassword = () => {
     // In a real app, this would open a change password modal
-    alert("Password change functionality would be implemented here");
+    showInfo("Password change functionality would be implemented here");
   };
 
   const handleChangeEmail = () => {
     // In a real app, this would open a change email modal
-    alert("Email change functionality would be implemented here");
+    showInfo("Email change functionality would be implemented here");
   };
 
   const handleDeleteAccount = () => {
     // In a real app, this would open a confirmation modal
     const confirmed = confirm("Are you sure you want to delete your account? This action cannot be undone.");
     if (confirmed) {
-      alert("Account deletion functionality would be implemented here");
+      showInfo("Account deletion functionality would be implemented here");
     }
   };
 

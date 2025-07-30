@@ -18,6 +18,7 @@ const applicationRoutes = require("./routes/applicationRoutes");
 const seedRoutes = require("./routes/seed");
 const googleAuthRoutes = require("./routes/googleAuth");
 const { router: adminAuthRoutes } = require("./routes/adminAuth");
+const recruiterAuthRoutes = require("./routes/recruiterAuth");
 
 
 // Setup middleware
@@ -31,6 +32,7 @@ app.use("/api/applications", applicationRoutes);
 app.use("/api/admin", adminAuthRoutes);
 app.use("/api", seedRoutes);
 app.use("/api", googleAuthRoutes);
+app.use("/api", recruiterAuthRoutes);
 
 // Legacy routes for backward compatibility
 app.use("/", userRoutes); // Legacy routes without /api prefix

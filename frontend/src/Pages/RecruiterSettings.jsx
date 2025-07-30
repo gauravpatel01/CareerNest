@@ -1,8 +1,10 @@
 import { Input } from "../Components/ui/input";
 import { Button } from "../Components/ui/button";
 import { useState, useEffect, useRef } from "react";
+import { useToast } from "@/Components/common/ToastContext";
 
 export default function RecruiterSettings() {
+  const { showError } = useToast();
   const [name, setName] = useState("");
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -131,7 +133,7 @@ export default function RecruiterSettings() {
       });
       if (!res.ok) {
         const err = await res.json();
-        alert(err.error || "Failed to delete account. Please try again.");
+        showError(err.error || "Failed to delete account. Please try again.");
         setShowDeleteConfirm(false);
         return;
       }
@@ -141,7 +143,7 @@ export default function RecruiterSettings() {
       // Redirect to login page
       window.location.href = "/";
     } catch (err) {
-      alert("An error occurred while deleting your account. Please try again.");
+      showError("An error occurred while deleting your account. Please try again.");
       setShowDeleteConfirm(false);
     }
   };

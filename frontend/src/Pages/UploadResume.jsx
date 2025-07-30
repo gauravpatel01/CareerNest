@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { FileText, UploadCloud, CheckCircle, XCircle } from "lucide-react";
 import { Button } from "../Components/ui/button";
+import { useToast } from "@/Components/common/ToastContext";
 
 export default function UploadResume() {
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState("");
   const [status, setStatus] = useState(""); // "success" | "error" | ""
+  const { showError, showWarning } = useToast();
 
   const handleFileChange = (e) => {
     const selected = e.target.files[0];
@@ -21,7 +23,7 @@ export default function UploadResume() {
       setFile(null);
       setFileName("");
       setStatus("error");
-      alert("Only PDF files are allowed.");
+      showError("Only PDF files are allowed.");
       return;
     }
 
@@ -29,7 +31,7 @@ export default function UploadResume() {
       setFile(null);
       setFileName("");
       setStatus("error");
-      alert("File size must be less than 2MB.");
+      showError("File size must be less than 2MB.");
       return;
     }
 
@@ -40,7 +42,7 @@ export default function UploadResume() {
 
   const handleUpload = async () => {
     if (!file) {
-      alert("No file selected");
+      showError("No file selected");
       return;
     }
 

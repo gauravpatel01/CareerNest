@@ -1,6 +1,7 @@
 import React from "react";
 import Layout, { AdminLayout } from "./layout";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { ToastProvider } from "./Components/common/ToastContext";
 import Home from "./Pages/Home";
 import About from "./Pages/About";
 import FAQ from "./Pages/FAQ";
@@ -35,7 +36,8 @@ import Hackathons from "./Pages/Hackathons";
 
 export default function App() {
   return (
-    <Router>
+    <ToastProvider>
+      <Router>
       <Routes>
         <Route
           path="/"
@@ -389,6 +391,7 @@ export default function App() {
           }
         />
       </Routes>
-    </Router>
+      </Router>
+    </ToastProvider>
   );
 }
