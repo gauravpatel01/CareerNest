@@ -84,6 +84,19 @@ export default function JobDetails() {
     return 'Not specified';
   };
 
+  // Display stipend if present, otherwise salary
+  const displayCompensation = () => {
+    if (job.stipend) {
+      const stipendNum = Number(job.stipend);
+      if (!isNaN(stipendNum) && stipendNum > 0) {
+        return `₹${(stipendNum / 1000).toFixed(1)}K`;
+      } else {
+        return 'Not specified';
+      }
+    }
+    return formatSalary(job.salary_min, job.salary_max);
+  };
+
   if (isLoading) return <LoadingSpinner />;
 
   if (!job) {
@@ -170,7 +183,7 @@ export default function JobDetails() {
                   <div className="flex flex-wrap gap-4 text-gray-600">
                     <span className="flex items-center"><MapPin className="w-4 h-4 mr-1" />{job.location}</span>
                     <span className="flex items-center"><Clock className="w-4 h-4 mr-1" />{job.job_type}</span>
-                    <span className="flex items-center text-green-600 font-semibold"><IndianRupee className="w-4 h-4 mr-1" />{formatSalary(job.salary_min, job.salary_max)}</span>
+                    <span className="flex items-center text-green-600 font-semibold"><IndianRupee className="w-4 h-4 mr-1" />{displayCompensation()}</span>
                   </div>
                 </div>
               </div>
@@ -266,7 +279,7 @@ export default function JobDetails() {
               <div><h4 className="font-medium text-gray-900 mb-1">Experience Level</h4><p className="text-gray-600">{job.experience_level}</p></div>
               <div><h4 className="font-medium text-gray-900 mb-1">Job Type</h4><p className="text-gray-600">{job.job_type}</p></div>
               <div><h4 className="font-medium text-gray-900 mb-1">Location</h4><p className="text-gray-600">{job.location}</p></div>
-              <div><h4 className="font-medium text-gray-900 mb-1">Salary Range</h4><p className="text-gray-600">{formatSalary(job.salary_min, job.salary_max)}</p></div>
+              <div><h4 className="font-medium text-gray-900 mb-1">Salary / Stipend</h4><p className="text-gray-600">{displayCompensation()}</p></div>
               {job.remote_option && <div><h4 className="font-medium text-gray-900 mb-1">Remote Work</h4><p className="text-green-600">Available</p></div>}
             </CardContent>
           </Card>

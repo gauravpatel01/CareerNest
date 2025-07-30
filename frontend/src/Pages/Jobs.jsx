@@ -223,7 +223,7 @@ export default function Jobs() {
         <div className="grid gap-6">
           {filteredJobs.length > 0 ? (
             filteredJobs.map((job) => (
-              <JobCard key={job.id} job={job} />
+              <JobCard key={job.id} job={job} isInternship={job.job_type === 'Internship' || !!job.stipend} />
             ))
           ) : (
             <div className="text-center py-12">

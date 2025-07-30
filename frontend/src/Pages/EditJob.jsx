@@ -55,9 +55,13 @@ export default function EditJob() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const jwt = localStorage.getItem("jwt");
       await fetch(`/api/jobs/${jobId}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${jwt}`,
+        },
         body: JSON.stringify(form)
       });
       setSuccess(true);
@@ -106,33 +110,33 @@ export default function EditJob() {
               ))}
             </select>
           </div>
-          <div className="flex gap-4 flex-col sm:flex-row">
-            <div className="flex-1">
-              <label htmlFor="salary_min" className="block mb-1 font-medium">
-                Salary Min (₹)
-              </label>
-              <Input
-                id="salary_min"
-                name="salary_min"
-                type="number"
-                value={form.salary_min}
-                onChange={handleChange}
-                className="w-full"
-              />
-            </div>
-            <div className="flex-1">
-              <label htmlFor="salary_max" className="block mb-1 font-medium">
-                Salary Max (₹)
-              </label>
-              <Input
-                id="salary_max"
-                name="salary_max"
-                type="number"
-                value={form.salary_max}
-                onChange={handleChange}
-                className="w-full"
-              />
-            </div>
+          {/* Remove Salary Min and Salary Max fields, add single Salary field */}
+          <div>
+            <label htmlFor="salary" className="block mb-1 font-medium">
+              Salary (₹)
+            </label>
+            <Input
+              id="salary"
+              name="salary"
+              type="number"
+              value={form.salary || ""}
+              onChange={handleChange}
+              className="w-full"
+            />
+          </div>
+          {/* Stipend field for jobs with stipend */}
+          <div>
+            <label htmlFor="stipend" className="block mb-1 font-medium">
+              Stipend (₹)
+            </label>
+            <Input
+              id="stipend"
+              name="stipend"
+              type="number"
+              value={form.stipend || ""}
+              onChange={handleChange}
+              className="w-full"
+            />
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

@@ -69,6 +69,19 @@ export default function JobCard({ job, isInternship = false }) {
     }
   };
 
+  // Display stipend if present, otherwise salary
+  const displayCompensation = () => {
+    if (job.stipend) {
+      const stipendNum = Number(job.stipend);
+      if (!isNaN(stipendNum) && stipendNum > 0) {
+        return <span className="flex items-center text-green-600 font-semibold"><IndianRupee className="w-4 h-4 mr-1" />₹{(stipendNum / 1000).toFixed(1)}K</span>;
+      } else {
+        return <span className="text-gray-500">Not specified</span>;
+      }
+    }
+    return <span className="flex items-center text-green-600 font-semibold"><IndianRupee className="w-4 h-4 mr-1" />{formatSalary(job.salary_min, job.salary_max)}</span>;
+  };
+
   return (
     <Card className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-blue-500">
       <CardHeader className="pb-3">
@@ -89,16 +102,10 @@ export default function JobCard({ job, isInternship = false }) {
                 <Building className="w-4 h-4" />
                 <span className="font-medium">{job.company}</span>
               </div>
-              <div className="flex items-center space-x-4 text-sm text-gray-500">
-                <span className="flex items-center">
-                  <MapPin className="w-4 h-4 mr-1" />
-                  {job.location}
-                </span>
-                {job.remote_option && (
-                  <Badge variant="outline" className="text-green-600 border-green-600">
-                    Remote Available
-                  </Badge>
-                )}
+              <div className="flex flex-wrap gap-4 text-gray-600">
+                <span className="flex items-center"><MapPin className="w-4 h-4 mr-1" />{job.location}</span>
+                <span className="flex items-center"><Clock className="w-4 h-4 mr-1" />{job.job_type}</span>
+                {displayCompensation()}
               </div>
             </div>
           </div>

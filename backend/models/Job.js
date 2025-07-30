@@ -26,6 +26,9 @@ const jobSchema = new mongoose.Schema(
     stipend: {
       type: String, // For internships - can be used instead of salary_min/max
     },
+    salary: {
+      type: Number,
+    },
     job_type: {
       type: String,
       required: true,

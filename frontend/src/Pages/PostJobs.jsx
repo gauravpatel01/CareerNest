@@ -159,14 +159,14 @@ export default function PostJob() {
           <label htmlFor="stipend" className="block mb-1 font-medium">
             Stipend (₹)
           </label>
-          <Input type="text" id="stipend" name="stipend" value={form.stipend} onChange={handleChange} required />
+          <Input type="number" id="stipend" name="stipend" value={form.stipend} onChange={handleChange} required />
         </div>
 
         <div>
           <label htmlFor="duration" className="block mb-1 font-medium">
             Duration
           </label>
-          <Input type="text" id="duration" name="duration" value={form.duration} onChange={handleChange} required />
+          <Input type="number" id="duration" name="duration" value={form.duration} onChange={handleChange} required />
         </div>
 
         <div>
