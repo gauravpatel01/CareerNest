@@ -33,9 +33,11 @@ export default function ManageJobs() {
   const loadJobs = async (email) => {
     setIsLoading(true);
     try {
+      const jwt = localStorage.getItem("jwt");
       const response = await fetch(`/api/jobs?posted_by=${encodeURIComponent(email)}`, {
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${jwt}`
         }
       });
       const data = await response.json();
@@ -54,20 +56,23 @@ export default function ManageJobs() {
       return;
     }
     try {
+      const jwt = localStorage.getItem("jwt");
       const res = await fetch(`/api/jobs/${jobId}`, {
         method: "DELETE",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${jwt}`
         }
       });
       if (res.ok) {
         setJobs((prev) => prev.filter((job) => job._id !== jobId));
+        showSuccess("Job deleted successfully");
       } else {
         const err = await res.json();
-        showError(err.error || "Failed to delete internship/job.");
+        showError(err.error || "Failed to delete job.");
       }
     } catch (error) {
-      showError("Failed to delete internship/job.");
+      showError("Failed to delete job.");
     }
   };
 

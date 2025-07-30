@@ -26,16 +26,23 @@ export default function RecruiterDashboard() {
       const userData = await UserApi.me();
       setUser(userData);
 
+      // Load jobs for the current recruiter
       const jobData = await JobApi.filter({ posted_by: userData.email });
       setJobs(jobData);
 
+      // Load internships for the current recruiter
       const internshipData = await fetchInternships({ posted_by: userData.email });
       setInternships(internshipData);
 
+      // Load applications (this might need to be filtered by recruiter's jobs)
       const applicationData = await ApplicationApi.list();
       setApplications(applicationData);
     } catch (error) {
       console.error("Error loading dashboard data:", error);
+      // Set empty arrays as fallback to prevent further errors
+      setJobs([]);
+      setInternships([]);
+      setApplications([]);
     } finally {
       setIsLoading(false);
     }
@@ -46,7 +53,7 @@ export default function RecruiterDashboard() {
   }
 
   const activeJobs = jobs.filter((job) => job.status === "active").length;
-  const totalApplications = applications.filter((app) => jobs.some((job) => job.id === app.job_id)).length;
+  const totalApplications = applications.filter((app) => jobs.some((job) => job._id === app.job_id || job.id === app.job_id)).length;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -126,8 +133,8 @@ export default function RecruiterDashboard() {
           <CardContent>
             {jobs.length > 0 ? (
               <div className="space-y-4">
-                {jobs.map((job) => (
-                  <div key={job.id} className="flex items-center justify-between p-4 border rounded-lg">
+                                 {jobs.map((job) => (
+                   <div key={job._id || job.id} className="flex items-center justify-between p-4 border rounded-lg">
                     <div>
                       <h3 className="font-semibold text-gray-900">{job.title}</h3>
                       <p className="text-sm text-gray-600">
@@ -182,8 +189,8 @@ export default function RecruiterDashboard() {
           <CardContent>
             {internships.length > 0 ? (
               <div className="space-y-4">
-                {internships.map((internship) => (
-                  <div key={internship.id} className="flex items-center justify-between p-4 border rounded-lg">
+                                 {internships.map((internship) => (
+                   <div key={internship._id || internship.id} className="flex items-center justify-between p-4 border rounded-lg">
                     <div>
                       <h3 className="font-semibold text-gray-900">{internship.title}</h3>
                       <p className="text-sm text-gray-600">

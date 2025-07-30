@@ -1,4 +1,5 @@
-const API_BASE_URL = 'http://localhost:5000';
+// Use a simple approach for API base URL that works in browser
+const API_BASE_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000' : '';
 
 class JobApi {
   static async create(jobData) {
@@ -37,11 +38,19 @@ class JobApi {
         }
       });
 
+      const token = localStorage.getItem('jwt');
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      
+      // Add JWT token if available (for recruiter requests)
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/jobs?${queryParams}`, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
       });
 
       if (!response.ok) {
@@ -57,11 +66,19 @@ class JobApi {
 
   static async getById(jobId) {
     try {
+      const token = localStorage.getItem('jwt');
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      
+      // Add JWT token if available (for recruiter requests)
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/jobs/${jobId}`, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
       });
 
       if (!response.ok) {

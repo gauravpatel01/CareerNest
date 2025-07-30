@@ -7,6 +7,7 @@ import LoadingSpinner from "../components/common/LoadingSpinner";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { fetchInternships, deleteInternship } from "../Services/InternshipApi";
+import { useToast } from "@/Components/common/ToastContext";
 
 export default function ManageInternships() {
   const [internships, setInternships] = useState([]);
@@ -14,6 +15,7 @@ export default function ManageInternships() {
   const [recruiter, setRecruiter] = useState(null);
   const [showDetails, setShowDetails] = useState({});
   const navigate = useNavigate();
+  const { showError, showSuccess } = useToast();
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -44,9 +46,10 @@ export default function ManageInternships() {
       try {
         await deleteInternship(internshipId);
         setInternships(internships.filter(internship => internship._id !== internshipId));
+        showSuccess("Internship deleted successfully");
       } catch (error) {
         console.error("Error deleting internship:", error);
-        alert("Failed to delete internship");
+        showError("Failed to delete internship");
       }
     }
   };

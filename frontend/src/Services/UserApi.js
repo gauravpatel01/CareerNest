@@ -1,4 +1,5 @@
-const API_BASE_URL = 'http://localhost:5000';
+// Use a simple approach for API base URL that works in browser
+const API_BASE_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000' : '';
 
 class UserApi {
   static async me() {
