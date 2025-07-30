@@ -62,7 +62,7 @@ const ProtectedRoute = ({ children, requiredRole = null }) => {
       location.pathname.includes("editresume") ||
       location.pathname.includes("updateprofile") ||
       location.pathname.includes("uploadresume") ||
-      location.pathname.includes("applications");
+      (location.pathname.includes("applications") && !location.pathname.includes("job-applications"));
 
     const loginPath = isStudentRoute ? createPageUrl("studentauth") : createPageUrl("recruiterauth");
 

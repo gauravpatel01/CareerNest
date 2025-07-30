@@ -2,10 +2,23 @@ const mongoose = require("mongoose");
 
 const applicationSchema = new mongoose.Schema(
   {
+    // Application type to distinguish between job and internship applications
+    application_type: {
+      type: String,
+      enum: ["job", "internship"],
+      required: true,
+    },
+    // Job reference (for job applications)
     job_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Job",
-      required: true,
+      required: function() { return this.application_type === "job"; },
+    },
+    // Internship reference (for internship applications)
+    internship_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Internship",
+      required: function() { return this.application_type === "internship"; },
     },
     applicant_email: {
       type: String,
@@ -52,18 +65,29 @@ const applicationSchema = new mongoose.Schema(
 );
 
 // Compound index to prevent duplicate applications
-applicationSchema.index({ job_id: 1, applicant_email: 1 }, { unique: true });
+applicationSchema.index({ job_id: 1, applicant_email: 1 }, { unique: true, sparse: true });
+applicationSchema.index({ internship_id: 1, applicant_email: 1 }, { unique: true, sparse: true });
 
 // Index for querying applications by job
 applicationSchema.index({ job_id: 1, status: 1 });
+// Index for querying applications by internship
+applicationSchema.index({ internship_id: 1, status: 1 });
 
 // Index for querying applications by applicant
 applicationSchema.index({ applicant_email: 1, status: 1 });
 
 // Virtual to populate job details
-applicationSchema.virtual("job", {
+applicationSchema.virtual('job', {
   ref: "Job",
   localField: "job_id",
+  foreignField: "_id",
+  justOne: true,
+});
+
+// Virtual to populate internship details
+applicationSchema.virtual('internship', {
+  ref: "Internship",
+  localField: "internship_id",
   foreignField: "_id",
   justOne: true,
 });

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Internship = require('../models/Internship');
+const { authenticateJWT } = require('../middleware/auth');
 
 // Seed 3 sample internships
 router.post('/seed-internships', async (req, res) => {
@@ -42,9 +43,18 @@ router.post('/seed-internships', async (req, res) => {
 });
 
 // Add internship creation endpoint for recruiters
-router.post('/internships/create', async (req, res) => {
+router.post('/internships/create', authenticateJWT, async (req, res) => {
   try {
-    const internship = new Internship(req.body);
+    // Only allow recruiters to post internships
+    if (req.user.role !== 'recruiter') {
+      return res.status(403).json({ error: "Only recruiters can post internships" });
+    }
+    
+    // Always set posted_by to the authenticated recruiter's email
+    const internship = new Internship({
+      ...req.body,
+      posted_by: req.user.email
+    });
     await internship.save();
     res.status(201).json({ 
       message: 'Internship created successfully and pending admin approval', 
@@ -89,19 +99,29 @@ router.put('/internships/:id/approve', async (req, res) => {
   }
 });
 
-// PUT update internship status by id (legacy)
-router.put('/internships/:id', async (req, res) => {
+// PUT update internship status by id
+router.put('/internships/:id', authenticateJWT, async (req, res) => {
   try {
     const { status } = req.body;
-    const internship = await Internship.findByIdAndUpdate(
+    
+    // Find the internship first to check ownership
+    const internship = await Internship.findById(req.params.id);
+    if (!internship) {
+      return res.status(404).json({ error: 'Internship not found' });
+    }
+    
+    // Only allow the recruiter who posted the internship to update it
+    if (internship.posted_by !== req.user.email) {
+      return res.status(403).json({ error: 'You can only update internships you posted' });
+    }
+    
+    const updatedInternship = await Internship.findByIdAndUpdate(
       req.params.id,
       { status },
       { new: true, runValidators: true }
     );
-    if (!internship) {
-      return res.status(404).json({ error: 'Internship not found' });
-    }
-    res.json({ message: 'Internship status updated', internship });
+    
+    res.json({ message: 'Internship status updated', internship: updatedInternship });
   } catch (err) {
     res.status(500).json({ error: 'Failed to update internship status.' });
   }
@@ -110,8 +130,11 @@ router.put('/internships/:id', async (req, res) => {
 // GET all internships (optionally filter by status)
 router.get('/internships', async (req, res) => {
   try {
-    const { status } = req.query;
-    const filter = status ? { status } : {};
+    const { status, posted_by } = req.query;
+    const filter = {};
+    
+    if (status) filter.status = status;
+    if (posted_by) filter.posted_by = posted_by;
     
     // Only show approved internships to students (unless admin is requesting)
     const isAdmin = req.headers['x-admin-auth'] === 'true';
@@ -123,6 +146,27 @@ router.get('/internships', async (req, res) => {
     res.json(internships);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch internships.' });
+  }
+});
+
+// DELETE internship by id
+router.delete('/internships/:id', authenticateJWT, async (req, res) => {
+  try {
+    // Find the internship first to check ownership
+    const internship = await Internship.findById(req.params.id);
+    if (!internship) {
+      return res.status(404).json({ error: 'Internship not found' });
+    }
+    
+    // Only allow the recruiter who posted the internship to delete it
+    if (internship.posted_by !== req.user.email) {
+      return res.status(403).json({ error: 'You can only delete internships you posted' });
+    }
+    
+    await Internship.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Internship deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete internship.' });
   }
 });
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import UserApi from "../Services/UserApi";
 import JobApi from "../Services/JobApi";
 import ApplicationApi from "../Services/ApplicationApi";
+import { fetchInternships } from "../Services/InternshipApi";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +13,7 @@ import { Link } from "react-router-dom";
 export default function RecruiterDashboard() {
   const [user, setUser] = useState(null);
   const [jobs, setJobs] = useState([]);
+  const [internships, setInternships] = useState([]);
   const [applications, setApplications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -26,6 +28,9 @@ export default function RecruiterDashboard() {
 
       const jobData = await JobApi.filter({ posted_by: userData.email });
       setJobs(jobData);
+
+      const internshipData = await fetchInternships({ posted_by: userData.email });
+      setInternships(internshipData);
 
       const applicationData = await ApplicationApi.list();
       setApplications(applicationData);
@@ -162,6 +167,64 @@ export default function RecruiterDashboard() {
                   <Button className="bg-blue-500 hover:bg-blue-600">
                     <Plus className="w-4 h-4 mr-2" />
                     Post Your First Job
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Recent Internships */}
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>Your Internship Postings</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {internships.length > 0 ? (
+              <div className="space-y-4">
+                {internships.map((internship) => (
+                  <div key={internship.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div>
+                      <h3 className="font-semibold text-gray-900">{internship.title}</h3>
+                      <p className="text-sm text-gray-600">
+                        {internship.location} • {internship.duration}
+                      </p>
+                      <Badge
+                        className={
+                          internship.status === "approved" ? "bg-green-100 text-green-800" : 
+                          internship.status === "pending" ? "bg-yellow-100 text-yellow-800" : 
+                          "bg-gray-100 text-gray-800"
+                        }
+                      >
+                        {internship.status}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Button variant="outline" size="sm">
+                        <Eye className="w-4 h-4 mr-1" />
+                        View
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        <Edit className="w-4 h-4 mr-1" />
+                        Edit
+                      </Button>
+                      <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">
+                        <Trash2 className="w-4 h-4 mr-1" />
+                        Delete
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <Briefcase className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-600 mb-2">No internships posted yet</h3>
+                <p className="text-gray-500 mb-4">Start by posting your first internship to attract candidates</p>
+                <Link to="/p/post-internships">
+                  <Button className="bg-blue-500 hover:bg-blue-600">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Post Your First Internship
                   </Button>
                 </Link>
               </div>
