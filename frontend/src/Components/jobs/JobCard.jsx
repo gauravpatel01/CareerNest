@@ -11,6 +11,8 @@ export default function JobCard({ job, isInternship = false }) {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const isRecruiter = user.role === "recruiter";
   const isMyJob = isRecruiter && job.posted_by === user.email;
+  
+
 
   const getApprovalStatusBadge = (status) => {
     const variants = {
@@ -42,16 +44,36 @@ export default function JobCard({ job, isInternship = false }) {
 
   // Helper to format stipend in thousands (K)
   const formatStipend = (stipend) => {
-    if (!stipend) return '';
-    // Extract numeric part from stipend string
-    const match = stipend.toString().replace(/,/g, '').match(/\d+/);
+    if (!stipend) return 'Not specified';
+    
+    // Handle different stipend formats
+    const stipendStr = stipend.toString().trim();
+    
+    // If it's already in a readable format with ₹ symbol, return as is
+    if (stipendStr.includes('₹')) {
+      return stipendStr;
+    }
+    
+    // Extract numeric part from stipend string (handle formats like "10,000/month")
+    const match = stipendStr.replace(/,/g, '').match(/(\d+)/);
     if (match) {
-      const value = parseInt(match[0], 10);
+      const value = parseInt(match[1], 10);
       if (!isNaN(value)) {
+        // Check if the original string has "/month" or similar
+        if (stipendStr.includes('/month') || stipendStr.includes('/mo')) {
+          return `₹${(value / 1000).toFixed(1)}K/month`;
+        }
         return `₹${(value / 1000).toFixed(1)}K`;
       }
     }
-    return stipend; // fallback to original if not a number
+    
+    // If it's a simple number, format it
+    const numValue = parseFloat(stipendStr);
+    if (!isNaN(numValue)) {
+      return `₹${(numValue / 1000).toFixed(1)}K`;
+    }
+    
+    return stipendStr; // fallback to original if not a number
   };
 
   const getExperienceBadgeColor = (level) => {
@@ -71,13 +93,8 @@ export default function JobCard({ job, isInternship = false }) {
 
   // Display stipend if present, otherwise salary
   const displayCompensation = () => {
-    if (job.stipend) {
-      const stipendNum = Number(job.stipend);
-      if (!isNaN(stipendNum) && stipendNum > 0) {
-        return <span className="flex items-center text-green-600 font-semibold"><IndianRupee className="w-4 h-4 mr-1" />₹{(stipendNum / 1000).toFixed(1)}K</span>;
-      } else {
-        return <span className="text-gray-500">Not specified</span>;
-      }
+    if (isInternship && job.stipend) {
+      return <span className="flex items-center text-green-600 font-semibold"><IndianRupee className="w-4 h-4 mr-1" />{formatStipend(job.stipend)}</span>;
     }
     return <span className="flex items-center text-green-600 font-semibold"><IndianRupee className="w-4 h-4 mr-1" />{formatSalary(job.salary_min, job.salary_max)}</span>;
   };

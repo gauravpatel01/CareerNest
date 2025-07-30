@@ -72,6 +72,23 @@ export default function Internships() {
       filtered = filtered.filter(internship => internship.location === locationFilter);
     }
 
+    if (durationFilter !== "all") {
+      filtered = filtered.filter(internship => {
+        if (!internship.duration) return false;
+        const duration = internship.duration.toLowerCase();
+        switch (durationFilter) {
+          case "1-3":
+            return duration.includes("1") || duration.includes("2") || duration.includes("3");
+          case "3-6":
+            return duration.includes("3") || duration.includes("4") || duration.includes("5") || duration.includes("6");
+          case "6+":
+            return duration.includes("6") || duration.includes("7") || duration.includes("8") || duration.includes("9") || duration.includes("10") || duration.includes("11") || duration.includes("12");
+          default:
+            return true;
+        }
+      });
+    }
+
     setFilteredInternships(filtered);
   };
 
@@ -202,7 +219,7 @@ export default function Internships() {
           {filteredInternships.length > 0 ? (
             filteredInternships.map((internship) => {
               const mappedInternship = { ...internship, id: internship._id };
-              return <JobCard key={mappedInternship.id} job={mappedInternship} isInternship={true} />;
+              return <JobCard key={internship._id} job={mappedInternship} isInternship={true} />;
             })
           ) : (
             <div className="text-center py-12">

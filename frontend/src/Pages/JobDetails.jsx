@@ -84,15 +84,44 @@ export default function JobDetails() {
     return 'Not specified';
   };
 
+  // Helper to format stipend in thousands (K)
+  const formatStipend = (stipend) => {
+    if (!stipend) return 'Not specified';
+    
+    // Handle different stipend formats
+    const stipendStr = stipend.toString().trim();
+    
+    // If it's already in a readable format with ₹ symbol, return as is
+    if (stipendStr.includes('₹')) {
+      return stipendStr;
+    }
+    
+    // Extract numeric part from stipend string (handle formats like "10,000/month")
+    const match = stipendStr.replace(/,/g, '').match(/(\d+)/);
+    if (match) {
+      const value = parseInt(match[1], 10);
+      if (!isNaN(value)) {
+        // Check if the original string has "/month" or similar
+        if (stipendStr.includes('/month') || stipendStr.includes('/mo')) {
+          return `₹${(value / 1000).toFixed(1)}K/month`;
+        }
+        return `₹${(value / 1000).toFixed(1)}K`;
+      }
+    }
+    
+    // If it's a simple number, format it
+    const numValue = parseFloat(stipendStr);
+    if (!isNaN(numValue)) {
+      return `₹${(numValue / 1000).toFixed(1)}K`;
+    }
+    
+    return stipendStr; // fallback to original if not a number
+  };
+
   // Display stipend if present, otherwise salary
   const displayCompensation = () => {
     if (job.stipend) {
-      const stipendNum = Number(job.stipend);
-      if (!isNaN(stipendNum) && stipendNum > 0) {
-        return `₹${(stipendNum / 1000).toFixed(1)}K`;
-      } else {
-        return 'Not specified';
-      }
+      return formatStipend(job.stipend);
     }
     return formatSalary(job.salary_min, job.salary_max);
   };

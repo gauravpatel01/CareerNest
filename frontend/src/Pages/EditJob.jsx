@@ -110,20 +110,6 @@ export default function EditJob() {
               ))}
             </select>
           </div>
-          {/* Remove Salary Min and Salary Max fields, add single Salary field */}
-          <div>
-            <label htmlFor="salary" className="block mb-1 font-medium">
-              Salary (₹)
-            </label>
-            <Input
-              id="salary"
-              name="salary"
-              type="number"
-              value={form.salary || ""}
-              onChange={handleChange}
-              className="w-full"
-            />
-          </div>
           {/* Stipend field for jobs with stipend */}
           <div>
             <label htmlFor="stipend" className="block mb-1 font-medium">
