@@ -9,9 +9,9 @@ router.get("/", async (req, res, next) => {
   try {
     const { job_type, location, status = "active", posted_by } = req.query;
     const filter = { status };
-
+    
     // Only show approved jobs to students (unless admin is requesting)
-    const isAdmin = req.headers["x-admin-auth"] === "true";
+    const isAdmin = req.headers['x-admin-auth'] === 'true';
     if (!isAdmin) {
       filter.approval_status = "approved";
     }
@@ -51,13 +51,13 @@ router.get("/:id", async (req, res, next) => {
     if (!job) {
       return res.status(404).json({ error: "Job not found" });
     }
-
+    
     // Check if user can view this job (approved or admin)
-    const isAdmin = req.headers["x-admin-auth"] === "true";
+    const isAdmin = req.headers['x-admin-auth'] === 'true';
     if (!isAdmin && job.approval_status !== "approved") {
       return res.status(403).json({ error: "Job not available" });
     }
-
+    
     res.json(job);
   } catch (error) {
     next(error);
@@ -86,7 +86,7 @@ router.put("/:id", authenticateJWT, async (req, res, next) => {
     if (!job) {
       return res.status(404).json({ error: "Job not found" });
     }
-
+    
     // Only allow the recruiter who posted the job to update it
     if (job.posted_by !== req.user.email) {
       return res.status(403).json({ error: "You can only update jobs you posted" });
@@ -110,15 +110,15 @@ router.put("/:id", authenticateJWT, async (req, res, next) => {
 router.put("/:id/approve", async (req, res, next) => {
   try {
     const { approval_status, comments } = req.body;
-    const adminEmail = req.headers["x-admin-email"] || "admin@careernest.com";
-
+    const adminEmail = req.headers['x-admin-email'] || 'admin@careernest.com';
+    
     const updateData = {
       approval_status,
       admin_review: {
         reviewed_by: adminEmail,
         reviewed_at: new Date(),
-        comments: comments || "",
-      },
+        comments: comments || ""
+      }
     };
 
     const job = await Job.findByIdAndUpdate(req.params.id, updateData, {
@@ -147,7 +147,7 @@ router.delete("/:id", authenticateJWT, async (req, res, next) => {
     if (!job) {
       return res.status(404).json({ error: "Job not found" });
     }
-
+    
     // Only allow the recruiter who posted the job to delete it
     if (job.posted_by !== req.user.email) {
       return res.status(403).json({ error: "You can only delete jobs you posted" });
@@ -169,9 +169,9 @@ router.get("/internships", async (req, res, next) => {
   try {
     const { posted_by } = req.query;
     const filter = {};
-
+    
     if (posted_by) filter.posted_by = posted_by;
-
+    
     const internships = await Internship.find(filter);
     res.json(internships);
   } catch (error) {
@@ -187,58 +187,6 @@ router.get("/internships/:id", async (req, res, next) => {
       return res.status(404).json({ error: "Internship not found" });
     }
     res.json(internship);
-  } catch (error) {
-    next(error);
-  }
-});
-
-// Update internship (legacy)
-router.put("/internships/:id", authenticateJWT, async (req, res, next) => {
-  try {
-    // Find the internship first to check ownership
-    const internship = await Internship.findById(req.params.id);
-    if (!internship) {
-      return res.status(404).json({ error: "Internship not found" });
-    }
-
-    // Only allow the recruiter who posted the internship to update it
-    if (internship.posted_by !== req.user.email) {
-      return res.status(403).json({ error: "You can only update internships you posted" });
-    }
-
-    const updatedInternship = await Internship.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
-
-    res.json({
-      message: "Internship updated successfully",
-      internship: updatedInternship,
-    });
-  } catch (error) {
-    next(error);
-  }
-});
-
-// Delete internship (legacy)
-router.delete("/internships/:id", authenticateJWT, async (req, res, next) => {
-  try {
-    // Find the internship first to check ownership
-    const internship = await Internship.findById(req.params.id);
-    if (!internship) {
-      return res.status(404).json({ error: "Internship not found" });
-    }
-
-    // Only allow the recruiter who posted the internship to delete it
-    if (internship.posted_by !== req.user.email) {
-      return res.status(403).json({ error: "You can only delete internships you posted" });
-    }
-
-    await Internship.findByIdAndDelete(req.params.id);
-
-    res.json({
-      message: "Internship deleted successfully",
-    });
   } catch (error) {
     next(error);
   }
