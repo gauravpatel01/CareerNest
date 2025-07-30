@@ -16,8 +16,8 @@
   },
   "homepage": "https://github.com/gauravpatel01/CareerNest#readme",
   "description": "",
-  
   "dependencies": {
+    "@react-oauth/google": "^0.12.2",
     "axios": "^1.10.0"
   }
 }

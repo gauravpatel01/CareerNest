@@ -95,12 +95,13 @@ export default function RecruiterAuth() {
       [name]: value,
     });
   };
+  const backendURL = import.meta.env.VITE_BACKEND_URL || "";
   const handleGoogleLoginSuccess = async (credentialResponse) => {
     setIsLoading(true);
     setError("");
     try {
       // Send credential to backend and get JWT
-      const res = await fetch(`/api/auth/google`, {
+      const res = await fetch(`${backendURL}/api/auth/google`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ credential: credentialResponse.credential, user_type: "recruiter" }),
@@ -142,7 +143,7 @@ export default function RecruiterAuth() {
         }
 
         // Call backend API for email login
-        const res = await fetch(`/api/auth/recruiter/login`, {
+        const res = await fetch(`${backendURL}/api/auth/recruiter/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: formData.email, password: formData.password }),
@@ -224,7 +225,7 @@ export default function RecruiterAuth() {
       }
 
       // Call backend API for recruiter registration
-      const res = await fetch(`/api/auth/recruiter/register`, {
+      const res = await fetch(`${backendURL}/api/auth/recruiter/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -248,17 +249,27 @@ export default function RecruiterAuth() {
       }
 
       const data = await res.json();
-      localStorage.setItem("jwt", data.token);
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          name: data.recruiter?.name || data.recruiter?.full_name || "Recruiter User",
-          email: data.recruiter?.email || "recruiter@example.com",
-          company_name: data.recruiter?.company_name || "",
-          role: "recruiter",
-        })
-      );
-      window.location.href = createPageUrl("recruiterdashboard");
+      
+      // On success, switch to sign-in mode and show a success message
+      setIsLogin(true);
+      setError("");
+      setSuccessMessage("Registration successful! Please sign in to continue.");
+      
+      // Clear the form data
+      setFormData({
+        full_name: "",
+        email: "",
+        phone: "",
+        password: "",
+        confirm_password: "",
+        company_name: "",
+        company_size: "",
+        industry: "",
+        location: "",
+        job_title: "",
+        company_website: "",
+        company_description: "",
+      });
       return;
     } catch (error) {
       setError(error.message || "Sign up failed. Please try again.");

@@ -19,11 +19,9 @@ const jobSchema = new mongoose.Schema(
     },
     salary_min: {
       type: Number,
-      min: 0,
     },
     salary_max: {
       type: Number,
-      min: 0,
     },
     stipend: {
       type: String, // For internships - can be used instead of salary_min/max
@@ -93,6 +91,10 @@ const jobSchema = new mongoose.Schema(
     },
     duration: {
       type: String, // For internships
+    },
+    salary_disclosed: {
+      type: Boolean,
+      default: true,
     },
     postedAt: {
       type: Date,

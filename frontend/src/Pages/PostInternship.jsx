@@ -83,7 +83,13 @@ export default function PostInternship() {
 
     try {
       console.log("Payload being sent:", payload);
-      const response = await axios.post("/api/internships/create", payload);
+      const jwt = localStorage.getItem("jwt");
+      const response = await axios.post("/api/internships/create", payload, {
+        headers: {
+          'Authorization': `Bearer ${jwt}`,
+          'Content-Type': 'application/json'
+        }
+      });
       
       // Show success message with approval notice
       showSuccess("Internship posted successfully! Your internship is now pending admin approval. You will be notified once it's approved.");

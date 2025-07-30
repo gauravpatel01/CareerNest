@@ -22,19 +22,22 @@ export default function JobCard({ job, isInternship = false }) {
   };
 
   const formatSalary = (min, max) => {
-    if (!min && !max) return "Salary not disclosed";
     if (min && max) {
       return isInternship
         ? `₹${(min / 1000).toFixed(1)}K - ₹${(max / 1000).toFixed(1)}K`
         : `₹${(min / 100000).toFixed(1)}L - ₹${(max / 100000).toFixed(1)}L`;
     }
-    return min
-      ? isInternship
+    if (min) {
+      return isInternship
         ? `₹${(min / 1000).toFixed(1)}K+`
-        : `₹${(min / 100000).toFixed(1)}L+`
-      : isInternship
-      ? `Up to ₹${(max / 1000).toFixed(1)}K`
-      : `Up to ₹${(max / 100000).toFixed(1)}L`;
+        : `₹${(min / 100000).toFixed(1)}L+`;
+    }
+    if (max) {
+      return isInternship
+        ? `Up to ₹${(max / 1000).toFixed(1)}K`
+        : `Up to ₹${(max / 100000).toFixed(1)}L`;
+    }
+    return 'Not specified';
   };
 
   // Helper to format stipend in thousands (K)
