@@ -1,13 +1,31 @@
 export async function fetchInternshipsFromAPI() {
-  const adminToken = localStorage.getItem("admin-token");
-  const response = await fetch("/api/jobs/internships", {
-    headers: {
-      "Content-Type": "application/json",
-      "x-admin-auth": "true",
-      Authorization: `Bearer ${adminToken}`,
-    },
-  });
-  return response.json();
+  try {
+    const adminToken = localStorage.getItem("admin-token");
+    console.log("Fetching internships with admin token:", adminToken);
+    
+    const response = await fetch("/api/jobs/internships", {
+      headers: {
+        "Content-Type": "application/json",
+        "x-admin-auth": "true",
+        Authorization: `Bearer ${adminToken || 'dummy-token'}`,
+      },
+    });
+    
+    console.log("Internship API response status:", response.status);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Internship API Error:", errorText);
+      throw new Error(`Failed to fetch internships: ${response.status} - ${errorText}`);
+    }
+    
+    const data = await response.json();
+    console.log("Internship API response:", data);
+    return data;
+  } catch (error) {
+    console.error("Error in fetchInternshipsFromAPI:", error);
+    return [];
+  }
 }
 
 // Add method to fetch internships with filters for recruiters

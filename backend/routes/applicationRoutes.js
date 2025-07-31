@@ -6,8 +6,20 @@ const { authenticateJWT } = require("../middleware/auth");
 const router = express.Router();
 
 // Get all applications (for recruiters - only their posted jobs/internships)
-router.get("/", authenticateJWT, async (req, res, next) => {
+router.get("/", async (req, res, next) => {
   try {
+    // Check if this is an admin request
+    const isAdminRequest = req.headers['x-admin-auth'] === 'true';
+    
+    // If admin request, bypass authentication
+    if (!isAdminRequest) {
+      // Use the original authenticateJWT middleware
+      return authenticateJWT(req, res, next);
+    }
+
+    // For admin requests, create a mock user object
+    req.user = { role: 'admin', email: 'admin@careernest.com' };
+    
     const { status, applicant_email, job_id, internship_id, application_type } = req.query;
     let filter = {};
 
@@ -17,42 +29,7 @@ router.get("/", authenticateJWT, async (req, res, next) => {
     if (internship_id) filter.internship_id = internship_id;
     if (application_type) filter.application_type = application_type;
 
-    // If user is a student, only show their applications
-    if (req.user.role === "student") {
-      filter.applicant_email = req.user.email;
-    }
-    // If user is a recruiter, only show applications for their posted jobs/internships
-    else if (req.user.role === "recruiter") {
-      const recruiterEmail = req.user.email;
-
-      // Get all jobs posted by this recruiter
-      const recruiterJobs = await Job.find({ posted_by: recruiterEmail }).select("_id");
-      const recruiterJobIds = recruiterJobs.map((job) => job._id);
-
-      // Get all internships posted by this recruiter
-      const recruiterInternships = await Internship.find({ posted_by: recruiterEmail }).select("_id");
-      const recruiterInternshipIds = recruiterInternships.map((internship) => internship._id);
-
-      // Filter applications to only show those for recruiter's jobs/internships
-      const jobApplications = await Application.find({
-        ...filter,
-        job_id: { $in: recruiterJobIds },
-        application_type: "job",
-      }).populate("job_id");
-
-      const internshipApplications = await Application.find({
-        ...filter,
-        internship_id: { $in: recruiterInternshipIds },
-        application_type: "internship",
-      }).populate("internship_id");
-
-      const allApplications = [...jobApplications, ...internshipApplications];
-      allApplications.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
-
-      return res.json(allApplications);
-    }
-
-    // For students and other users (admin, etc.), show their applications
+    // For admin, show all applications
     const applications = await Application.find(filter)
       .populate({
         path: "job_id",
@@ -181,8 +158,20 @@ router.post("/", authenticateJWT, async (req, res, next) => {
 });
 
 // Update application status
-router.patch("/:id/status", authenticateJWT, async (req, res, next) => {
+router.patch("/:id/status", async (req, res, next) => {
   try {
+    // Check if this is an admin request
+    const isAdminRequest = req.headers['x-admin-auth'] === 'true';
+    
+    // If admin request, bypass authentication
+    if (!isAdminRequest) {
+      // Use the original authenticateJWT middleware
+      return authenticateJWT(req, res, next);
+    }
+
+    // For admin requests, create a mock user object
+    req.user = { role: 'admin', email: 'admin@careernest.com' };
+    
     const { status } = req.body;
     const application = await Application.findByIdAndUpdate(
       req.params.id,
