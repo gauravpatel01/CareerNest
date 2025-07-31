@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, MapPin, GraduationCap, Clock, IndianRupee, Filter, Calendar } from "lucide-react";
-import JobCard from "../Components/jobs/JobCard"
+import JobCard from "../Components/jobs/InternshipCard"
 import LoadingSpinner from "../Components/common/LoadingSpinner";
 
 export default function Internships() {
