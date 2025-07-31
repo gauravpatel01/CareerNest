@@ -240,18 +240,7 @@ export default function Internships() {
           )}
         </div>
 
-        {/* Call to Action */}
-        <div className="bg-gradient-to-r from-green-600 to-teal-700 rounded-xl p-8 mt-12 text-white text-center">
-          <h2 className="text-2xl font-bold mb-4">Can't find the right internship?</h2>
-          <p className="text-green-100 mb-6">
-            Create your profile and get notified when new internships matching your preferences are posted
-          </p>
-          <Link to={createPageUrl("StudentAuth")}>
-            <Button className="bg-white text-green-600 hover:bg-gray-100 px-8 py-3 rounded-lg font-semibold">
-              Create Profile
-            </Button>
-          </Link>
-        </div>
+       
       </div>
     </div>
   );
