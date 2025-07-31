@@ -1,5 +1,5 @@
 // Use a simple approach for API base URL that works in browser
-const API_BASE_URL = window.location.hostname === "localhost" ? "http://localhost:8080" : "";
+const API_BASE_URL = window.location.hostname === "localhost" ? "http://localhost:5000" : "";
 
 class ApplicationApi {
   static async create(applicationData) {

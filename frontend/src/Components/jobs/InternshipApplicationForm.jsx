@@ -272,42 +272,14 @@ export default function InternshipApplicationForm({ internship, onClose, onSucce
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Resume</label>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-              {uploadedFileName ? (
-                <div className="flex items-center justify-center space-x-2">
-                  <FileText className="w-5 h-5 text-green-600" />
-                  <span className="text-green-600 font-medium">{uploadedFileName}</span>
-                  <CheckCircle className="w-5 h-5 text-green-600" />
-                </div>
-              ) : (
-                <div>
-                  <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-gray-600 mb-2">Upload your resume (PDF, DOC, DOCX)</p>
-                  <input
-                    type="file"
-                    accept=".pdf,.doc,.docx"
-                    onChange={handleFileUpload}
-                    className="hidden"
-                    id="resume-upload"
-                    disabled={hasApplied}
-                  />
-                  <label
-                    htmlFor="resume-upload"
-                    className={`cursor-pointer ${
-                      hasApplied ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"
-                    } text-white px-4 py-2 rounded`}
-                  >
-                    Choose File
-                  </label>
-                </div>
-              )}
-            </div>
-
-            {hasApplied && (
-              <div className="mt-2 text-center text-sm text-green-600">
-                You have already applied for this position. Check your application status in My Applications.
-              </div>
-            )}
+            <input
+            required
+            type="text" name="resume_url"
+            value={formData.resume_url}
+            onChange={handleInputChange}
+            placeholder="Paste your resume link here"
+            className=" block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+            />
           </div>
 
           <div className="flex justify-end space-x-4">
