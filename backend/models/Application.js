@@ -12,13 +12,17 @@ const applicationSchema = new mongoose.Schema(
     job_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Job",
-      required: function() { return this.application_type === "job"; },
+      required: function () {
+        return this.application_type === "job";
+      },
     },
     // Internship reference (for internship applications)
     internship_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Internship",
-      required: function() { return this.application_type === "internship"; },
+      required: function () {
+        return this.application_type === "internship";
+      },
     },
     applicant_email: {
       type: String,
@@ -46,6 +50,38 @@ const applicationSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    // Internship-specific fields
+    university: {
+      type: String,
+      trim: true,
+    },
+    course: {
+      type: String,
+      trim: true,
+    },
+    graduation_year: {
+      type: Number,
+    },
+    current_semester: {
+      type: String,
+      trim: true,
+    },
+    technical_skills: {
+      type: String,
+      trim: true,
+    },
+    github_profile: {
+      type: String,
+      trim: true,
+    },
+    linkedin_profile: {
+      type: String,
+      trim: true,
+    },
+    portfolio_url: {
+      type: String,
+      trim: true,
+    },
     status: {
       type: String,
       enum: ["pending", "reviewed", "shortlisted", "rejected", "hired"],
@@ -70,7 +106,7 @@ applicationSchema.index({ internship_id: 1, status: 1 });
 applicationSchema.index({ created_date: -1 }); // For sorting by date
 
 // Virtual to populate job details
-applicationSchema.virtual('job', {
+applicationSchema.virtual("job", {
   ref: "Job",
   localField: "job_id",
   foreignField: "_id",
@@ -78,7 +114,7 @@ applicationSchema.virtual('job', {
 });
 
 // Virtual to populate internship details
-applicationSchema.virtual('internship', {
+applicationSchema.virtual("internship", {
   ref: "Internship",
   localField: "internship_id",
   foreignField: "_id",
