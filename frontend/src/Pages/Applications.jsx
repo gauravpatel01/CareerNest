@@ -1,131 +1,216 @@
-import React, { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
-import { Button } from "@/Components/ui/button";
-import { Badge } from "@/Components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs";
-import {
-  FileText,
-  Briefcase,
-  CheckCircle,
-  XCircle,
-  Eye,
-  Download,
-  Calendar,
-  MapPin,
-  User,
-  Mail,
-  Phone,
-  ExternalLink,
-} from "lucide-react";
-import LoadingSpinner from "../components/common/LoadingSpinner";
-import ApplicationApi from "../Services/ApplicationApi";
-import { useNavigate } from "react-router-dom";
 
-export default function Applications() {
-  console.log("Applications component rendering...");
-  
-  // Simple test render to see if component loads
-  if (!localStorage.getItem("user")) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold text-gray-600 mb-4">Loading Applications...</h2>
-          <p className="text-gray-500">Please wait while we check your authentication.</p>
-        </div>
-      </div>
-    );
-  }
-  
+import React, { useState, useEffect } from "react";
+import ApplicationApi from "../Services/ApplicationApi";
+import { Search, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import ApplicationFilters from "../components/applications/ApplicationFilters";
+import ApplicationList from "../components/applications/ApplicationList";
+import ApplicationDetails from "../components/applications/ApplicationDetails";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
+export default function ApplicationsPage() {
   const [applications, setApplications] = useState([]);
-  const [jobs, setJobs] = useState([]);
-  const [internships, setInternships] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [selectedTab, setSelectedTab] = useState("all");
+  const [filteredApplications, setFilteredApplications] = useState([]);
   const [selectedApplication, setSelectedApplication] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("-created_date");
+  const [selectedIds, setSelectedIds] = useState([]);
 
   useEffect(() => {
-    console.log("Applications component mounted");
-    console.log("Current user:", localStorage.getItem("user"));
-    console.log("JWT token:", localStorage.getItem("jwt"));
-    
-    // Check if user is authenticated and is a recruiter
-    const userStr = localStorage.getItem("user");
-    const jwt = localStorage.getItem("jwt");
-    
-    if (!userStr || !jwt) {
-      console.log("User not authenticated, redirecting to recruiter auth");
-      navigate("/p/recruiterauth");
-      return;
-    }
-    
-    try {
-      const user = JSON.parse(userStr);
-      console.log("User role:", user.role);
-      
-      if (user.role !== "recruiter") {
-        console.log("User is not a recruiter, redirecting");
-        navigate("/p/recruiterauth");
-        return;
-      }
-    } catch (error) {
-      console.error("Error parsing user data:", error);
-      navigate("/p/recruiterauth");
-      return;
-    }
-    
     loadApplications();
-  }, [navigate]);
+  }, [sortBy]);
+
+  useEffect(() => {
+    filterAndSortApplications();
+  }, [applications, searchTerm, statusFilter, typeFilter]);
 
   const loadApplications = async () => {
     setIsLoading(true);
-    setError(null);
     try {
-      console.log("Loading applications...");
       const data = await ApplicationApi.list();
-      console.log("Applications data:", data);
       setApplications(data);
-      
-      // Separate job and internship applications
-      const jobApps = data.filter(app => app.application_type === 'job');
-      const internshipApps = data.filter(app => app.application_type === 'internship');
-      
-      setJobs(jobApps);
-      setInternships(internshipApps);
     } catch (error) {
       console.error("Error loading applications:", error);
-      setError(error.message);
-    } finally {
-      setIsLoading(false);
+    }
+    setIsLoading(false);
+  };
+
+  const filterAndSortApplications = () => {
+    let filtered = [...applications];
+
+    if (searchTerm) {
+      filtered = filtered.filter((app) =>
+        (app.student_name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (app.position_title || "").toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    if (statusFilter !== "all") {
+      filtered = filtered.filter((app) => app.status === statusFilter);
+    }
+
+    if (typeFilter !== "all") {
+      filtered = filtered.filter((app) => app.position_type === typeFilter);
+    }
+
+    setFilteredApplications(filtered);
+  };
+
+  const handleStatusUpdate = async (applicationId, newStatus) => {
+    try {
+      await ApplicationApi.update(applicationId, { status: newStatus });
+      const updatedApplications = applications.map((app) =>
+        app.id === applicationId ? { ...app, status: newStatus } : app
+      );
+      setApplications(updatedApplications);
+
+      if (selectedApplication?.id === applicationId) {
+        setSelectedApplication((prev) => ({ ...prev, status: newStatus }));
+      }
+    } catch (error) {
+      console.error("Error updating status:", error);
     }
   };
 
-  // Simple test render
+  const handleSelectionChange = (id) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    );
+  };
+
+  const handleSelectAll = (isChecked) => {
+    setSelectedIds(isChecked ? filteredApplications.map((app) => app.id) : []);
+  };
+
+  const handleBulkStatusUpdate = async (status) => {
+    if (selectedIds.length === 0) return;
+
+    setIsLoading(true);
+    try {
+      const updates = selectedIds.map((id) =>
+        ApplicationApi.update(id, { status })
+      );
+      await Promise.all(updates);
+      setSelectedIds([]);
+      await loadApplications();
+    } catch (error) {
+      console.error("Error during bulk update:", error);
+    }
+    setIsLoading(false);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">Applications Test</h1>
-        <p className="text-gray-600 mb-4">This is a test to see if the component loads.</p>
-        
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-4">Debug Information:</h2>
-          <div className="space-y-2 text-sm">
-            <p><strong>User:</strong> {localStorage.getItem("user") || "Not found"}</p>
-            <p><strong>JWT:</strong> {localStorage.getItem("jwt") ? "Present" : "Not found"}</p>
-            <p><strong>Loading:</strong> {isLoading ? "Yes" : "No"}</p>
-            <p><strong>Error:</strong> {error || "None"}</p>
-            <p><strong>Applications Count:</strong> {applications.length}</p>
-          </div>
-          
-          <div className="mt-4">
-            <Button onClick={loadApplications} className="bg-blue-500 hover:bg-blue-600">
-              Reload Applications
-            </Button>
-          </div>
+      <div className="max-w-4xl mx-auto p-6">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Applications</h1>
+          <p className="text-gray-600 mt-1">Manage and review student applications</p>
+        </div>
+
+        <Card className="mb-6">
+          <CardContent className="p-6">
+            <div className="flex flex-col lg:flex-row gap-4">
+              <div className="flex-1">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Input
+                    placeholder="Search by name or position..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+              <ApplicationFilters
+                statusFilter={statusFilter}
+                setStatusFilter={setStatusFilter}
+                typeFilter={typeFilter}
+                setTypeFilter={setTypeFilter}
+                sortBy={sortBy}
+                setSortBy={setSortBy}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {selectedIds.length > 0 && (
+          <Card className="mb-4 bg-indigo-50 border-indigo-200 shadow-md">
+            <CardContent className="p-4 flex items-center justify-between">
+              <p className="font-medium text-indigo-800">
+                {selectedIds.length} application(s) selected.
+              </p>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium mr-2">Bulk Actions:</span>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleBulkStatusUpdate("shortlisted")}
+                >
+                  Shortlist
+                </Button>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={() => handleBulkStatusUpdate("rejected")}
+                >
+                  Reject
+                </Button>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => setSelectedIds([])}
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        <div className="w-full">
+          <ApplicationList
+            applications={filteredApplications}
+            isLoading={isLoading}
+            onSelectApplication={setSelectedApplication}
+            onStatusUpdate={handleStatusUpdate}
+            selectedApplication={selectedApplication}
+            selectedIds={selectedIds}
+            onSelectionChange={handleSelectionChange}
+            onSelectAll={handleSelectAll}
+          />
         </div>
       </div>
+
+      <Dialog
+        open={!!selectedApplication}
+        onOpenChange={(isOpen) => !isOpen && setSelectedApplication(null)}
+      >
+        <DialogContent className="max-w-2xl p-0">
+          {selectedApplication && (
+            <div className="max-h-[90vh] overflow-y-auto">
+              <DialogHeader className="p-6 pb-4">
+                <DialogTitle>Application Details</DialogTitle>
+              </DialogHeader>
+              <div className="px-6 pb-6">
+                <ApplicationDetails
+                  application={selectedApplication}
+                  onStatusUpdate={handleStatusUpdate}
+                />
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
