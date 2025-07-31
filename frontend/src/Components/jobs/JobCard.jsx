@@ -193,7 +193,7 @@ export default function JobCard({ job, isInternship = false }) {
                          {(job.approval_status === "approved" || job.status === "approved") && (
                <Link to={`/p/job-details/${job._id}?apply=true`}>
                  <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                   {isInternship ? "Apply for Internship" : "Apply Now"}
+                   {isInternship ? "Apply for Job" : "Apply Now"}
                  </Button>
                </Link>
              )}
