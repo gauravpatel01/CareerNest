@@ -1,31 +1,32 @@
 import { useEffect, useState } from "react";
 import LoadingSpinner from "../Components/common/LoadingSpinner";
 import MyApplicationCard from "@/Components/jobs/MyApplicationCard";
+import ApplicationApi from "../Services/ApplicationApi";
+import { useToast } from "../Components/common/ToastContext";
 
 export default function MyApplications() {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const email = localStorage.getItem("email") || "shivam@email.com"; // Replace accordingly
+  const [error, setError] = useState(null);
+  const { showToast } = useToast();
 
   useEffect(() => {
     async function fetchApplications() {
-      const url = "https://app.base44.com/api/apps/687508e8c02e10285e949016/entities/Application";
-
       try {
-        const response = await fetch(url, {
-          headers: {
-            api_key: "fc6a61ef692346c9b3d1d0749378bd8e",
-            "Content-Type": "application/json",
-          },
-        });
+        setLoading(true);
+        setError(null);
+        
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user || !user.email) {
+          throw new Error('Please log in to view your applications');
+        }
 
-        if (!response.ok) throw new Error("Failed to fetch applications.");
-
-        const data = await response.json();
+        const data = await ApplicationApi.list({ applicant_email: user.email });
         setApplications(data);
       } catch (err) {
-        console.error(err.message);
+        console.error('Error fetching applications:', err);
+        setError(err.message || 'Failed to fetch applications');
+        showToast(err.message || 'Failed to fetch applications', 'error');
         setApplications([]);
       } finally {
         setLoading(false);
@@ -33,22 +34,39 @@ export default function MyApplications() {
     }
 
     fetchApplications();
-  }, [email]);
-
-  if (loading) return <LoadingSpinner />;
+  }, [showToast]);
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
       <h1 className="text-2xl font-semibold mb-6 text-blue-900">My Applications</h1>
 
-      {applications.length > 0 ? (
+      {loading ? (
+        <div className="flex justify-center items-center py-20">
+          <LoadingSpinner />
+        </div>
+      ) : error ? (
+        <div className="text-center py-20">
+          <p className="text-red-500 mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="text-blue-500 hover:text-blue-700"
+          >
+            Try Again
+          </button>
+        </div>
+      ) : applications.length > 0 ? (
         <div className="grid gap-6">
           {applications.map((app) => (
-            <MyApplicationCard key={app.id} app={app} />
+            <MyApplicationCard key={app._id} app={app} />
           ))}
         </div>
       ) : (
-        <div className="text-center py-20 text-gray-500">No applications found.</div>
+        <div className="text-center py-20 text-gray-500">
+          <p>No applications found.</p>
+          <a href="/jobs" className="text-blue-500 hover:text-blue-700 mt-2 inline-block">
+            Browse Jobs
+          </a>
+        </div>
       )}
     </div>
   );

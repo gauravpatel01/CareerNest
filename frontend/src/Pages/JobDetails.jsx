@@ -19,6 +19,7 @@ export default function JobDetails() {
   const [isLoading, setIsLoading] = useState(true);
   const [showApplicationForm, setShowApplicationForm] = useState(false);
   const [applicationMessage, setApplicationMessage] = useState("");
+  const [applicationStatus, setApplicationStatus] = useState(""); // "success", "error", or ""
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -68,6 +69,19 @@ export default function JobDetails() {
       return user && jwt && user.role === "student";
     } catch {
       return false;
+    }
+  };
+
+  const handleApplicationSuccess = (message, type = "success") => {
+    setApplicationMessage(message);
+    setApplicationStatus(type);
+    setShowApplicationForm(false);
+    
+    if (type === "success") {
+      // Navigate to My Applications after a delay
+      setTimeout(() => {
+        navigate('/p/applications');
+      }, 2000);
     }
   };
 
@@ -154,18 +168,23 @@ export default function JobDetails() {
           </div>
 
           {applicationMessage && (
-            <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+            <div className={`mb-6 p-4 rounded-lg ${
+              applicationStatus === "error" 
+                ? "bg-red-100 border border-red-400 text-red-700"
+                : "bg-green-100 border border-green-400 text-green-700"
+            }`}>
               {applicationMessage}
             </div>
           )}
 
           <ApplicationForm
             job={job}
-            onClose={() => setShowApplicationForm(false)}
-            onSuccess={(message) => {
-              setApplicationMessage(message);
+            onClose={() => {
               setShowApplicationForm(false);
+              setApplicationMessage("");
+              setApplicationStatus("");
             }}
+            onSuccess={handleApplicationSuccess}
           />
         </div>
       </div>

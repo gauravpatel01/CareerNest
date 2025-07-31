@@ -20,6 +20,9 @@ class ApplicationApi {
 
       if (!response.ok) {
         const errorData = await response.json();
+        if (response.status === 409) {
+          throw new Error('You have already applied for this position');
+        }
         throw new Error(errorData.error || 'Failed to create application');
       }
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ApplicationApi from "../../Services/ApplicationApi";
 import UserApi from "../../Services/UserApi";
 // import { UploadFile } from "@/integrations/Core";
@@ -21,6 +21,8 @@ export default function ApplicationForm({ job, onClose, onSuccess }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState("");
+  const [hasApplied, setHasApplied] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
   const navigate = useNavigate();
 
   // Authorization check
@@ -35,7 +37,29 @@ export default function ApplicationForm({ job, onClose, onSuccess }) {
   const isStudent = user && jwt && user.role === "student";
 
   // Determine if this is an internship or job application
-  const isInternship = job.job_type === "Internship" || job.duration || job.stipend;
+  const isInternship = job.job_type === "Internship";
+
+  // Check if user has already applied
+  useEffect(() => {
+    async function checkApplication() {
+      try {
+        if (!user?.email) return;
+        
+        const applications = await ApplicationApi.list({ 
+          applicant_email: user.email,
+          [isInternship ? 'internship_id' : 'job_id']: job.id || job._id
+        });
+        
+        setHasApplied(applications.length > 0);
+      } catch (error) {
+        console.error('Error checking application status:', error);
+      } finally {
+        setIsChecking(false);
+      }
+    }
+
+    checkApplication();
+  }, [job.id, job._id, user?.email, isInternship]);
 
   if (!isStudent) {
     return (
@@ -89,11 +113,13 @@ export default function ApplicationForm({ job, onClose, onSuccess }) {
     setIsSubmitting(true);
 
     try {
-      // Check if user is logged in
-      const user = await UserApi.me();
+      const user = JSON.parse(localStorage.getItem('user'));
+      if (!user || !user.email) {
+        throw new Error('Please log in to apply');
+      }
 
       const applicationData = {
-        applicant_email: formData.applicant_email || user.email,
+        applicant_email: user.email,
         applicant_name: formData.applicant_name || user.full_name,
         phone: formData.phone,
         experience: formData.experience,
@@ -109,11 +135,34 @@ export default function ApplicationForm({ job, onClose, onSuccess }) {
       }
 
       onSuccess(`${isInternship ? 'Internship' : 'Job'} application submitted successfully!`);
+      
+      // Show success message
+      onSuccess(`${isInternship ? 'Internship' : 'Job'} application submitted successfully!`);
+      
+      // Close the form
+      onClose();
+      
+      // Navigate to My Applications
+      try {
+        // Ensure we're properly wrapped in StudentLayout
+        navigate('/p/applications', { 
+          replace: true,
+          state: { from: 'application' }
+        });
+      } catch (error) {
+        console.error('Navigation error:', error);
+        // Fallback navigation
+        window.location.href = '/p/applications';
+      }
     } catch (error) {
       console.error("Error submitting application:", error);
       // If user not logged in, redirect to login
       if (error.message?.includes("not authenticated")) {
         await User.loginWithRedirect(window.location.href);
+      } else if (error.message?.includes("already applied")) {
+        onSuccess(error.message, "warning");
+      } else {
+        onSuccess(error.message || "Failed to submit application. Please try again.", "error");
       }
     } finally {
       setIsSubmitting(false);
@@ -210,16 +259,23 @@ export default function ApplicationForm({ job, onClose, onSuccess }) {
                     onChange={handleFileUpload}
                     className="hidden"
                     id="resume-upload"
+                    disabled={hasApplied}
                   />
                   <label
                     htmlFor="resume-upload"
-                    className="cursor-pointer bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                    className={`cursor-pointer ${hasApplied ? 'bg-gray-400' : 'bg-blue-500 hover:bg-blue-600'} text-white px-4 py-2 rounded`}
                   >
                     Choose File
                   </label>
                 </div>
               )}
             </div>
+
+            {hasApplied && (
+              <div className="mt-2 text-center text-sm text-green-600">
+                You have already applied for this position. Check your application status in My Applications.
+              </div>
+            )}
           </div>
 
           <div className="flex justify-end space-x-4">

@@ -9,7 +9,7 @@ const router = express.Router();
 router.get("/", authenticateJWT, async (req, res, next) => {
   try {
     const { status, applicant_email, job_id, internship_id, application_type } = req.query;
-    const filter = {};
+    let filter = {};
 
     if (status) filter.status = status;
     if (applicant_email) filter.applicant_email = applicant_email;
@@ -17,8 +17,12 @@ router.get("/", authenticateJWT, async (req, res, next) => {
     if (internship_id) filter.internship_id = internship_id;
     if (application_type) filter.application_type = application_type;
 
+    // If user is a student, only show their applications
+    if (req.user.role === 'student') {
+      filter.applicant_email = req.user.email;
+    }
     // If user is a recruiter, only show applications for their posted jobs/internships
-    if (req.user.role === 'recruiter') {
+    else if (req.user.role === 'recruiter') {
       const recruiterEmail = req.user.email;
       
       // Get all jobs posted by this recruiter
@@ -48,13 +52,46 @@ router.get("/", authenticateJWT, async (req, res, next) => {
       return res.json(allApplications);
     }
 
-    // For other users (admin, etc.), show all applications
+    // For students and other users (admin, etc.), show their applications
     const applications = await Application.find(filter)
-      .populate("job_id")
-      .populate("internship_id")
+      .populate({
+        path: 'job_id',
+        select: 'title position company location salary status type posted_by company_logo'
+      })
+      .populate({
+        path: 'internship_id',
+        select: 'title position company location stipend duration status posted_by company_logo'
+      })
       .sort({ created_date: -1 });
 
-    res.json(applications);
+    // Transform the response to include all necessary information
+    const transformedApplications = applications.map(app => {
+      const source = app.application_type === 'job' ? app.job_id : app.internship_id;
+      return {
+        _id: app._id,
+        application_type: app.application_type,
+        status: app.status,
+        created_date: app.created_date,
+        applicant_name: app.applicant_name,
+        applicant_email: app.applicant_email,
+        company_name: app.company_name || source?.company,
+        company_logo: app.company_logo || source?.company_logo,
+        position: source?.position,
+        location: source?.location,
+        title: source?.title,
+        // Include other relevant fields from job/internship
+        ...(app.application_type === 'job' ? {
+          salary: source?.salary,
+          job_id: source?._id
+        } : {
+          stipend: source?.stipend,
+          duration: source?.duration,
+          internship_id: source?._id
+        })
+      };
+    });
+
+    res.json(transformedApplications);
   } catch (error) {
     next(error);
   }
@@ -137,6 +174,12 @@ router.post("/", authenticateJWT, async (req, res, next) => {
       return res.status(400).json({ error: "Invalid application_type. Must be 'job' or 'internship'" });
     }
   } catch (error) {
+    // Handle MongoDB duplicate key error (code 11000)
+    if (error.code === 11000) {
+      return res.status(409).json({ 
+        error: "You have already applied for this position" 
+      });
+    }
     next(error);
   }
 });
@@ -165,13 +208,22 @@ router.patch("/:id/status", authenticateJWT, async (req, res, next) => {
 });
 
 // Delete application
-router.delete("/:id", async (req, res, next) => {
+router.delete("/:id", authenticateJWT, async (req, res, next) => {
   try {
-    const application = await Application.findByIdAndDelete(req.params.id);
+    const application = await Application.findById(req.params.id);
 
     if (!application) {
       return res.status(404).json({ error: "Application not found" });
     }
+
+    // Only allow admin, the applicant, or the job/internship poster to delete
+    if (req.user.role !== 'admin' && 
+        application.applicant_email !== req.user.email && 
+        req.user.role !== 'recruiter') {
+      return res.status(403).json({ error: "Not authorized to delete this application" });
+    }
+
+    await application.delete();
 
     res.json({
       message: "Application deleted successfully",
@@ -182,13 +234,51 @@ router.delete("/:id", async (req, res, next) => {
 });
 
 // Get applications by job ID
-router.get("/job/:jobId", async (req, res, next) => {
+router.get("/job/:jobId", authenticateJWT, async (req, res, next) => {
   try {
+    // Verify the job exists and user has permission to view applications
+    const job = await Job.findById(req.params.jobId);
+    if (!job) {
+      return res.status(404).json({ error: "Job not found" });
+    }
+
+    // Only allow job poster or admin to view all applications
+    if (req.user.role !== 'admin' && job.posted_by !== req.user.email) {
+      return res.status(403).json({ error: "Not authorized to view these applications" });
+    }
+
     const applications = await Application.find({
       job_id: req.params.jobId,
       application_type: 'job'
     })
     .populate('job_id')
+    .sort({ created_date: -1 });
+
+    res.json(applications);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Get applications by internship ID
+router.get("/internship/:internshipId", authenticateJWT, async (req, res, next) => {
+  try {
+    // Verify the internship exists and user has permission to view applications
+    const internship = await Internship.findById(req.params.internshipId);
+    if (!internship) {
+      return res.status(404).json({ error: "Internship not found" });
+    }
+
+    // Only allow internship poster or admin to view all applications
+    if (req.user.role !== 'admin' && internship.posted_by !== req.user.email) {
+      return res.status(403).json({ error: "Not authorized to view these applications" });
+    }
+
+    const applications = await Application.find({
+      internship_id: req.params.internshipId,
+      application_type: 'internship'
+    })
+    .populate('internship_id')
     .sort({ created_date: -1 });
 
     res.json(applications);
