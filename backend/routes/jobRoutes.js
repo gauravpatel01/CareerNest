@@ -44,6 +44,87 @@ router.get("/admin/all", async (req, res, next) => {
   }
 });
 
+// Legacy routes for backward compatibility - MUST BE BEFORE /:id route
+// Get all internships (legacy - using Internship model)
+router.get("/internships", async (req, res, next) => {
+  try {
+    const { posted_by } = req.query;
+    const filter = {};
+
+    if (posted_by) filter.posted_by = posted_by;
+
+    const internships = await Internship.find(filter);
+    res.json(internships);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Get single internship by ID (legacy)
+router.get("/internships/:id", async (req, res, next) => {
+  try {
+    const internship = await Internship.findById(req.params.id);
+    if (!internship) {
+      return res.status(404).json({ error: "Internship not found" });
+    }
+    res.json(internship);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Update internship (legacy)
+router.put("/internships/:id", authenticateJWT, async (req, res, next) => {
+  try {
+    // Find the internship first to check ownership
+    const internship = await Internship.findById(req.params.id);
+    if (!internship) {
+      return res.status(404).json({ error: "Internship not found" });
+    }
+
+    // Only allow the recruiter who posted the internship to update it
+    if (internship.posted_by !== req.user.email) {
+      return res.status(403).json({ error: "You can only update internships you posted" });
+    }
+
+    const updatedInternship = await Internship.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    res.json({
+      message: "Internship updated successfully",
+      internship: updatedInternship,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Delete internship (legacy)
+router.delete("/internships/:id", authenticateJWT, async (req, res, next) => {
+  try {
+    // Find the internship first to check ownership
+    const internship = await Internship.findById(req.params.id);
+    if (!internship) {
+      return res.status(404).json({ error: "Internship not found" });
+    }
+
+    // Only allow the recruiter who posted the internship to delete it
+    if (internship.posted_by !== req.user.email) {
+      return res.status(403).json({ error: "You can only delete internships you posted" });
+    }
+
+    await Internship.findByIdAndDelete(req.params.id);
+
+    res.json({
+      message: "Internship deleted successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // Get single job/internship by ID
 router.get("/:id", async (req, res, next) => {
   try {
@@ -157,87 +238,6 @@ router.delete("/:id", authenticateJWT, async (req, res, next) => {
 
     res.json({
       message: "Job deleted successfully",
-    });
-  } catch (error) {
-    next(error);
-  }
-});
-
-// Legacy routes for backward compatibility
-// Get all internships (legacy - using Internship model)
-router.get("/internships", async (req, res, next) => {
-  try {
-    const { posted_by } = req.query;
-    const filter = {};
-
-    if (posted_by) filter.posted_by = posted_by;
-
-    const internships = await Internship.find(filter);
-    res.json(internships);
-  } catch (error) {
-    next(error);
-  }
-});
-
-// Get single internship by ID (legacy)
-router.get("/internships/:id", async (req, res, next) => {
-  try {
-    const internship = await Internship.findById(req.params.id);
-    if (!internship) {
-      return res.status(404).json({ error: "Internship not found" });
-    }
-    res.json(internship);
-  } catch (error) {
-    next(error);
-  }
-});
-
-// Update internship (legacy)
-router.put("/internships/:id", authenticateJWT, async (req, res, next) => {
-  try {
-    // Find the internship first to check ownership
-    const internship = await Internship.findById(req.params.id);
-    if (!internship) {
-      return res.status(404).json({ error: "Internship not found" });
-    }
-
-    // Only allow the recruiter who posted the internship to update it
-    if (internship.posted_by !== req.user.email) {
-      return res.status(403).json({ error: "You can only update internships you posted" });
-    }
-
-    const updatedInternship = await Internship.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
-
-    res.json({
-      message: "Internship updated successfully",
-      internship: updatedInternship,
-    });
-  } catch (error) {
-    next(error);
-  }
-});
-
-// Delete internship (legacy)
-router.delete("/internships/:id", authenticateJWT, async (req, res, next) => {
-  try {
-    // Find the internship first to check ownership
-    const internship = await Internship.findById(req.params.id);
-    if (!internship) {
-      return res.status(404).json({ error: "Internship not found" });
-    }
-
-    // Only allow the recruiter who posted the internship to delete it
-    if (internship.posted_by !== req.user.email) {
-      return res.status(403).json({ error: "You can only delete internships you posted" });
-    }
-
-    await Internship.findByIdAndDelete(req.params.id);
-
-    res.json({
-      message: "Internship deleted successfully",
     });
   } catch (error) {
     next(error);

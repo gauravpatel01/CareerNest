@@ -18,55 +18,55 @@ router.get("/", authenticateJWT, async (req, res, next) => {
     if (application_type) filter.application_type = application_type;
 
     // If user is a student, only show their applications
-    if (req.user.role === 'student') {
+    if (req.user.role === "student") {
       filter.applicant_email = req.user.email;
     }
     // If user is a recruiter, only show applications for their posted jobs/internships
-    else if (req.user.role === 'recruiter') {
+    else if (req.user.role === "recruiter") {
       const recruiterEmail = req.user.email;
-      
+
       // Get all jobs posted by this recruiter
-      const recruiterJobs = await Job.find({ posted_by: recruiterEmail }).select('_id');
-      const recruiterJobIds = recruiterJobs.map(job => job._id);
-      
+      const recruiterJobs = await Job.find({ posted_by: recruiterEmail }).select("_id");
+      const recruiterJobIds = recruiterJobs.map((job) => job._id);
+
       // Get all internships posted by this recruiter
-      const recruiterInternships = await Internship.find({ posted_by: recruiterEmail }).select('_id');
-      const recruiterInternshipIds = recruiterInternships.map(internship => internship._id);
-      
+      const recruiterInternships = await Internship.find({ posted_by: recruiterEmail }).select("_id");
+      const recruiterInternshipIds = recruiterInternships.map((internship) => internship._id);
+
       // Filter applications to only show those for recruiter's jobs/internships
-      const jobApplications = await Application.find({ 
-        ...filter, 
+      const jobApplications = await Application.find({
+        ...filter,
         job_id: { $in: recruiterJobIds },
-        application_type: 'job'
-      }).populate('job_id');
-      
-      const internshipApplications = await Application.find({ 
-        ...filter, 
+        application_type: "job",
+      }).populate("job_id");
+
+      const internshipApplications = await Application.find({
+        ...filter,
         internship_id: { $in: recruiterInternshipIds },
-        application_type: 'internship'
-      }).populate('internship_id');
-      
+        application_type: "internship",
+      }).populate("internship_id");
+
       const allApplications = [...jobApplications, ...internshipApplications];
       allApplications.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
-      
+
       return res.json(allApplications);
     }
 
     // For students and other users (admin, etc.), show their applications
     const applications = await Application.find(filter)
       .populate({
-        path: 'job_id',
-        select: 'title position company location salary status type posted_by company_logo'
+        path: "job_id",
+        select: "title position company location salary status type posted_by company_logo",
       })
       .populate({
-        path: 'internship_id',
-        select: 'title position company location stipend duration status posted_by company_logo'
+        path: "internship_id",
+        select: "title position company location stipend duration status posted_by company_logo",
       })
       .sort({ created_date: -1 });
 
     // Transform the response to include all necessary information
-    const transformedApplications = applications.map(app => {
-      const source = app.application_type === 'job' ? app.job_id : app.internship_id;
+    const transformedApplications = applications.map((app) => {
+      const source = app.application_type === "job" ? app.job_id : app.internship_id;
       return {
         _id: app._id,
         application_type: app.application_type,
@@ -80,14 +80,16 @@ router.get("/", authenticateJWT, async (req, res, next) => {
         location: source?.location,
         title: source?.title,
         // Include other relevant fields from job/internship
-        ...(app.application_type === 'job' ? {
-          salary: source?.salary,
-          job_id: source?._id
-        } : {
-          stipend: source?.stipend,
-          duration: source?.duration,
-          internship_id: source?._id
-        })
+        ...(app.application_type === "job"
+          ? {
+              salary: source?.salary,
+              job_id: source?._id,
+            }
+          : {
+              stipend: source?.stipend,
+              duration: source?.duration,
+              internship_id: source?._id,
+            }),
       };
     });
 
@@ -100,9 +102,7 @@ router.get("/", authenticateJWT, async (req, res, next) => {
 // Get single application by ID
 router.get("/:id", authenticateJWT, async (req, res, next) => {
   try {
-    const application = await Application.findById(req.params.id)
-      .populate("job_id")
-      .populate("internship_id");
+    const application = await Application.findById(req.params.id).populate("job_id").populate("internship_id");
 
     if (!application) {
       return res.status(404).json({ error: "Application not found" });
@@ -120,11 +120,11 @@ router.post("/", authenticateJWT, async (req, res, next) => {
     const { job_id, internship_id, application_type } = req.body;
 
     // Validate application type and corresponding ID
-    if (application_type === 'job') {
+    if (application_type === "job") {
       if (!job_id) {
         return res.status(400).json({ error: "job_id is required for job applications" });
       }
-      
+
       // Verify job exists
       const job = await Job.findById(job_id);
       if (!job) {
@@ -145,11 +145,11 @@ router.post("/", authenticateJWT, async (req, res, next) => {
         message: "Job application submitted successfully",
         application,
       });
-    } else if (application_type === 'internship') {
+    } else if (application_type === "internship") {
       if (!internship_id) {
         return res.status(400).json({ error: "internship_id is required for internship applications" });
       }
-      
+
       // Verify internship exists
       const internship = await Internship.findById(internship_id);
       if (!internship) {
@@ -175,7 +175,7 @@ router.post("/", authenticateJWT, async (req, res, next) => {
     }
   } catch (error) {
     // Log the error for debugging
-    console.error('Application creation error:', error);
+    console.error("Application creation error:", error);
     next(error);
   }
 });
@@ -213,9 +213,7 @@ router.delete("/:id", authenticateJWT, async (req, res, next) => {
     }
 
     // Only allow admin, the applicant, or the job/internship poster to delete
-    if (req.user.role !== 'admin' && 
-        application.applicant_email !== req.user.email && 
-        req.user.role !== 'recruiter') {
+    if (req.user.role !== "admin" && application.applicant_email !== req.user.email && req.user.role !== "recruiter") {
       return res.status(403).json({ error: "Not authorized to delete this application" });
     }
 
@@ -239,16 +237,16 @@ router.get("/job/:jobId", authenticateJWT, async (req, res, next) => {
     }
 
     // Only allow job poster or admin to view all applications
-    if (req.user.role !== 'admin' && job.posted_by !== req.user.email) {
+    if (req.user.role !== "admin" && job.posted_by !== req.user.email) {
       return res.status(403).json({ error: "Not authorized to view these applications" });
     }
 
     const applications = await Application.find({
       job_id: req.params.jobId,
-      application_type: 'job'
+      application_type: "job",
     })
-    .populate('job_id')
-    .sort({ created_date: -1 });
+      .populate("job_id")
+      .sort({ created_date: -1 });
 
     res.json(applications);
   } catch (error) {
@@ -266,16 +264,16 @@ router.get("/internship/:internshipId", authenticateJWT, async (req, res, next) 
     }
 
     // Only allow internship poster or admin to view all applications
-    if (req.user.role !== 'admin' && internship.posted_by !== req.user.email) {
+    if (req.user.role !== "admin" && internship.posted_by !== req.user.email) {
       return res.status(403).json({ error: "Not authorized to view these applications" });
     }
 
     const applications = await Application.find({
       internship_id: req.params.internshipId,
-      application_type: 'internship'
+      application_type: "internship",
     })
-    .populate('internship_id')
-    .sort({ created_date: -1 });
+      .populate("internship_id")
+      .sort({ created_date: -1 });
 
     res.json(applications);
   } catch (error) {
@@ -288,10 +286,10 @@ router.get("/internship/:internshipId", async (req, res, next) => {
   try {
     const applications = await Application.find({
       internship_id: req.params.internshipId,
-      application_type: 'internship'
+      application_type: "internship",
     })
-    .populate('internship_id')
-    .sort({ created_date: -1 });
+      .populate("internship_id")
+      .sort({ created_date: -1 });
 
     res.json(applications);
   } catch (error) {

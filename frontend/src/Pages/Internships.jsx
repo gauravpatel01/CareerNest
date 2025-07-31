@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, MapPin, GraduationCap, Clock, IndianRupee, Filter, Calendar } from "lucide-react";
-import JobCard from "../Components/jobs/InternshipCard"
+import JobCard from "../Components/jobs/InternshipCard";
 import LoadingSpinner from "../Components/common/LoadingSpinner";
 
 export default function Internships() {
@@ -30,50 +30,53 @@ export default function Internships() {
     filterInternships();
   }, [internships, searchTerm, locationFilter, durationFilter]);
 
- const loadInternships = async () => {
-  try {
-    const response = await fetch('/api/internships', {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const data = await response.json();
-    
-    // Check if user is a recruiter
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
-    const isRecruiter = user.role === "recruiter";
-    
-    if (isRecruiter) {
-      // For recruiters, show all their internships (approved, pending, rejected)
-      const recruiterInternships = (Array.isArray(data) ? data : []).filter(internship => internship.posted_by === user.email);
-      setInternships(recruiterInternships);
-    } else {
-      // For students, only show approved internships
-      setInternships((Array.isArray(data) ? data : []).filter(internship => internship.status === 'approved'));
+  const loadInternships = async () => {
+    try {
+      const response = await fetch("/api/jobs/internships", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+
+      // Check if user is a recruiter
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+      const isRecruiter = user.role === "recruiter";
+
+      if (isRecruiter) {
+        // For recruiters, show all their internships (approved, pending, rejected)
+        const recruiterInternships = (Array.isArray(data) ? data : []).filter(
+          (internship) => internship.posted_by === user.email
+        );
+        setInternships(recruiterInternships);
+      } else {
+        // For students, only show approved internships
+        setInternships((Array.isArray(data) ? data : []).filter((internship) => internship.status === "approved"));
+      }
+    } catch (error) {
+      console.error("Error loading internships:", error);
+    } finally {
+      setIsLoading(false);
     }
-  } catch (error) {
-    console.error('Error loading internships:', error);
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
   const filterInternships = () => {
     let filtered = internships;
 
     if (searchTerm) {
-      filtered = filtered.filter(internship =>
-        internship.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        internship.company.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        (internship) =>
+          internship.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          internship.company.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     if (locationFilter !== "all") {
-      filtered = filtered.filter(internship => internship.location === locationFilter);
+      filtered = filtered.filter((internship) => internship.location === locationFilter);
     }
 
     if (durationFilter !== "all") {
-      filtered = filtered.filter(internship => {
+      filtered = filtered.filter((internship) => {
         if (!internship.duration) return false;
         const duration = internship.duration.toLowerCase();
         switch (durationFilter) {
@@ -82,7 +85,15 @@ export default function Internships() {
           case "3-6":
             return duration.includes("3") || duration.includes("4") || duration.includes("5") || duration.includes("6");
           case "6+":
-            return duration.includes("6") || duration.includes("7") || duration.includes("8") || duration.includes("9") || duration.includes("10") || duration.includes("11") || duration.includes("12");
+            return (
+              duration.includes("6") ||
+              duration.includes("7") ||
+              duration.includes("8") ||
+              duration.includes("9") ||
+              duration.includes("10") ||
+              duration.includes("11") ||
+              duration.includes("12")
+            );
           default:
             return true;
         }
@@ -93,7 +104,7 @@ export default function Internships() {
   };
 
   if (isLoading) {
-    return <LoadingSpinner />
+    return <LoadingSpinner />;
   }
 
   return (
@@ -102,9 +113,7 @@ export default function Internships() {
       <section className="bg-gradient-to-r from-green-600 to-teal-700 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-3xl md:text-5xl font-bold mb-4">
-              Start Your Career Journey
-            </h1>
+            <h1 className="text-3xl md:text-5xl font-bold mb-4">Start Your Career Journey</h1>
             <p className="text-xl text-green-100 mb-8">
               Currently {internships.length}+ internship opportunities available
             </p>
@@ -133,13 +142,15 @@ export default function Internships() {
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  <path
+                    fillRule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </div>
               <div className="ml-3">
-                <h3 className="text-sm font-medium text-green-800">
-                  Recruiter Dashboard
-                </h3>
+                <h3 className="text-sm font-medium text-green-800">Recruiter Dashboard</h3>
                 <div className="mt-2 text-sm text-green-700">
                   <p>You can see all your posted internships here, including pending, approved, and rejected ones.</p>
                   <p className="mt-1">Only approved internships are visible to students.</p>
@@ -161,7 +172,7 @@ export default function Internships() {
                 className="pl-10"
               />
             </div>
-            
+
             <Select value={locationFilter} onValueChange={setLocationFilter}>
               <SelectTrigger>
                 <SelectValue placeholder="Location" />
@@ -195,9 +206,7 @@ export default function Internships() {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-2">
             <Filter className="w-5 h-5 text-gray-500" />
-            <span className="text-gray-700">
-              Showing {filteredInternships.length} internships
-            </span>
+            <span className="text-gray-700">Showing {filteredInternships.length} internships</span>
           </div>
           <div className="flex items-center space-x-2">
             <span className="text-sm text-gray-500">Sort by:</span>
@@ -226,7 +235,7 @@ export default function Internships() {
               <GraduationCap className="w-16 h-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-600 mb-2">No internships found</h3>
               <p className="text-gray-500">Try adjusting your filters or search terms</p>
-              <Button 
+              <Button
                 onClick={() => {
                   setSearchTerm("");
                   setLocationFilter("all");
@@ -239,8 +248,6 @@ export default function Internships() {
             </div>
           )}
         </div>
-
-       
       </div>
     </div>
   );

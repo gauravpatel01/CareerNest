@@ -35,6 +35,7 @@ import Preparation from "./Pages/Preparation";
 import Hackathons from "./Pages/Hackathons";
 import ManageInternships from "./Pages/ManageInternships";
 import EditInternship from "./Pages/EditInternship";
+import InternshipDetails from "./Pages/InternshipDetails";
 
 export default function App() {
   return (
@@ -112,6 +113,14 @@ export default function App() {
             element={
               <Layout currentPageName="JobDetails">
                 <JobDetails />
+              </Layout>
+            }
+          />
+          <Route
+            path="/p/internship-details/:internshipId"
+            element={
+              <Layout currentPageName="InternshipDetails">
+                <InternshipDetails />
               </Layout>
             }
           />
