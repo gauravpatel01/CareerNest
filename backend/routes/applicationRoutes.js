@@ -174,12 +174,8 @@ router.post("/", authenticateJWT, async (req, res, next) => {
       return res.status(400).json({ error: "Invalid application_type. Must be 'job' or 'internship'" });
     }
   } catch (error) {
-    // Handle MongoDB duplicate key error (code 11000)
-    if (error.code === 11000) {
-      return res.status(409).json({ 
-        error: "You have already applied for this position" 
-      });
-    }
+    // Log the error for debugging
+    console.error('Application creation error:', error);
     next(error);
   }
 });

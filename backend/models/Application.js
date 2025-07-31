@@ -64,17 +64,10 @@ const applicationSchema = new mongoose.Schema(
   }
 );
 
-// Compound index to prevent duplicate applications
-applicationSchema.index({ job_id: 1, applicant_email: 1 }, { unique: true, sparse: true });
-applicationSchema.index({ internship_id: 1, applicant_email: 1 }, { unique: true, sparse: true });
-
-// Index for querying applications by job
+// Indexes for efficient querying (allowing multiple applications per email)
 applicationSchema.index({ job_id: 1, status: 1 });
-// Index for querying applications by internship
 applicationSchema.index({ internship_id: 1, status: 1 });
-
-// Index for querying applications by applicant
-applicationSchema.index({ applicant_email: 1, status: 1 });
+applicationSchema.index({ created_date: -1 }); // For sorting by date
 
 // Virtual to populate job details
 applicationSchema.virtual('job', {

@@ -39,27 +39,20 @@ export default function ApplicationForm({ job, onClose, onSuccess }) {
   // Determine if this is an internship or job application
   const isInternship = job.job_type === "Internship";
 
-  // Check if user has already applied
+  // Initialize the form
   useEffect(() => {
-    async function checkApplication() {
+    async function initializeForm() {
       try {
         if (!user?.email) return;
-        
-        const applications = await ApplicationApi.list({ 
-          applicant_email: user.email,
-          [isInternship ? 'internship_id' : 'job_id']: job.id || job._id
-        });
-        
-        setHasApplied(applications.length > 0);
+        setIsChecking(false);
       } catch (error) {
-        console.error('Error checking application status:', error);
-      } finally {
+        console.error('Error initializing form:', error);
         setIsChecking(false);
       }
     }
 
-    checkApplication();
-  }, [job.id, job._id, user?.email, isInternship]);
+    initializeForm();
+  }, [user?.email]);
 
   if (!isStudent) {
     return (
@@ -125,14 +118,12 @@ export default function ApplicationForm({ job, onClose, onSuccess }) {
         experience: formData.experience,
         cover_letter: formData.cover_letter,
         resume_url: formData.resume_url,
+        application_type: isInternship ? 'internship' : 'job',
+        [isInternship ? 'internship_id' : 'job_id']: job.id || job._id
       };
 
-      // Use appropriate API method based on whether it's a job or internship
-      if (isInternship) {
-        await ApplicationApi.createInternshipApplication(job.id || job._id, applicationData);
-      } else {
-        await ApplicationApi.createJobApplication(job.id || job._id, applicationData);
-      }
+      // Create the application directly
+      await ApplicationApi.create(applicationData);
 
       onSuccess(`${isInternship ? 'Internship' : 'Job'} application submitted successfully!`);
       
@@ -159,10 +150,8 @@ export default function ApplicationForm({ job, onClose, onSuccess }) {
       // If user not logged in, redirect to login
       if (error.message?.includes("not authenticated")) {
         await User.loginWithRedirect(window.location.href);
-      } else if (error.message?.includes("already applied")) {
-        onSuccess(error.message, "warning");
       } else {
-        onSuccess(error.message || "Failed to submit application. Please try again.", "error");
+        onSuccess("Failed to submit application. Please try again.", "error");
       }
     } finally {
       setIsSubmitting(false);
